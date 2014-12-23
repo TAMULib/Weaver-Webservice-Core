@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Test Websocket</title>
+	</head>
+	<body>
+
+	<button id="connect">connect</button>
+	<input type="text" id="field" style="display:none;"/><button id="connect">send message</button>
+
+
+	<script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+	<script src="js/lib/sockjs-0.3.4.js"></script>
+    <script src="js/lib/stomp.js"></script>
+    <script>
+    	$(document).ready(function() {
+    		
+    		$("#connect").on("click", function() {
+    			connect();
+    		});
+
+
+    	});
+
+    	function setConnected(connected) {
+		 	$("#field").show();
+            console.log("connected");
+        }
+
+        function connect() {
+            var socket = new SockJS('/hello');
+            stompClient = Stomp.over(socket);
+            stompClient.connect({}, function(frame) {
+                setConnected(true);
+                console.log('Connected: ' + frame);
+                stompClient.subscribe('/topic/greetings', function(greeting){
+                    showGreeting(JSON.parse(greeting.body).content);
+                });
+            });
+        }
+
+        function disconnect() {
+            stompClient.disconnect();
+            setConnected(false);
+            console.log("Disconnected");
+        }
+
+        function sendName() {
+            var name = document.getElementById('name').value;
+            stompClient.send("/app/hello", {}, JSON.stringify({ 'name': name }));
+        }
+
+        function showGreeting(message) {
+            var response = document.getElementById('response');
+            var p = document.createElement('p');
+            p.style.wordWrap = 'break-word';
+            p.appendChild(document.createTextNode(message));
+            response.appendChild(p);
+        }
+
+    </script>
+    </body>
+</html>
