@@ -1,22 +1,18 @@
 package edu.tamu.app.model.api;
 
+import java.util.HashMap;
+
 public abstract class APIres{
 	
-	
 	public String response;
-    public String content;
-    public Object returnObject;
+    public HashMap<String, Object> content;
 
 	public String getResponse() {
 		return response;
 	}
 	
-	public String getContent() {
+	public Object getContent() {
 		return content;
-	}
-	
-	public Object getReturnObject() {
-		return returnObject;
 	}
    
 }

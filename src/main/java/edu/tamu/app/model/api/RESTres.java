@@ -1,29 +1,34 @@
 package edu.tamu.app.model.api;
 
-public class RESTres extends APIres {
+import java.util.ArrayList;
+import java.util.HashMap;
 
-	public RESTres(String response, String content, Object returnObject) {
-        this.response = response;
-        this.content = content;
-        this.returnObject = returnObject;
-    }
+public class RESTres extends APIres {
     
-    public RESTres(String response, Object returnObject) {
+    public RESTres(String response, Object ... objects) {
         this.response = response;
-        this.content = returnObject.getClass().getSimpleName();
-        this.returnObject = returnObject;
-    }
-    
-    public RESTres(String response, String content) {
-        this.response = response;
+        
+        HashMap<String, Object> content = new HashMap<String, Object>();
+      
+        for(Object obj : objects) {
+        	
+        	String objectType = obj.getClass().getSimpleName();
+        	        	
+        	if(objectType.equals("ArrayList")) {
+        		ArrayList<?> a = ((ArrayList<?>) obj);
+        		if(a.size()>0)
+        			objectType += "<"+a.get(0).getClass().getSimpleName()+">";
+        	}
+        	
+        	content.put(objectType, obj);
+        }
+        
         this.content = content;
-        this.returnObject = null;
     }
     
     public RESTres(String response) {
         this.response = response;
         this.content = null;
-        this.returnObject = null;
     }
 	
 }

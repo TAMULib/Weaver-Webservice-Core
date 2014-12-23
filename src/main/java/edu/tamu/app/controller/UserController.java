@@ -18,9 +18,11 @@ public class UserController {
 	private final static String MAPPING_PREFIX = "rest/user";
 	
 	@RequestMapping(MAPPING_PREFIX+"/list")
-    public Iterable<UserImpl> users() {
+    public RESTres listUsers() {
     	
-    	return userRepo.findAll();
+		Iterable<UserImpl> users = userRepo.findAll();
+		
+    	return users != null ? new RESTres("success", users) :  new RESTres("fail");
    
     }
 	
