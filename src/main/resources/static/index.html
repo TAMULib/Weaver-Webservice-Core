@@ -6,8 +6,10 @@
 	<body>
 
 	<button id="connect">connect</button>
-	<input type="text" id="field" style="display:none;"/><button id="connect">send message</button>
+	<input type="text" id="field" style="display:none;"/><button id="send" style="display:none;">send message</button>
 
+	<div id="result"></div>
+	
 
 	<script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
 	<script src="js/lib/sockjs-0.3.4.js"></script>
@@ -18,22 +20,29 @@
     		$("#connect").on("click", function() {
     			connect();
     		});
+    		
+    		$("#send").on("click", function() {
+    			var action = $("#field").val();
+    			console.log(action);
+    			sendAction(action);
+    		});
 
 
     	});
 
     	function setConnected(connected) {
 		 	$("#field").show();
+		 	$("#send").show();
             console.log("connected");
         }
 
         function connect() {
-            var socket = new SockJS('/hello');
+            var socket = new SockJS('/user');
             stompClient = Stomp.over(socket);
             stompClient.connect({}, function(frame) {
                 setConnected(true);
                 console.log('Connected: ' + frame);
-                stompClient.subscribe('/topic/greetings', function(greeting){
+                stompClient.subscribe('/channel/user', function(greeting){
                     showGreeting(JSON.parse(greeting.body).content);
                 });
             });
@@ -45,17 +54,13 @@
             console.log("Disconnected");
         }
 
-        function sendName() {
-            var name = document.getElementById('name').value;
-            stompClient.send("/app/hello", {}, JSON.stringify({ 'name': name }));
+        function sendAction(action) {
+            stompClient.send("/ws/user", {}, JSON.stringify({ "action": action }));
         }
 
         function showGreeting(message) {
-            var response = document.getElementById('response');
-            var p = document.createElement('p');
-            p.style.wordWrap = 'break-word';
-            p.appendChild(document.createTextNode(message));
-            response.appendChild(p);
+        	console.log("WE GOT A RESPONSE!!!!!!!");
+            $("#result").html(message);
         }
 
     </script>
