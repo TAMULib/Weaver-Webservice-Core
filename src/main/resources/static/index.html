@@ -6,7 +6,8 @@
 	<body>
 
 	<button id="connect">connect</button>
-	<input type="text" id="field" style="display:none;"/><button id="send" style="display:none;">send message</button>
+	<input type="text" id="field" style="display:none;"/>
+	<button id="send" style="display:none;">send message</button>
 
 	<div id="result"></div>
 	
@@ -23,45 +24,50 @@
     		
     		$("#send").on("click", function() {
     			var action = $("#field").val();
-    			console.log(action);
     			sendAction(action);
     		});
 
 
+    	
+	
+	    	function setConnected(connected) {
+			 	$("#field").show();
+			 	$("#send").show();
+	        }
+	
+	        function connect() {
+	            var socket = new SockJS('/user');
+	            stompClient = Stomp.over(socket);
+	            stompClient.connect({}, function(frame) {
+	                setConnected(true);
+	                console.log('Connected: ' + frame);
+	                stompClient.subscribe('/channel/user', function(message){
+	                    showMessage(message.body);
+	                });
+	            });
+	        }
+	
+	        function disconnect() {
+	            stompClient.disconnect();
+	            setConnected(false);
+	            console.log("Disconnected");
+	        }
+	
+	        function sendAction(action) {
+	        	
+	        	var params = {
+	        		"uin": "123456789"
+	        	}
+	        	
+	            stompClient.send("/ws/user/"+action, {}, JSON.stringify(params));
+	        }
+	
+	        function showMessage(message) {
+	        	console.log(message);
+	            $("#result").append(message);
+	        }
+        
     	});
-
-    	function setConnected(connected) {
-		 	$("#field").show();
-		 	$("#send").show();
-            console.log("connected");
-        }
-
-        function connect() {
-            var socket = new SockJS('/user');
-            stompClient = Stomp.over(socket);
-            stompClient.connect({}, function(frame) {
-                setConnected(true);
-                console.log('Connected: ' + frame);
-                stompClient.subscribe('/channel/user', function(greeting){
-                    showGreeting(JSON.parse(greeting.body).content);
-                });
-            });
-        }
-
-        function disconnect() {
-            stompClient.disconnect();
-            setConnected(false);
-            console.log("Disconnected");
-        }
-
-        function sendAction(action) {
-            stompClient.send("/ws/user", {}, JSON.stringify({ "action": action }));
-        }
-
-        function showGreeting(message) {
-        	console.log("WE GOT A RESPONSE!!!!!!!");
-            $("#result").html(message);
-        }
 
     </script>
     </body>

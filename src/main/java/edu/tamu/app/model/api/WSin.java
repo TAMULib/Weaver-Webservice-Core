@@ -2,10 +2,10 @@ package edu.tamu.app.model.api;
 
 public class WSin {
 	
-	private String action;
+	private String uinString;
 	
-	public String getAction() {
-		return action;
+	public String getUinString() {
+		return uinString;
 	}
 	
 }
