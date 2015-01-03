@@ -5,6 +5,20 @@
 	</head>
 	<body>
 
+	<select id="connectionTypeSelect">
+		<option value="websocket">websocket</option>
+		<option value="xhr-streaming">xhr-streaming</option>
+		<option value="xdr-streaming">xdr-streaming</option>
+		<option value="eventsource">eventsource</option>
+		<option value="iframe-eventsource">iframe-eventsource</option>
+		<option value="htmlfile">htmlfile</option>
+		<option value="iframe-htmlfile">iframe-htmlfile</option>
+		<option value="xhr-polling">xhr-polling</option>
+		<option value="xdr-polling">xdr-polling</option>
+		<option value="iframe-xhr-polling">iframe-xhr-polling</option>
+		<option value="jsonp-polling">jsonp-polling</option>
+	</select>
+
 	<button id="connect">connect</button>
 	<input type="text" id="field" style="display:none;"/>
 	<button id="send" style="display:none;">send message</button>
@@ -18,6 +32,8 @@
     <script>
     	$(document).ready(function() {
     		
+    		var connectionType = $("#connectionTypeSelect").val();
+    		
     		$("#connect").on("click", function() {
     			connect();
     		});
@@ -25,6 +41,11 @@
     		$("#send").on("click", function() {
     			var action = $("#field").val();
     			sendAction(action);
+    		});
+    		
+    		$("#connectionTypeSelect").on("change", function() {
+    			connectionType = $("#connectionTypeSelect").val();
+    			console.log(connectionType);
     		});
 
 
@@ -36,7 +57,7 @@
 	        }
 	
 	        function connect() {
-	            var socket = new SockJS('/user');
+	            var socket = new SockJS('/user', null, {protocols_whitelist: [connectionType]});
 	            stompClient = Stomp.over(socket);
 	            stompClient.connect({}, function(frame) {
 	                setConnected(true);
@@ -64,7 +85,7 @@
 	
 	        function showMessage(message) {
 	        	console.log(message);
-	            $("#result").append(message);
+	            $("#result").append(message+"<br>");
 	        }
         
     	});

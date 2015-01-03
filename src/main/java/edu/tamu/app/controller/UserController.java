@@ -9,9 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import edu.tamu.app.model.api.WSin;
 import edu.tamu.app.model.api.apiResImpl;
-//import edu.tamu.app.model.api.WSin;
 import edu.tamu.app.model.impl.UserImpl;
 import edu.tamu.app.repo.UserRepo;
 
@@ -88,7 +86,7 @@ public class UserController {
    
     @RequestMapping("/update")
     @MessageMapping("/update")
-	@SendTo("/channel/update")
+	@SendTo("/channel/user")
     public apiResImpl update(@RequestParam() Map<String, String> params) {
 
     	Long uin = Long.parseLong(params.get("uin"));
