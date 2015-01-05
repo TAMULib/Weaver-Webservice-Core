@@ -1,12 +1,13 @@
-package edu.tamu.app.model.api;
+package edu.tamu.app.model.impl;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class apiResImpl extends APIres {
+import edu.tamu.app.model.APIres;
+
+public class ApiResImpl extends APIres {
     
-    public apiResImpl(String response, Object ... objects) {
+    public ApiResImpl(String response, Object ... objects) {
         this.response = response;
         
         HashMap<String, Object> content = new HashMap<String, Object>();
@@ -27,7 +28,7 @@ public class apiResImpl extends APIres {
         this.content = content;
     }
     
-    public apiResImpl(String response) {
+    public ApiResImpl(String response) {
         this.response = response;
         this.content = null;
     }

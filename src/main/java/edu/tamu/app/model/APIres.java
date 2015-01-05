@@ -1,4 +1,4 @@
-package edu.tamu.app.model.api;
+package edu.tamu.app.model;
 
 import java.util.HashMap;
 
