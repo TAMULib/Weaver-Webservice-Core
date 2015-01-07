@@ -24,7 +24,10 @@ public class UserController {
 	@RequestMapping("/list")
 	@MessageMapping("/list")
 	@SendTo("/channel/user")
-	public ApiResImpl list() {		
+	public ApiResImpl list() {	
+		
+		System.out.println("This is a new message");
+		
 		Iterable<UserImpl> users = userRepo.findAll();	
     	return users != null ? new ApiResImpl("success", users) :  new ApiResImpl("fail");
     }
