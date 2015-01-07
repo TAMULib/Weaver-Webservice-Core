@@ -33,9 +33,9 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
--           <artifactId>spring-boot-starter-tomcat</artifactId>
--           <scope>provided</scope>
--       </dependency>
+           <artifactId>spring-boot-starter-tomcat</artifactId>
+           <scope>provided</scope>
+       </dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-messaging</artifactId>
@@ -113,13 +113,13 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 			<plugin>
--        		<groupId>org.apache.maven.plugins</groupId>
--        		<artifactId>maven-war-plugin</artifactId>
--        		<version>2.4</version>
--        		<configuration>
--          			<failOnMissingWebXml>false</failOnMissingWebXml>
--        		</configuration>        
--      		</plugin>
+        		<groupId>org.apache.maven.plugins</groupId>
+        		<artifactId>maven-war-plugin</artifactId>
+        		<version>2.4</version>
+        		<configuration>
+          			<failOnMissingWebXml>false</failOnMissingWebXml>
+        		</configuration>        
+      		</plugin>
 		</plugins>
 	</build>
 
