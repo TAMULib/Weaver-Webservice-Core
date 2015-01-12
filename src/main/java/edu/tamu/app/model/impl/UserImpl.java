@@ -1,12 +1,16 @@
 package edu.tamu.app.model.impl;
 
+import edu.tamu.app.model.User;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import edu.tamu.app.model.User;
-
+/**
+ * Implementation of user object.
+ * 
+ * @author 
+ */
 @Entity
 @Table(name="all_users")
 public class UserImpl implements User{

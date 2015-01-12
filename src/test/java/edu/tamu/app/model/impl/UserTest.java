@@ -19,6 +19,11 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import edu.tamu.app.config.TestDataSourceConfiguration;
 import edu.tamu.app.model.repo.UserRepo;
 
+/**
+ * User test.
+ * 
+ * @author 
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestDataSourceConfiguration.class})
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
@@ -30,10 +35,16 @@ public class UserTest {
 	@Autowired
 	private UserRepo userRepo;
 	
+	/**
+	 * 
+	 */
 	@Before
 	public void setUp() {
 	}
 	
+	/**
+	 * 
+	 */
 	@Test
 	public void testMethod() {
 		

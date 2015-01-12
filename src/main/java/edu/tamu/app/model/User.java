@@ -1,5 +1,10 @@
 package edu.tamu.app.model;
 
+/**
+ * Interface for user object.
+ * 
+ * @author 
+ */
 public interface User {
 
 	/**

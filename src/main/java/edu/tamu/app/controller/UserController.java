@@ -1,7 +1,9 @@
 package edu.tamu.app.controller;
 
+import edu.tamu.app.model.impl.UserImpl;
+import edu.tamu.app.model.impl.ApiResImpl;
+import edu.tamu.app.model.repo.UserRepo;
 import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -9,10 +11,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import edu.tamu.app.model.impl.UserImpl;
-import edu.tamu.app.model.impl.ApiResImpl;
-import edu.tamu.app.model.repo.UserRepo;
-
+/**
+ * RESTful controller.
+ * 
+ * @author 
+ */
 @RestController
 @RequestMapping("rest/user")
 @MessageMapping("/user")
@@ -20,7 +23,12 @@ public class UserController {
 
 	@Autowired
 	private UserRepo userRepo;
-			
+		
+	/**
+	 * RESTful call to return list of all users.
+	 * 
+	 * @return ApiResImpl
+	 */
 	@RequestMapping("/list")
 	@MessageMapping("/list")
 	@SendTo("/channel/user")
@@ -32,6 +40,12 @@ public class UserController {
     	return users != null ? new ApiResImpl("success", users) :  new ApiResImpl("fail");
     }
 	
+	/**
+	 * RESTful call to return user by UIN.
+	 * 
+	 * @param params
+	 * @return ApiResImpl
+	 */
 	@RequestMapping("/find")
 	@MessageMapping("/find")
 	@SendTo("/channel/user")
@@ -47,6 +61,12 @@ public class UserController {
     	return user == null ? new ApiResImpl("fail", "No user wa found with that UIN.") : new ApiResImpl("success", user);
     }
 	
+	/**
+	 * RESTfull call to create a new user.
+	 * 
+	 * @param params
+	 * @return ApiResImpl
+	 */
     @RequestMapping("/create")
     @MessageMapping("/create")
 	@SendTo("/channel/user")
@@ -70,9 +90,14 @@ public class UserController {
     	userRepo.save(user);
     	
     	return new ApiResImpl("sucsess", user);
-   
-   }
+    }
     
+    /**
+     * RESTfull call to delete user by UIN. 
+     * 
+     * @param params
+     * @return ApiResImpl
+     */
     @RequestMapping("/delete")
     @MessageMapping("/delete")
 	@SendTo("/channel/user")
@@ -84,9 +109,14 @@ public class UserController {
     	if(user != null) userRepo.delete(user);
     	
     	return user != null ? new ApiResImpl("success") : new ApiResImpl("fail");
+    }
    
-   }
-   
+    /**
+     * RESTfull call to update user with specified UIN.
+     * 
+     * @param params
+     * @return ApiResImpl
+     */
     @RequestMapping("/update")
     @MessageMapping("/update")
 	@SendTo("/channel/user")
@@ -110,10 +140,6 @@ public class UserController {
     	userRepo.save(user);
     	
     	return new ApiResImpl("sucsess", user);
-   
    }
-   
-    
-    
     
 }
