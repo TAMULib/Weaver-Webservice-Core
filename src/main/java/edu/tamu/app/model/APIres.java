@@ -1,29 +1,43 @@
+/* 
+ * APIres.java 
+ * 
+ * Version: 
+ *     $Id$ 
+ * 
+ * Revisions: 
+ *     $Log$ 
+ */
 package edu.tamu.app.model;
 
 import java.util.HashMap;
 
 /**
- * API response object.
+ * Abstract class for an API response.
  * 
- * @author
+ * @author 
+ *
  */
 public abstract class APIres{
 	
 	public String response;
     public HashMap<String, Object> content;
-
+    
     /**
+     * Gets response.
      * 
-     * @return String
+     * @return		String
+     * 
      */
 	public String getResponse() {
 		return response;
 	}
 	
 	/**
-	 * 
-	 * @return Object
-	 */
+     * Gets content.
+     * 
+     * @return		Object
+     * 
+     */
 	public Object getContent() {
 		return content;
 	}

@@ -1,21 +1,33 @@
+/* 
+ * ApiResImpljava 
+ * 
+ * Version: 
+ *     $Id$ 
+ * 
+ * Revisions: 
+ *     $Log$ 
+ */
 package edu.tamu.app.model.impl;
 
-import edu.tamu.app.model.APIres;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import edu.tamu.app.model.APIres;
+
 /**
- * API response object implimentation.
+ * Implementation for ApiRes object.
  * 
- * @author 
+ * @author
+ *
  */
 public class ApiResImpl extends APIres {
-    
-	/**
-	 * API response implementation constructor with list of objects.
+
+    /**
+	 * Constructor.
 	 * 
-	 * @param response
-	 * @param objects
+	 * @param 		response		String
+	 * @param 		objects			Object ...
+	 * 
 	 */
     public ApiResImpl(String response, Object ... objects) {
         this.response = response;
@@ -37,11 +49,12 @@ public class ApiResImpl extends APIres {
         
         this.content = content;
     }
-
+    
     /**
-     * API response implementation constructor without list of objects.
+     * Constructor.
      * 
-     * @param response
+     * @param 		response		String
+     * 
      */
     public ApiResImpl(String response) {
         this.response = response;

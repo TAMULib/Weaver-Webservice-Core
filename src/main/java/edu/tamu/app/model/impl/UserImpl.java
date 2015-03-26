@@ -1,16 +1,21 @@
+/* 
+ * UserImpl.java 
+ * 
+ * Version: 
+ *     $Id$ 
+ * 
+ * Revisions: 
+ *     $Log$ 
+ */
 package edu.tamu.app.model.impl;
 
-import edu.tamu.app.model.User;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-/**
- * Implementation of user object.
- * 
- * @author 
- */
+import edu.tamu.app.model.User;
+
 @Entity
 @Table(name="all_users")
 public class UserImpl implements User{
@@ -19,53 +24,26 @@ public class UserImpl implements User{
 	@Column(name="uin", nullable=false)
 	private Long uin;
 	
-	@Column(name="first_name")
-	private String firstName;
-	
-	@Column(name="last_name")
-	private String lastName;
-	
-	@Column(name="email")
-	private String email;
+	@Column(name="role")
+	private String role;
 	
 	@Override
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-	
-	@Override
-	public String getFirstName() {
-		return firstName;
-	}
-	
-	@Override
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-	
-	@Override
-	public String getLastName() {
-		return lastName;
-	}
-	
-	@Override
-	public void setEmail(String email) {
-		this.email = email;
-	}
-	
-	@Override
-	public String getEmail() {
-		return email;
-	}
-	
-	@Override
-	public void setUIN(Long uin) {
+	public void setUin(Long uin) {
 		this.uin = uin;
 	}
 	
 	@Override
-	public Long getUIN() {
+	public Long getUin() {
 		return uin;
 	}
 
+	@Override
+	public void setRole(String role) {
+		this.role = role;
+	}
+
+	@Override
+	public String getRole() {
+		return role;
+	}
 }

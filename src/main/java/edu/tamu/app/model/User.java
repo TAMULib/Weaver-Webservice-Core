@@ -1,50 +1,54 @@
+/* 
+ * User.java 
+ * 
+ * Version: 
+ *     $Id$ 
+ * 
+ * Revisions: 
+ *     $Log$ 
+ */
 package edu.tamu.app.model;
 
 /**
- * Interface for user object.
+ * User interface. lol
  * 
- * @author 
+ * @author
+ *
  */
 public interface User {
 
 	/**
-	 * @parameter User's first name.
+	 * Sets UIN.
+	 * 
+	 * @param 		uin				Long
+	 * 
 	 */
-	public void setFirstName(String firstName);
+	public void setUin(Long uin);
+	
+	/**
+	 * Gets UIN.
+	 * 
+	 * @return		Long
+	 * 
+	 */
+	public Long getUin();
+	
+	/**
+	 * Sets role.
+	 * 
+	 * @param 		role			String
+	 * 
+	 */
+	public void setRole(String role);
+	
+	/**
+	 * Gets role.
+	 * 
+	 * @return		String
+	 * 
+	 */
+	public String getRole();
 
-	/**
-	 * @return User's first name as a String.
-	 */
-	public String getFirstName();
-	
-	/**
-	 * @parameter User's last name.
-	 */
-	public void setLastName(String lastName);
-	
-	/**
-	 * @return User's last name as a String.
-	 */
-	public String getLastName();
-	
-	/**
-	 * @parameter User's email.
-	 */
-	public void setEmail(String email);
-	
-	/**
-	 * @return User's email as a String.
-	 */
-	public String getEmail();
 
-	/**
-	 * @parameter User's UIN.
-	 */
-	public void setUIN(Long uin);
-	
-	/**
-	 * @return User's UIN as a Long.
-	 */
-	public Long getUIN();
 }
 

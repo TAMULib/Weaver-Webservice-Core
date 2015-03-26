@@ -1,20 +1,32 @@
+/* 
+ * UserController.java 
+ * 
+ * Version: 
+ *     $Id$ 
+ * 
+ * Revisions: 
+ *     $Log$ 
+ */
 package edu.tamu.app.controller;
 
-import edu.tamu.app.model.impl.UserImpl;
-import edu.tamu.app.model.impl.ApiResImpl;
-import edu.tamu.app.model.repo.UserRepo;
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.annotation.SendToUser;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * RESTful controller.
+import edu.tamu.app.model.Credentials;
+import edu.tamu.app.model.RequestId;
+import edu.tamu.app.model.impl.ApiResImpl;
+import edu.tamu.app.model.repo.UserRepo;
+
+/** 
+ * User Controller
  * 
- * @author 
+ * @author
+ *
  */
 @RestController
 @RequestMapping("rest/user")
@@ -23,123 +35,40 @@ public class UserController {
 
 	@Autowired
 	private UserRepo userRepo;
-		
-	/**
-	 * RESTful call to return list of all users.
-	 * 
-	 * @return ApiResImpl
-	 */
-	@RequestMapping("/list")
-	@MessageMapping("/list")
-	@SendTo("/channel/user")
-	public ApiResImpl list() {	
-		
-		System.out.println("This is a new message");
-		
-		Iterable<UserImpl> users = userRepo.findAll();	
-    	return users != null ? new ApiResImpl("success", users) :  new ApiResImpl("fail");
-    }
-	
-	/**
-	 * RESTful call to return user by UIN.
-	 * 
-	 * @param params
-	 * @return ApiResImpl
-	 */
-	@RequestMapping("/find")
-	@MessageMapping("/find")
-	@SendTo("/channel/user")
-    public ApiResImpl find(@RequestParam() Map<String, String> params) {
-    	
-		String uinString = params.get("uin");
-		
-		if("".equals(uinString)) return new ApiResImpl("fail", "No UIN was suplied.");
-		
-		Long uin = Long.parseLong(uinString);
-		UserImpl user = userRepo.getUserByUin(uin);
-		
-    	return user == null ? new ApiResImpl("fail", "No user wa found with that UIN.") : new ApiResImpl("success", user);
-    }
-	
-	/**
-	 * RESTfull call to create a new user.
-	 * 
-	 * @param params
-	 * @return ApiResImpl
-	 */
-    @RequestMapping("/create")
-    @MessageMapping("/create")
-	@SendTo("/channel/user")
-    public ApiResImpl create(@RequestParam() Map<String, String> params) {
-    	
-    	Long uin = Long.parseLong(params.get("uin"));
-    	String firstName = params.get("first-name");
-    	String lastName = params.get("last-name");
-    	String email = params.get("email");
-    	
-    	UserImpl user = userRepo.getUserByUin(uin);
-    	
-    	if(user != null) return new ApiResImpl ("fail", "User with uin: "+uin+" already exist");
 
-    	user = new UserImpl();
-    	user.setFirstName(firstName);
-    	user.setLastName(lastName);
-    	user.setEmail(email);
-    	user.setUIN(uin);
-	    
-    	userRepo.save(user);
-    	
-    	return new ApiResImpl("sucsess", user);
-    }
-    
-    /**
-     * RESTfull call to delete user by UIN. 
-     * 
-     * @param params
-     * @return ApiResImpl
-     */
-    @RequestMapping("/delete")
-    @MessageMapping("/delete")
-	@SendTo("/channel/user")
-    public ApiResImpl delete(@RequestParam() Map<String, String> params) {
-    	
-    	Long uin = Long.parseLong(params.get("uin"));  	
-    	UserImpl user = userRepo.getUserByUin(uin);
-	    
-    	if(user != null) userRepo.delete(user);
-    	
-    	return user != null ? new ApiResImpl("success") : new ApiResImpl("fail");
-    }
-   
-    /**
-     * RESTfull call to update user with specified UIN.
-     * 
-     * @param params
-     * @return ApiResImpl
-     */
-    @RequestMapping("/update")
-    @MessageMapping("/update")
-	@SendTo("/channel/user")
-    public ApiResImpl update(@RequestParam() Map<String, String> params) {
+	/**
+	 * Websocket endpoint to request credentials.
+	 * 
+	 * @param 		message			Message<?>
+	 * 
+	 * @return		ApiResImpl
+	 * 
+	 * @throws 		Exception
+	 * 
+	 */
+	@MessageMapping("/credentials")
+	@SendToUser
+	public ApiResImpl credentials(Message<?> message) throws Exception {
+		StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);		
+		Credentials shib = (Credentials) accessor.getSessionAttributes().get("shib");
+		if(shib != null && userRepo.getUserByUin(Long.parseLong(shib.getUin())) == null) 
+			return new ApiResImpl("failure", "user not registered");		
+		return shib != null ? credentials(shib, accessor.getNativeHeader("id").get(0)) : new ApiResImpl("refresh", "EXPIRED_JWT", new RequestId(accessor.getNativeHeader("id").get(0)));
+	}
 
-    	Long uin = Long.parseLong(params.get("uin"));
-    	String firstName = params.get("first-name");
-    	String lastName = params.get("last-name");
-    	String email = params.get("email");
-    	
-    	UserImpl user = userRepo.getUserByUin(uin);
-    	
-    	if(user != null) {
-	    	if(!"".equals(firstName)) user.setFirstName(firstName);
-	    	if(!"".equals(lastName)) user.setLastName(lastName);
-	    	if(!"".equals(email)) user.setEmail(email);
-    	} else {
-    		return new ApiResImpl("fail");
-    	}
-		    
-    	userRepo.save(user);
-    	
-    	return new ApiResImpl("sucsess", user);
-   }
-    
+	/**
+	 * Method to pack credentials into ApiResImp.
+	 * 
+	 * @param 		shib			Credentials
+	 * 
+	 * @return		ApiResImpl
+	 * 
+	 */
+	private ApiResImpl credentials(Credentials shib, String id) {
+		System.out.println("Creating credentials with id " + id);
+		//TODO: all business logic for credentials should take place here 
+		//      calling methods will just obtain credentials
+		return new ApiResImpl("success", shib, new RequestId(id));
+	}
+
 }
