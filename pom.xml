@@ -18,10 +18,11 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>1.2.0.RELEASE</version>
+		
 	</parent>
 
 	<properties>
-		<start-class>edu.tamu.app.ApplicationInitializer</start-class>
+		<start-class>edu.tamu.app.WebServerInit</start-class>
 	</properties>
 
 	<packaging>war</packaging>
@@ -43,6 +44,19 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-jwt</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security.oauth</groupId>
+			<artifactId>spring-security-oauth2</artifactId>
+			<version>2.0.5.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>org.postgresql</groupId>
