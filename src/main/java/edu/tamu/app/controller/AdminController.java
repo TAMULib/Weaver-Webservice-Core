@@ -9,17 +9,14 @@
  */
 package edu.tamu.app.controller;
 
-import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SendToUser;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -47,33 +44,18 @@ public class AdminController {
 	
 	@Autowired
 	private UserRepo userRepo;
-
-	/**
-	 * Websocket endpoint to request to broadcast message.
-	 * 
-	 * @param 		message			Message<?>
-	 * 
-	 * @return		Map<String, String>
-	 * 
-	 * @throws 		Exception
-	 * 
-	 */
-	@MessageMapping("/broadcast")
-	@SendTo("/channel/admin/broadcast")
-	public ApiResImpl broadcast(Message<?> message) throws Exception {
-		StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
-		
-		Map<String, String> messageMap = new HashMap<String, String>();
-		messageMap.put("message", accessor.getNativeHeader("data").get(0));
-		
-		return new ApiResImpl("success", messageMap, new RequestId(accessor.getNativeHeader("id").get(0)));
-	}
+	
+	@Autowired 
+	private SimpMessagingTemplate simpMessagingTemplate; 
 	
 	@MessageMapping("/confirmuser")
 	@SendToUser
 	public ApiResImpl confirmUser(Message<?> message, @Shib Object shibObj, @ReqId String requestId) throws Exception {
 
 		Credentials shib = (Credentials) shibObj;
+		
+		Map<String, Object> userMap = new HashMap<String, Object>();
+		userMap.put("changedUserUin", shib.getUin());
 		
 		if(userRepo.getUserByUin(Long.parseLong(shib.getUin())) == null) {
     		
@@ -83,10 +65,17 @@ public class AdminController {
 			newUser.setRole(shib.getRole());
 			
 			userRepo.save(newUser);
-			return new ApiResImpl("success", "created user", new RequestId(requestId));
+			
+			userMap.put("list", userRepo.findAll());
+			
+			this.simpMessagingTemplate.convertAndSend("/channel/users", new ApiResImpl("success", userMap, new RequestId(requestId)));
+			
+			return new ApiResImpl("success", userMap, new RequestId(requestId));
 		}
 		
-		return new ApiResImpl("success", "user exists", new RequestId(requestId));
+		userMap.put("list", userRepo.findAll());
+				
+		return new ApiResImpl("success", userMap, new RequestId(requestId));
 	}
 	
 }

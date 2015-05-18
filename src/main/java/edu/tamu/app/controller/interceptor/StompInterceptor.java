@@ -9,10 +9,8 @@
  */
 package edu.tamu.app.controller.interceptor;
 
-import java.io.IOException;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHeaders;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptorAdapter;
@@ -31,7 +30,10 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import edu.tamu.app.ApplicationContextProvider;
 import edu.tamu.app.model.Credentials;
+import edu.tamu.app.model.RequestId;
+import edu.tamu.app.model.impl.ApiResImpl;
 import edu.tamu.app.model.impl.UserImpl;
 import edu.tamu.app.model.repo.UserRepo;
 
@@ -69,6 +71,7 @@ public class StompInterceptor extends ChannelInterceptorAdapter {
 	@Override 
 	@SuppressWarnings("unchecked")	
 	public Message<?> preSend(Message<?> message, MessageChannel channel) {
+		
 		StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 		StompCommand command = accessor.getCommand();
 		
@@ -81,6 +84,8 @@ public class StompInterceptor extends ChannelInterceptorAdapter {
 		
 		if("SEND".equals(command.name())) {
 			
+			String requestId = accessor.getNativeHeader("id").get(0);
+			
 			MessageHeaders headers = message.getHeaders();	
 			Map<String, Object> headerMap = (Map<String, Object>) headers.get("nativeHeaders");		
 			
@@ -89,7 +94,8 @@ public class StompInterceptor extends ChannelInterceptorAdapter {
 			
 			if(jwt == null) {
 				System.out.println("Missing token!");
-				return MessageBuilder.withPayload("MISSING_JWT").setHeaders(accessor).build();
+				((SimpMessagingTemplate) ApplicationContextProvider.appContext.getBean("brokerMessagingTemplate")).convertAndSend(accessor.getDestination().replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResImpl("failure", "MISSING_JWT", new RequestId(requestId)));
+				return null;
 			}
 			
 			Jwt token = null;
@@ -98,8 +104,9 @@ public class StompInterceptor extends ChannelInterceptorAdapter {
 				token = JwtHelper.decodeAndVerify(jwt, hmac);				
 				tokenMap = objectMapper.readValue(token.getClaims(), Map.class);
 			} catch (Exception e) {
-				System.out.println("Invalid token!"); 
-				return MessageBuilder.withPayload("INVALID_JWT").setHeaders(accessor).build();
+				System.out.println("Invalid token!");
+				((SimpMessagingTemplate) ApplicationContextProvider.appContext.getBean("brokerMessagingTemplate")).convertAndSend(accessor.getDestination().replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResImpl("failure", "INVALID_UIN", new RequestId(requestId)));
+				return null;
 			}
 			
 			Credentials shib = new Credentials(tokenMap);
@@ -112,13 +119,14 @@ public class StompInterceptor extends ChannelInterceptorAdapter {
 
 			long currentTime = Calendar.getInstance().getTime().getTime()+90000;
 			long expTime = Long.parseLong(shib.getExp());
-			Boolean tokenIsExpired = expTime < currentTime;
-
-			System.out.println("Token expires in: " + ((expTime - currentTime))/1000);
-		
-			if(tokenIsExpired) {
-				System.out.println("Token expired!");
-				return MessageBuilder.withPayload("EXPIRED_JWT").setHeaders(accessor).build();
+			
+			if(expTime < currentTime) {
+				System.out.println("Token expired!");	
+				((SimpMessagingTemplate) ApplicationContextProvider.appContext.getBean("brokerMessagingTemplate")).convertAndSend(accessor.getDestination().replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResImpl("refresh", "EXPIRED_JWT", new RequestId(requestId)));
+				return null;
+			}
+			else {
+				System.out.println("Token expires in: " + ((expTime - currentTime)) / 1000);
 			}
 			
 			Map<String, Object> shibMap = new HashMap<String, Object>();
@@ -131,7 +139,7 @@ public class StompInterceptor extends ChannelInterceptorAdapter {
 			
 		}
 		else if("CONNECT".equals(command.name())) {
-			
+						
 			MessageHeaders headers = message.getHeaders();
 		    Map<String, Object> headerMap = (Map<String, Object>) headers.get("nativeHeaders");
 		    String jwt = headerMap.get("jwt").toString();
