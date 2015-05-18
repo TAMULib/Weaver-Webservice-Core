@@ -67,7 +67,10 @@ public class UserController {
 	@SendToUser
 	public ApiResImpl credentials(Message<?> message, @Shib Object credentials, @ReqId String requestId) throws Exception {
 		
+		
 		Credentials shib = (Credentials) credentials;
+				
+		shib.setRole(userRepo.getUserByUin(Long.parseLong(shib.getUin())).getRole());
 		
 		if(shib != null && userRepo.getUserByUin(Long.parseLong(shib.getUin())) == null) 
 			return new ApiResImpl("failure", "user not registered");		
