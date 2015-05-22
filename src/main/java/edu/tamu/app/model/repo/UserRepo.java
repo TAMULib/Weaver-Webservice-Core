@@ -21,7 +21,7 @@ import edu.tamu.app.model.impl.UserImpl;
  *
  */
 @Repository
-public interface UserRepo extends JpaRepository <UserImpl, Long>{
+public interface UserRepo extends JpaRepository <UserImpl, Long>, UserRepoCustom {
 	
 	/**
 	 * Retrieve user by UIN.

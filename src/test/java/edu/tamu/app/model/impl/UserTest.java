@@ -1,8 +1,10 @@
 package edu.tamu.app.model.impl;
 
+import static org.junit.Assert.*;
+
 import java.util.List;
 
-import org.junit.Assert;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,30 +37,32 @@ public class UserTest {
 	}
 	
 	@Test
-	public void testMethod() {
+	public void testCreateAndDelete() {
 		
-		UserImpl testUser1 = new UserImpl();
-		testUser1.setUin(Long.parseLong("123456789"));
+		userRepo.create(123456789l);		
+		UserImpl testUser1 = userRepo.getUserByUin(123456789l);				
+		assertTrue("Test User1 was not added.", testUser1.getUin().equals(123456789l));
 		
-		UserImpl testUser2 = new UserImpl();
-		testUser2.setUin(Long.parseLong("123456789"));
-		
-		userRepo.save(testUser1);		
-		UserImpl assertUser = userRepo.getUserByUin(Long.parseLong("123456789"));		
-		Assert.assertEquals("Test User1 was not added.", testUser1.getUin(), assertUser.getUin());
+		userRepo.delete(testUser1);				
+		assertEquals("Test User1 was not removed.", 0, userRepo.findAll().size());
+	}
 	
-		userRepo.save(testUser2);		
+	@Test
+	public void testDuplicateUser() {
+		
+		userRepo.create(123456789l);		
+		UserImpl testUser1 = userRepo.getUserByUin(123456789l);				
+		assertTrue("Test User1 was not added.", testUser1.getUin().equals(123456789l));
+		
+		userRepo.create(123456789l);
+		
 		List<UserImpl> allUsers = (List<UserImpl>) userRepo.findAll();		
-		Assert.assertEquals("Duplicate UIN found.", 1, allUsers.size());
-		
-		//testUser1.setFirstName("Change");
-		userRepo.save(testUser1);
-		testUser1 = userRepo.getUserByUin(Long.parseLong("123456789"));
-		//Assert.assertEquals("Update fail.", "Change", testUser1.getFirstName());
-		
-		userRepo.delete(testUser1);		
-		allUsers = (List<UserImpl>) userRepo.findAll();		
-		Assert.assertEquals("Test User1 was not removed.", 0, allUsers.size());
-		
+		assertEquals("Duplicate UIN found.", 1, allUsers.size());
+	}
+			
+	@After
+	public void cleanUp() {
+		for(UserImpl user : userRepo.findAll())
+			userRepo.delete(user);
 	}
 }

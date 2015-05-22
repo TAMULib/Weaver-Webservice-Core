@@ -27,6 +27,12 @@ public class UserImpl implements User{
 	@Column(name="role")
 	private String role;
 	
+	public UserImpl() {}
+	
+	public UserImpl(Long uin) {
+		this.uin = uin;
+	}
+	
 	@Override
 	public void setUin(Long uin) {
 		this.uin = uin;
