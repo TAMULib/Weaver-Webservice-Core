@@ -2,8 +2,6 @@ package edu.tamu.app.model.impl;
 
 import static org.junit.Assert.*;
 
-import java.util.List;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,7 +42,7 @@ public class UserTest {
 		assertTrue("Test User1 was not added.", testUser1.getUin().equals(123456789l));
 		
 		userRepo.delete(testUser1);				
-		assertEquals("Test User1 was not removed.", 0, userRepo.findAll().size());
+		assertEquals("Test User1 was not removed.", 0, userRepo.count());
 	}
 	
 	@Test
@@ -55,9 +53,8 @@ public class UserTest {
 		assertTrue("Test User1 was not added.", testUser1.getUin().equals(123456789l));
 		
 		userRepo.create(123456789l);
-		
-		List<UserImpl> allUsers = (List<UserImpl>) userRepo.findAll();		
-		assertEquals("Duplicate UIN found.", 1, allUsers.size());
+				
+		assertEquals("Duplicate UIN found.", 1, userRepo.count());
 	}
 			
 	@After
