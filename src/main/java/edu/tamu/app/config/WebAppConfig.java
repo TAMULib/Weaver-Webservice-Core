@@ -24,13 +24,13 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
 import org.springframework.http.converter.xml.SourceHttpMessageConverter;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+//import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-import edu.tamu.app.controller.interceptor.RestInterceptor;
+//import edu.tamu.app.controller.interceptor.RestInterceptor;
 
 /** 
  * Web MVC Configuration for application controller.
@@ -41,7 +41,7 @@ import edu.tamu.app.controller.interceptor.RestInterceptor;
 @Configuration
 @ComponentScan(basePackages = "edu.tamu.app.controller")
 @ConfigurationProperties(prefix="app.controller")
-public class ControllerConfig extends WebMvcConfigurerAdapter{	
+public class WebAppConfig extends WebMvcConfigurerAdapter{	
 
 	/**
 	 * Configures message converters.
@@ -94,10 +94,10 @@ public class ControllerConfig extends WebMvcConfigurerAdapter{
 	 * @return      RestInterceptor
 	 *
 	 */
-	@Bean
-	public RestInterceptor jwtInterceptor() {
-	    return new RestInterceptor();
-	}
+//	@Bean
+//	public RestInterceptor jwtInterceptor() {
+//	    return new RestInterceptor();
+//	}
 
 	/**
 	 * Add interceptor to interceptor registry.
@@ -105,9 +105,9 @@ public class ControllerConfig extends WebMvcConfigurerAdapter{
 	 * @param       registry	   InterceptorRegistry
 	 *
 	 */
-	@Override
-	public void addInterceptors(InterceptorRegistry registry) {
-	    registry.addInterceptor(jwtInterceptor()).addPathPatterns("/rest/**");
-	}
+//	@Override
+//	public void addInterceptors(InterceptorRegistry registry) {
+//	    registry.addInterceptor(jwtInterceptor()).addPathPatterns("/rest/**");
+//	}
 	
 }

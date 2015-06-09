@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import edu.tamu.app.aspect.annotation.Auth;
 import edu.tamu.app.aspect.annotation.ReqId;
 import edu.tamu.app.aspect.annotation.Shib;
 import edu.tamu.app.model.Credentials;
@@ -65,6 +66,7 @@ public class UserController {
 	 */
 	@MessageMapping("/credentials")
 	@SendToUser
+	@Auth(role="ROLE_USER")
 	public ApiResImpl credentials(Message<?> message, @Shib Object credentials, @ReqId String requestId) throws Exception {
 		
 		Credentials shib = (Credentials) credentials;
@@ -88,6 +90,7 @@ public class UserController {
 	 */
 	@MessageMapping("/all")
 	@SendToUser
+	@Auth(role="ROLE_MANAGER")
 	public ApiResImpl allUsers(Message<?> message, @ReqId String requestId) throws Exception {
 			
 		Map<String,List<UserImpl>> map = new HashMap<String,List<UserImpl>>();
@@ -106,8 +109,9 @@ public class UserController {
 	 * @throws 		Exception
 	 * 
 	 */
-	@MessageMapping("/update_role")
+	@MessageMapping("/update-role")
 	@SendToUser
+	@Auth(role="ROLE_MANAGER")
 	public ApiResImpl updateRole(Message<?> message, @ReqId String requestId) throws Exception {		
 		
 		StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);

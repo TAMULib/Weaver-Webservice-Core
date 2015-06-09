@@ -45,7 +45,12 @@ public class ApplicationContextProvider implements ApplicationContextAware {
 	@Override
 	public void setApplicationContext(ApplicationContext ac) throws BeansException {
 		
-		appContext = ac;
+		appContext = ac;		
+
+		String[] beans = appContext.getBeanDefinitionNames();
+        for (String bean : beans) {
+            System.out.println(bean);
+        }
 		
 	}
 	

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import edu.tamu.app.aspect.annotation.Auth;
 import edu.tamu.app.aspect.annotation.ReqId;
 import edu.tamu.app.aspect.annotation.Shib;
 import edu.tamu.app.model.Credentials;
@@ -48,8 +49,9 @@ public class AdminController {
 	@Autowired 
 	private SimpMessagingTemplate simpMessagingTemplate; 
 	
-	@MessageMapping("/confirmuser")
+	@MessageMapping("/confirm-user")
 	@SendToUser
+	@Auth(role="ROLE_ADMIN")
 	public ApiResImpl confirmUser(Message<?> message, @Shib Object shibObj, @ReqId String requestId) throws Exception {
 
 		Credentials shib = (Credentials) shibObj;

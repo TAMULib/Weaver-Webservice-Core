@@ -1,18 +1,29 @@
+/* 
+ * RestAuth.java 
+ * 
+ * Version: 
+ *     $Id$ 
+ * 
+ * Revisions: 
+ *     $Log$ 
+ */
 package edu.tamu.app.aspect.annotation;
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation to have aspect skip annotated method.
+ * 
  * 
  * @author 
  *
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface SkipAOP {
-
+@Documented
+public @interface Auth {
+	String role() default "ROLE_USER";
 }
