@@ -14,11 +14,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SendToUser;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,6 +24,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.tamu.app.aspect.annotation.Auth;
+import edu.tamu.app.aspect.annotation.Data;
 import edu.tamu.app.aspect.annotation.ReqId;
 import edu.tamu.app.aspect.annotation.Shib;
 import edu.tamu.app.model.Credentials;
@@ -66,8 +65,8 @@ public class UserController {
 	 */
 	@MessageMapping("/credentials")
 	@SendToUser
-	@Auth(role="ROLE_USER")
-	public ApiResImpl credentials(Message<?> message, @Shib Object credentials, @ReqId String requestId) throws Exception {
+	@Auth
+	public ApiResImpl credentials(@Shib Object credentials, @ReqId String requestId) throws Exception {
 		
 		Credentials shib = (Credentials) credentials;
 		shib.setRole(userRepo.getUserByUin(Long.parseLong(shib.getUin())).getRole());
@@ -90,7 +89,7 @@ public class UserController {
 	@MessageMapping("/all")
 	@SendToUser
 	@Auth(role="ROLE_MANAGER")
-	public ApiResImpl allUsers(Message<?> message, @ReqId String requestId) throws Exception {
+	public ApiResImpl allUsers(@ReqId String requestId) throws Exception {
 			
 		Map<String,List<UserImpl>> map = new HashMap<String,List<UserImpl>>();
 		map.put("list", userRepo.findAll());	
@@ -111,11 +110,8 @@ public class UserController {
 	@MessageMapping("/update-role")
 	@SendToUser
 	@Auth(role="ROLE_MANAGER")
-	public ApiResImpl updateRole(Message<?> message, @ReqId String requestId) throws Exception {		
+	public ApiResImpl updateRole(@Data String data, @ReqId String requestId) throws Exception {		
 		
-		StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
-		String data = accessor.getNativeHeader("data").get(0).toString();		
-
 		Map<String,String> map = new HashMap<String,String>();		
 		try {
 			map = objectMapper.readValue(data, new TypeReference<HashMap<String,String>>(){});

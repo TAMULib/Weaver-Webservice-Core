@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SendToUser;
@@ -52,7 +51,7 @@ public class AdminController {
 	@MessageMapping("/confirm-user")
 	@SendToUser
 	@Auth(role="ROLE_ADMIN")
-	public ApiResImpl confirmUser(Message<?> message, @Shib Object shibObj, @ReqId String requestId) throws Exception {
+	public ApiResImpl confirmUser(@Shib Object shibObj, @ReqId String requestId) throws Exception {
 
 		Credentials shib = (Credentials) shibObj;
 		
