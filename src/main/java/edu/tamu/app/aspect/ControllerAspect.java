@@ -11,7 +11,6 @@ package edu.tamu.app.aspect;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,26 +22,24 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.messaging.Message;
-import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
-import org.springframework.security.jwt.Jwt;
-import org.springframework.security.jwt.JwtHelper;
-import org.springframework.security.jwt.crypto.sign.MacSigner;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.context.request.RequestContextHolder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.tamu.app.aspect.annotation.Auth;
-import edu.tamu.app.aspect.annotation.PreProcess;
 import edu.tamu.app.model.Credentials;
 import edu.tamu.app.model.RequestId;
 import edu.tamu.app.model.impl.ApiResImpl;
 import edu.tamu.app.model.impl.UserImpl;
 import edu.tamu.app.model.repo.UserRepo;
+import edu.tamu.app.util.HttpRequestUtility;
+import edu.tamu.app.util.WebSocketRequestUtility;
+import edu.tamu.app.enums.Roles;
 
 /** 
  * Controller Aspect
@@ -68,8 +65,18 @@ public class ControllerAspect {
 	
 	@Autowired 
 	private SimpMessagingTemplate simpMessagingTemplate;
-		
-    @Around(value="@annotation(auth)")
+	
+	@Autowired
+	private WebSocketRequestUtility webSocketRequestUtility;
+	
+	@Autowired
+	private HttpRequestUtility httpRequestUtility;
+	
+	@Autowired
+	private SecurityContext securityContext;
+
+
+    @Around("execution(* edu.tamu.app.controller.*.*(..)) && !@annotation(edu.tamu.app.aspect.annotation.SkipAop) && @annotation(auth)")
     public ApiResImpl validatePolpulateCredentialsAndAuthorize(ProceedingJoinPoint joinPoint, Auth auth) throws Throwable {
     	
     	PreProcessObject preProcessObject = validatePreProcess(joinPoint);
@@ -92,8 +99,8 @@ public class ControllerAspect {
 		
     }
     
-    @Around(value="@annotation(preProcess)")
-    public ApiResImpl validateAndPopulateCredentials(ProceedingJoinPoint joinPoint, PreProcess preProcess) throws Throwable {
+    @Around("execution(* edu.tamu.app.controller.*.*(..)) && !@annotation(edu.tamu.app.aspect.annotation.SkipAop) && !@annotation(edu.tamu.app.aspect.annotation.Auth)")
+    public ApiResImpl validateAndPopulateCredentials(ProceedingJoinPoint joinPoint) throws Throwable {
     	
     	PreProcessObject preProcessObject = validatePreProcess(joinPoint);
     	
@@ -105,8 +112,17 @@ public class ControllerAspect {
         
     }
     
-    @SuppressWarnings("unchecked")
-	private PreProcessObject validatePreProcess(ProceedingJoinPoint joinPoint) throws Throwable {
+    private PreProcessObject validatePreProcess(ProceedingJoinPoint joinPoint) throws Throwable {
+    	    	
+    	HttpServletRequest request = null;
+    	
+        Message<?> message = null;
+    	StompHeaderAccessor accessor = null;
+    	
+    	Credentials shib = null;
+    	String requestId = null;
+    	String data = null;
+    	
     	
     	Object[] arguments = joinPoint.getArgs();
     	
@@ -114,105 +130,72 @@ public class ControllerAspect {
         Class<?> clazz = methodSignature.getDeclaringType();
         Method method = clazz.getDeclaredMethod(methodSignature.getName(), methodSignature.getParameterTypes());
         
-        RequestType requestType = null;
-        
-        // for rest request
-        HttpServletRequest request = null;
-        
-        // for web socket request
-    	Message<?> message = null;
-    	StompHeaderAccessor accessor = null;
-    	
-    	for(Object argument : arguments) {
+    	if (RequestContextHolder.getRequestAttributes() != null) {
     		
-            // for rest request
-    		if("org.springframework.security.web.servletapi.HttpServlet3RequestFactory$Servlet3SecurityContextHolderAwareRequestWrapper".equals(argument.getClass().getTypeName())) {
-    			request = (HttpServletRequest) joinPoint.getArgs()[0];
-    			requestType = RequestType.REST;
-    		}
+    		request = httpRequestUtility.getAndRemoveRequestByUser(securityContext.getAuthentication().getName());
     		
-    		// for web socket request
-    		if("org.springframework.messaging.support.GenericMessage".equals(argument.getClass().getTypeName())) {
-    			message = (Message<?>) joinPoint.getArgs()[0];
-    	    	accessor = StompHeaderAccessor.wrap(message);
-    	    	requestType = RequestType.WEB_SOCKET;
-    		}   		
+    		shib = (Credentials) request.getAttribute("shib");
     		
-    	}
+    		data = (String) request.getAttribute("data");
+    		
+    	} else {
+    		
+    		message = webSocketRequestUtility.getAndRemoveMessageByUser(securityContext.getAuthentication().getName());
+    		
+    		accessor = StompHeaderAccessor.wrap(message);
+    		
+    		requestId = accessor.getNativeHeader("id").get(0);
+    		shib =(Credentials) accessor.getSessionAttributes().get("shib");
+    		    		
+    		data = accessor.getNativeHeader("data").get(0).toString();
+  
+    			
+    	}  
     	
     	
-    	// decode and validate
-    	
-    	MacSigner hmac = new MacSigner(secret_key);
-    	
-    	Jwt token = null;
-    	
-    	String requestId = "0";
-    	
-    	
-    	if(requestType == RequestType.REST) {
-    		// safety check
-	    	if(request != null) {
-	    		
-	    		String jwt = request.getHeader("jwt");
-	    		
-	    		if(jwt == null) {
-	    			throw new MissingJwtException();
-	    		}
-	    		
-	    		try {
-	    			token = JwtHelper.decodeAndVerify(jwt, hmac);
-	    		} catch (Exception e) {
-	    			throw new InvalidJwtException();
-	    		}
-	    		
-	    	}
-    	}
-    	else if(requestType == RequestType.WEB_SOCKET) {
-    		// safety check
-	    	if(message != null && accessor != null) {
-	    		
-	    		requestId = accessor.getNativeHeader("id").get(0);
-	    		
-	    		MessageHeaders headers = message.getHeaders();	
-	    		Map<String, Object> headerMap = (Map<String, Object>) headers.get("nativeHeaders");		
-	    		
-	    		String jwt = headerMap.get("jwt").toString();			
-	    		jwt = jwt.substring(1, jwt.length()-1);
-	    		
-	    		if(jwt == null) {
-	    			System.out.println("Missing token!");
-	    			return new PreProcessObject(new ApiResImpl("failure", "MISSING_JWT", new RequestId(requestId)));
-	    		}
-	    		
-	    		try {
-	    			token = JwtHelper.decodeAndVerify(jwt, hmac);
-	    		} catch (Exception e) {
-	    			System.out.println("Invalid token! Not verified!");
-	    			return new PreProcessObject(new ApiResImpl("failure", "INVALID_UIN", new RequestId(requestId)));
-	    		}
-	    		
-	    	}
-	    	
-    	}
-    	else {
-    		// something went wrong
-    	}
-    	
-
-		// map credentials
-    	
-    	Map<String, String> tokenMap = null;
-		try {			
-			tokenMap = objectMapper.readValue(token.getClaims(), Map.class);
-		} catch (Exception e) {
-			System.out.println("Invalid token! Unable to map!");
-			return new PreProcessObject(new ApiResImpl("failure", "INVALID_UIN", new RequestId(requestId)));
-		}
+		shib = authorizeRole(shib);
 		
-		Credentials shib = new Credentials(tokenMap);
+		
+		Map<String, Integer> argMap = new HashMap<String, Integer>();
+  		
+  		int index = 0;
+  		for (Annotation[] annotations : method.getParameterAnnotations()) {
+  			for (Annotation annotation : annotations) {
+  		  
+  				String annotationString = annotation.toString();
+  				annotationString = annotationString.substring(annotationString.lastIndexOf('.')+1).replace("()", "");
+		
+  				argMap.put(annotationString, index);
+            
+  			}
+  			index++;
+  		}
 
-		if(shib.getRole() == null) {
+  		for(String arg : argMap.keySet()) {
+  	
+  			switch(arg) {	  			
+	  			case "Shib": {
+	  				arguments[argMap.get(arg)] = shib;
+	  			} break;
+	  			case "ReqId": {
+	  				arguments[argMap.get(arg)] = requestId;
+	  			} break;
+	  			case "Data": {
+	  				arguments[argMap.get(arg)] = data;
+	  			} break;
+	  			case "InputStream": {
+	  				arguments[argMap.get(arg)] = request.getInputStream();
+	  			} break;
+  			}
+  	
+  		}
+		
+        
+    	return new PreProcessObject(shib, requestId, arguments);
+    }
+    
+    private Credentials authorizeRole(Credentials shib) {
+    	if(shib.getRole() == null) {
 			
 			UserImpl user = userRepo.getUserByUin(Long.parseLong(shib.getUin()));
 			
@@ -231,56 +214,7 @@ public class ControllerAspect {
 			}
 			
 		}
-
-		
-		// check expiration
-		
-		long currentTime = Calendar.getInstance().getTime().getTime()+90000;
-		long expTime = Long.parseLong(shib.getExp());
-		
-		if(expTime < currentTime) {
-			System.out.println("Token expired!");
-			return new PreProcessObject(new ApiResImpl("refresh", "EXPIRED_JWT", new RequestId(requestId)));
-		}
-		else {
-			System.out.println("Token expires in: " + ((expTime - currentTime)) / 1000);
-		}
-		
-		
-		if(requestType == RequestType.REST) {
-			request.setAttribute("shib", shib);
-		}
-		else if(requestType == RequestType.WEB_SOCKET) {	
-			Map<String, Object> shibMap = new HashMap<String, Object>();			
-			shibMap.put("shib", shib);
-			accessor.setSessionAttributes(shibMap);
-		}
-		
-		
-		// populate arguments, order contingent
-		
-        int index = 0;
-        for (Annotation[] annotations : method.getParameterAnnotations()) {
-        	  for (Annotation annotation : annotations) {
-        		  
-		            String annotationString = annotation.toString();
-		            annotationString = annotationString.substring(annotationString.lastIndexOf('.')+1).replace("()", "");
-		            
-		            switch(annotationString) {
-			            case "Shib": {
-			            	arguments[index] = shib;
-			            } break;
-			            case "ReqId": {
-			            	arguments[index] = requestId;
-			            } break;
-		            }
-		            
-        	  }
-        	  index++;
-        }
-        
-        
-    	return new PreProcessObject(shib, requestId, arguments);
+		return shib;
     }
     
     public class PreProcessObject {
@@ -306,50 +240,5 @@ public class ControllerAspect {
     	}
     	
     }
-    
-    public enum RequestType {
-    	REST,
-    	WEB_SOCKET
-    }
-    
-    public enum Roles {
-    	ROLE_ANONYMOUS, 
-    	ROLE_USER, 
-    	ROLE_MANAGER, 
-    	ROLE_ADMIN
-    }
-    
-    /**
-	 * Expired JWT Exception class.
-	 * 
-	 * @author 
-	 *
-	 */
-	@ResponseStatus(value=HttpStatus.FORBIDDEN, reason="expired") 
-	public class ExpiredJwtException extends RuntimeException {
-		private static final long serialVersionUID = 1L;
-	}
-	
-	/**
-	 * Missing JWT Exception class.
-	 * 
-	 * @author 
-	 *
-	 */
-	@ResponseStatus(value=HttpStatus.FORBIDDEN, reason="missing") 
-	public class MissingJwtException extends RuntimeException {
-		private static final long serialVersionUID = 1L;
-	}
-	
-	/**
-	 * Invalid JWT Exception class.
-	 * 
-	 * @author 
-	 *
-	 */
-	@ResponseStatus(value=HttpStatus.FORBIDDEN, reason="invalid") 
-	public class InvalidJwtException extends RuntimeException {
-		private static final long serialVersionUID = 1L;
-	}
 	
 }

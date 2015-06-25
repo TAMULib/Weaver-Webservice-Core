@@ -1,5 +1,5 @@
 /* 
- * ControllerConfig.java 
+ * WebAppConfig.java 
  * 
  * Version: 
  *     $Id$ 
@@ -24,13 +24,15 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
 import org.springframework.http.converter.xml.SourceHttpMessageConverter;
-//import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-//import edu.tamu.app.controller.interceptor.RestInterceptor;
+import edu.tamu.app.controller.interceptor.RestInterceptor;
 
 /** 
  * Web MVC Configuration for application controller.
@@ -89,15 +91,26 @@ public class WebAppConfig extends WebMvcConfigurerAdapter{
 	}
 	
 	/**
+	 * Security context bean.
+	 * 
+	 * @return		SecurityContext
+	 * 
+	 */
+	@Bean
+	public SecurityContext securityContext() {
+		return SecurityContextHolder.getContext();
+	}
+	    
+    /**
 	 * Rest interceptor bean.
 	 *
 	 * @return      RestInterceptor
 	 *
 	 */
-//	@Bean
-//	public RestInterceptor jwtInterceptor() {
-//	    return new RestInterceptor();
-//	}
+	@Bean
+	public RestInterceptor restInterceptor() {
+	    return new RestInterceptor();
+	}
 
 	/**
 	 * Add interceptor to interceptor registry.
@@ -105,9 +118,9 @@ public class WebAppConfig extends WebMvcConfigurerAdapter{
 	 * @param       registry	   InterceptorRegistry
 	 *
 	 */
-//	@Override
-//	public void addInterceptors(InterceptorRegistry registry) {
-//	    registry.addInterceptor(jwtInterceptor()).addPathPatterns("/rest/**");
-//	}
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+	    registry.addInterceptor(restInterceptor()).addPathPatterns("/rest/**");
+	}
 	
 }

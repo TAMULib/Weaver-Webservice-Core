@@ -22,7 +22,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import edu.tamu.app.util.jwt.JWTservice;
+import edu.tamu.app.util.jwt.JwtService;
 
 /** 
  * JSON Web Token.
@@ -113,7 +113,7 @@ public class JWTtoken {
 		SecretKeySpec secret_key = new SecretKeySpec(secret.getBytes(), "HmacSHA256");
 		sha256_HMAC.init(secret_key);
 		
-		JWTservice jwtService = new JWTservice();
+		JwtService jwtService = new JwtService();
 		
 		String encodedHeader = jwtService.encodeJSON(header.getHeaderAsJSON());
 		String encodedClaim = jwtService.encodeJSON(claim.getClaimAsJSON());

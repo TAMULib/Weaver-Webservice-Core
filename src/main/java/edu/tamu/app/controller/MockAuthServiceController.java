@@ -25,6 +25,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import edu.tamu.app.aspect.annotation.SkipAop;
 import edu.tamu.app.model.jwt.JWTtoken;
 
 /** 
@@ -64,6 +65,7 @@ public class MockAuthServiceController {
 	 * 
 	 */
 	@RequestMapping("/token")
+	@SkipAop
 	public ModelAndView token(@RequestParam() Map<String,String> params, @RequestHeader() Map<String,String> headers) throws InvalidKeyException, NoSuchAlgorithmException, IllegalStateException, UnsupportedEncodingException, JsonProcessingException {
 		String referer = params.get("referer");
 		if(referer == null) System.err.println("No referer in query string!!");
@@ -86,6 +88,7 @@ public class MockAuthServiceController {
 	 * 
 	 */
 	@RequestMapping("/refresh")
+	@SkipAop
 	public JWTtoken refresh(@RequestParam() Map<String,String> params, @RequestHeader() Map<String,String> headers) throws InvalidKeyException, NoSuchAlgorithmException, IllegalStateException, UnsupportedEncodingException, JsonProcessingException {
 		return makeToken(params.get("mock"), headers);
 	}
@@ -104,6 +107,7 @@ public class MockAuthServiceController {
 	 * @exception   JsonProcessingException
 	 * 
 	 */
+	@SkipAop
 	private JWTtoken makeToken(String mockUser, Map<String, String> headers) throws InvalidKeyException, JsonProcessingException, NoSuchAlgorithmException, IllegalStateException, UnsupportedEncodingException {		
 		
 		System.out.println("Creating token for mock " + mockUser);
