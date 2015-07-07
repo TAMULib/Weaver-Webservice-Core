@@ -109,11 +109,9 @@ public class RestInterceptor extends HandlerInterceptorAdapter {
 			}
 		}
 		
-		
 		request.setAttribute("shib", shib);
 		
 		request.setAttribute("data", request.getHeader("data"));
-		
 		
 		List<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
 		
@@ -131,8 +129,7 @@ public class RestInterceptor extends HandlerInterceptorAdapter {
 		
 		securityContext.setAuthentication(auth);		
 		
-		httpRequestUtility.addRequest(new HttpRequest(request, shib.getNetid()));
-		
+		httpRequestUtility.addRequest(new HttpRequest(request, request.getServletPath(), shib.getNetid()));
 		
         return true;
     }

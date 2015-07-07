@@ -6,10 +6,13 @@ public class HttpRequest {
 	
 	private HttpServletRequest request;
 	
-	private String user;	
+	private String user;
 	
-	public HttpRequest(HttpServletRequest request, String user) {
+	private String destination;
+	
+	public HttpRequest(HttpServletRequest request, String destination, String user) {
 		this.request = request;
+		this.destination = destination;
 		this.user = user;
 	}
 
@@ -27,6 +30,14 @@ public class HttpRequest {
 
 	public void setUser(String user) {
 		this.user = user;
+	}
+	
+	public String getDestination() {
+		return destination;
+	}
+
+	public void setDestination(String destination) {
+		this.destination = destination;
 	}
 	
 }

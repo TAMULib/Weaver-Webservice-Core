@@ -30,11 +30,11 @@ public class HttpRequestUtility {
 		requests.remove(request);
 	}
 	
-	public synchronized HttpServletRequest getAndRemoveRequestByUser(String user) {
-		HttpServletRequest httpServletRequest = null;		
+	public synchronized HttpServletRequest getAndRemoveRequestByDestinationAndUser(String destination, String user) {
+		HttpServletRequest httpServletRequest = null;
 		for(int index = 0; index <= requests.size(); index++) {
 			HttpRequest request = requests.get(index);
-			if(request.getUser().equals(user)) {
+			if(request.getUser().equals(user) && request.getDestination().contains(destination)) {
 				httpServletRequest = request.getRequest();
 				requests.remove(index);
 				break;

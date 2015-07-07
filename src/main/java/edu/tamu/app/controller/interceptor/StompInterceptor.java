@@ -138,7 +138,7 @@ public class StompInterceptor extends ChannelInterceptorAdapter {
 			
 			Message<?> newMessage = MessageBuilder.withPayload("VALID_JWT").setHeaders(accessor).build();
 			
-			webSocketRequestUtility.addRequest(new WebSocketRequest(newMessage, securityContext.getAuthentication().getName()));
+			webSocketRequestUtility.addRequest(new WebSocketRequest(newMessage, accessor.getDestination(), securityContext.getAuthentication().getName()));
 			
 			return newMessage;
 			

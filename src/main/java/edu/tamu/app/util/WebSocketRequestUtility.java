@@ -29,11 +29,11 @@ public class WebSocketRequestUtility {
 		requests.remove(request);
 	}
 	
-	public synchronized Message<?> getAndRemoveMessageByUser(String user) {
+	public synchronized Message<?> getAndRemoveMessageByDestinationAndUser(String destination, String user) {
 		Message<?> message = null;		
 		for(int index = 0; index <= requests.size(); index++) {
-			WebSocketRequest request = requests.get(index);
-			if(request.getUser().equals(user)) {
+			WebSocketRequest request = requests.get(index);			
+			if(request.getUser().equals(user) && request.getDestination().contains(destination)) {
 				message = request.getMessage();
 				requests.remove(index);
 				break;

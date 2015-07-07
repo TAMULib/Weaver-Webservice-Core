@@ -23,10 +23,12 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.Message;
+import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.RequestContextHolder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -75,34 +77,28 @@ public class ControllerAspect {
 	@Autowired
 	private SecurityContext securityContext;
 
-
     @Around("execution(* edu.tamu.app.controller.*.*(..)) && !@annotation(edu.tamu.app.aspect.annotation.SkipAop) && @annotation(auth)")
-    public ApiResImpl validatePolpulateCredentialsAndAuthorize(ProceedingJoinPoint joinPoint, Auth auth) throws Throwable {
+    public ApiResImpl polpulateCredentialsAndAuthorize(ProceedingJoinPoint joinPoint, Auth auth) throws Throwable {
     	
-    	PreProcessObject preProcessObject = validatePreProcess(joinPoint);
+    	PreProcessObject preProcessObject = preProcess(joinPoint);
     	
     	if(preProcessObject.error != null) {
     		return preProcessObject.error;
     	}
         
-        System.out.println("YOUR ROLE " + Roles.valueOf(preProcessObject.shib.getRole()));
-        System.out.println("ATTEMPTING ACCESS AGAINST " + Roles.valueOf(auth.role()));
-        
         if(Roles.valueOf(preProcessObject.shib.getRole()).ordinal() < Roles.valueOf(auth.role()).ordinal()) {
         	System.out.println("DENIED");
         	return new ApiResImpl("restricted", "You are not authorized for this request.", new RequestId(preProcessObject.requestId));
         }
-        
-        System.out.println("GRANTED");
                 
         return (ApiResImpl) joinPoint.proceed(preProcessObject.arguments);	
 		
     }
     
     @Around("execution(* edu.tamu.app.controller.*.*(..)) && !@annotation(edu.tamu.app.aspect.annotation.SkipAop) && !@annotation(edu.tamu.app.aspect.annotation.Auth)")
-    public ApiResImpl validateAndPopulateCredentials(ProceedingJoinPoint joinPoint) throws Throwable {
+    public ApiResImpl populateCredentials(ProceedingJoinPoint joinPoint) throws Throwable {
     	
-    	PreProcessObject preProcessObject = validatePreProcess(joinPoint);
+    	PreProcessObject preProcessObject = preProcess(joinPoint);
     	
     	if(preProcessObject.error != null) {
     		return preProcessObject.error;
@@ -112,8 +108,8 @@ public class ControllerAspect {
         
     }
     
-    private PreProcessObject validatePreProcess(ProceedingJoinPoint joinPoint) throws Throwable {
-    	    	
+    private PreProcessObject preProcess(ProceedingJoinPoint joinPoint) throws Throwable {
+    	    	    	
     	HttpServletRequest request = null;
     	
         Message<?> message = null;
@@ -132,7 +128,7 @@ public class ControllerAspect {
         
     	if (RequestContextHolder.getRequestAttributes() != null) {
     		
-    		request = httpRequestUtility.getAndRemoveRequestByUser(securityContext.getAuthentication().getName());
+    		request = httpRequestUtility.getAndRemoveRequestByDestinationAndUser(method.getAnnotation(RequestMapping.class).value()[0], securityContext.getAuthentication().getName());
     		
     		shib = (Credentials) request.getAttribute("shib");
     		
@@ -140,7 +136,7 @@ public class ControllerAspect {
     		
     	} else {
     		
-    		message = webSocketRequestUtility.getAndRemoveMessageByUser(securityContext.getAuthentication().getName());
+    		message = webSocketRequestUtility.getAndRemoveMessageByDestinationAndUser(method.getAnnotation(MessageMapping.class).value()[0], securityContext.getAuthentication().getName());
     		
     		accessor = StompHeaderAccessor.wrap(message);
     		
@@ -148,20 +144,17 @@ public class ControllerAspect {
     		shib =(Credentials) accessor.getSessionAttributes().get("shib");
     		    		
     		data = accessor.getNativeHeader("data").get(0).toString();
-  
-    			
     	}  
-    	
-    	
+    	    	
 		shib = authorizeRole(shib);
-		
-		
+				
 		Map<String, Integer> argMap = new HashMap<String, Integer>();
   		
   		int index = 0;
   		for (Annotation[] annotations : method.getParameterAnnotations()) {
+  			
   			for (Annotation annotation : annotations) {
-  		  
+
   				String annotationString = annotation.toString();
   				annotationString = annotationString.substring(annotationString.lastIndexOf('.')+1).replace("()", "");
 		
@@ -170,7 +163,7 @@ public class ControllerAspect {
   			}
   			index++;
   		}
-
+  		
   		for(String arg : argMap.keySet()) {
   	
   			switch(arg) {	  			
@@ -189,8 +182,7 @@ public class ControllerAspect {
   			}
   	
   		}
-		
-        
+		        
     	return new PreProcessObject(shib, requestId, arguments);
     }
     
