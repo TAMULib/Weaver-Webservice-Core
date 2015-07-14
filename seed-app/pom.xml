@@ -1,0 +1,70 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>edu.tamu</groupId>
+	<artifactId>springseed</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>Spring Seed App</name>
+	<description>A simple spring seed application for Library projects.</description>
+
+	<!--This section should be completed when initial development has begun 
+		(ctrl+shift+f to format) -->
+	<!--<developers> <developer> <id></id> <name></name> <email><email> <url></url> 
+		<organization></organization> <organizationUrl></organizationUrl> <roles> 
+		<role></role> <role></role> </roles> <timezone></timezone> <properties> <picUrl></picUrl> 
+		</properties> </developer> </developers> -->
+
+	<parent>
+		<groupId>edu.tamu</groupId>
+		<artifactId>webservice-framework</artifactId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
+	 
+	
+	<properties>
+		<start-class>edu.tamu.app.WebServerInit</start-class>
+	</properties>
+
+	<packaging>war</packaging>
+
+	<dependencies>
+		<dependency>
+			<groupId>edu.tamu</groupId>
+			<artifactId>webservice-framework-core</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+	
+	<build>
+		<finalName>ROOT</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+        		<groupId>org.apache.maven.plugins</groupId>
+        		<artifactId>maven-war-plugin</artifactId>
+        		<configuration>
+          			<failOnMissingWebXml>false</failOnMissingWebXml>
+        		</configuration>        
+      		</plugin>
+		</plugins>
+	</build>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>spring-releases</id>
+			<url>https://repo.spring.io/libs-release</url>
+		</pluginRepository>
+	</pluginRepositories>
+
+</project>
