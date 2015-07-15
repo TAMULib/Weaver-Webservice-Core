@@ -36,7 +36,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.tamu.app.aspect.annotation.Auth;
 import edu.tamu.app.model.Credentials;
 import edu.tamu.app.model.RequestId;
-import edu.tamu.app.model.impl.UserImpl;
+import edu.tamu.app.model.impl.AppUser;
 import edu.tamu.app.model.repo.UserRepo;
 import edu.tamu.app.util.HttpRequestUtility;
 import edu.tamu.app.util.WebSocketRequestUtility;
@@ -189,7 +189,7 @@ public class ControllerAspect {
     private Credentials authorizeRole(Credentials shib) {
     	if(shib.getRole() == null) {
 			
-			UserImpl user = userRepo.getUserByUin(Long.parseLong(shib.getUin()));
+			AppUser user = userRepo.getUserByUin(Long.parseLong(shib.getUin()));
 			
 			if(user == null) {
 				shib.setRole("ROLE_USER");

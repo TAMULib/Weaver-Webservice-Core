@@ -1,9 +1,9 @@
 package edu.tamu.app.model.repo;
 
-import edu.tamu.app.model.impl.UserImpl;
+import edu.tamu.app.model.impl.AppUser;
 
 public interface UserRepoCustom {
 
-	public UserImpl create(Long uin);
+	public AppUser create(Long uin);
 	
 }

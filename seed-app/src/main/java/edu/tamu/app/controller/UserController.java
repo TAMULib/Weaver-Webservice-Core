@@ -29,7 +29,7 @@ import edu.tamu.app.aspect.annotation.ReqId;
 import edu.tamu.app.aspect.annotation.Shib;
 import edu.tamu.app.model.Credentials;
 import edu.tamu.app.model.RequestId;
-import edu.tamu.app.model.impl.UserImpl;
+import edu.tamu.app.model.impl.AppUser;
 import edu.tamu.app.model.repo.UserRepo;
 
 import edu.tamu.framework.model.APIres;
@@ -92,7 +92,7 @@ public class UserController {
 	@Auth(role="ROLE_MANAGER")
 	public APIres allUsers(@ReqId String requestId) throws Exception {
 			
-		Map<String,List<UserImpl>> map = new HashMap<String,List<UserImpl>>();
+		Map<String,List<AppUser>> map = new HashMap<String,List<AppUser>>();
 		map.put("list", userRepo.findAll());	
 		
 		return new APIres("success", map, new RequestId(requestId));
@@ -119,7 +119,7 @@ public class UserController {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}		
-		UserImpl user = userRepo.getUserByUin(Long.decode(map.get("uin")));		
+		AppUser user = userRepo.getUserByUin(Long.decode(map.get("uin")));		
 		user.setRole(map.get("role"));		
 		userRepo.save(user);
 		

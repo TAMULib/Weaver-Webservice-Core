@@ -7,7 +7,7 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.app.model.impl;
+package edu.tamu.framework.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,8 +17,8 @@ import javax.persistence.Table;
 import edu.tamu.framework.model.User;
 
 @Entity
-@Table(name="all_users")
-public class UserImpl implements User{
+@Table(name="core_users")
+public abstract class AbstractUserImpl implements User{
 	
 	@Id
 	@Column(name="uin", nullable=false)
@@ -27,9 +27,9 @@ public class UserImpl implements User{
 	@Column(name="role")
 	private String role;
 	
-	public UserImpl() {}
+	public AbstractUserImpl() {}
 	
-	public UserImpl(Long uin) {
+	public AbstractUserImpl(Long uin) {
 		this.uin = uin;
 	}
 	

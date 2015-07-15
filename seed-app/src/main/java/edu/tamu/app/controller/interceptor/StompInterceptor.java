@@ -35,7 +35,7 @@ import edu.tamu.app.ApplicationContextProvider;
 import edu.tamu.app.model.Credentials;
 import edu.tamu.app.model.RequestId;
 import edu.tamu.app.model.WebSocketRequest;
-import edu.tamu.app.model.impl.UserImpl;
+import edu.tamu.app.model.impl.AppUser;
 import edu.tamu.app.model.repo.UserRepo;
 import edu.tamu.app.util.WebSocketRequestUtility;
 import edu.tamu.app.util.jwt.JwtService;
@@ -165,7 +165,7 @@ public class StompInterceptor extends ChannelInterceptorAdapter {
 		    	
 		    	if(!("ROLE_ANONYMOUS").equals(shib.getRole())) {
 		    		
-		    		UserImpl user = userRepo.getUserByUin(Long.parseLong(shib.getUin()));
+		    		AppUser user = userRepo.getUserByUin(Long.parseLong(shib.getUin()));
 		    		
 		    		if(user == null) {
 			    		
@@ -179,7 +179,7 @@ public class StompInterceptor extends ChannelInterceptorAdapter {
 			    			}
 			    		}
 			    		
-			    		UserImpl newUser = new UserImpl();
+			    		AppUser newUser = new AppUser();
 			    		
 			    		newUser.setUin(Long.parseLong(shib.getUin()));					
 			    		newUser.setRole(shib.getRole());

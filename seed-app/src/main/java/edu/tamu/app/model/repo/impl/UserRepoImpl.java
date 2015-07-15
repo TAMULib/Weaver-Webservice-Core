@@ -2,7 +2,7 @@ package edu.tamu.app.model.repo.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import edu.tamu.app.model.impl.UserImpl;
+import edu.tamu.app.model.impl.AppUser;
 import edu.tamu.app.model.repo.UserRepo;
 import edu.tamu.app.model.repo.UserRepoCustom;
 
@@ -12,10 +12,10 @@ public class UserRepoImpl implements UserRepoCustom {
 	private UserRepo userRepo;
 	
 	@Override
-	public UserImpl create(Long uin) {
-		UserImpl user = null;
+	public AppUser create(Long uin) {
+		AppUser user = null;
 		if(userRepo.getUserByUin(uin)==null) {
-			user = new UserImpl(uin);
+			user = new AppUser(uin);
 			userRepo.save(user);
 		}
 		return user;

@@ -38,7 +38,7 @@ public class UserTest {
 	public void testCreateAndDelete() {
 		
 		userRepo.create(123456789l);		
-		UserImpl testUser1 = userRepo.getUserByUin(123456789l);				
+		AppUser testUser1 = userRepo.getUserByUin(123456789l);				
 		assertTrue("Test User1 was not added.", testUser1.getUin().equals(123456789l));
 		
 		userRepo.delete(testUser1);				
@@ -49,7 +49,7 @@ public class UserTest {
 	public void testDuplicateUser() {
 		
 		userRepo.create(123456789l);		
-		UserImpl testUser1 = userRepo.getUserByUin(123456789l);				
+		AppUser testUser1 = userRepo.getUserByUin(123456789l);				
 		assertTrue("Test User1 was not added.", testUser1.getUin().equals(123456789l));
 		
 		userRepo.create(123456789l);
@@ -59,7 +59,7 @@ public class UserTest {
 			
 	@After
 	public void cleanUp() {
-		for(UserImpl user : userRepo.findAll())
+		for(AppUser user : userRepo.findAll())
 			userRepo.delete(user);
 	}
 }

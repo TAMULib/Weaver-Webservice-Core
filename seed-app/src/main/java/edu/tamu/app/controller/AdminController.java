@@ -25,7 +25,7 @@ import edu.tamu.app.aspect.annotation.ReqId;
 import edu.tamu.app.aspect.annotation.Shib;
 import edu.tamu.app.model.Credentials;
 import edu.tamu.app.model.RequestId;
-import edu.tamu.app.model.impl.UserImpl;
+import edu.tamu.app.model.impl.AppUser;
 import edu.tamu.app.model.repo.UserRepo;
 import edu.tamu.framework.model.APIres;
 
@@ -60,7 +60,7 @@ public class AdminController {
 		
 		if(userRepo.getUserByUin(Long.parseLong(shib.getUin())) == null) {
     		
-    		UserImpl newUser = new UserImpl();
+    		AppUser newUser = new AppUser();
     		
 			newUser.setUin(Long.parseLong(shib.getUin()));					
 			newUser.setRole(shib.getRole());
