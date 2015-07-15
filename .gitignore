@@ -4,3 +4,4 @@
 .settings
 .settings/
 .DS_Store
+framework/core/target/
