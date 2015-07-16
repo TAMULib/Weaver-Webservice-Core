@@ -7,7 +7,7 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.app.controller.interceptor;
+package edu.tamu.framework.controller.interceptor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,9 +31,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Component;
 
-import edu.tamu.app.ApplicationContextProvider;
-import edu.tamu.app.model.AppUser;
-import edu.tamu.app.model.repo.UserRepo;
+import edu.tamu.framework.ApplicationContextProvider;
 import edu.tamu.framework.model.APIres;
 import edu.tamu.framework.model.Credentials;
 import edu.tamu.framework.model.RequestId;
@@ -49,13 +47,10 @@ import edu.tamu.framework.util.WebSocketRequestUtility;
  *
  */
 @Component
-public class StompInterceptor extends ChannelInterceptorAdapter {
+public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 	
 	@Value("${app.authority.admins}")
-	private String[] admins;
-	
-	@Autowired
-	private UserRepo userRepo;
+	String[] admins;
 	
 	@Autowired
 	private JwtService jwtService;
@@ -165,35 +160,7 @@ public class StompInterceptor extends ChannelInterceptorAdapter {
 		    	
 		    	if(!("ROLE_ANONYMOUS").equals(shib.getRole())) {
 		    		
-		    		AppUser user = userRepo.getUserByUin(Long.parseLong(shib.getUin()));
-		    		
-		    		if(user == null) {
-			    		
-			    		if(shib.getRole() == null) {
-			    			shib.setRole("ROLE_USER");
-			    		}
-			        	String shibUin = shib.getUin();
-			    		for(String uin : admins) {
-			    			if(uin.equals(shibUin)) {
-			    				shib.setRole("ROLE_ADMIN");					
-			    			}
-			    		}
-			    		
-			    		AppUser newUser = new AppUser();
-			    		
-			    		newUser.setUin(Long.parseLong(shib.getUin()));					
-			    		newUser.setRole(shib.getRole());
-			    		
-			    		userRepo.save(newUser);
-			        	
-			        	System.out.println(shib.getFirstName() + " " + shib.getLastName() + " connected with session id " + headers.get("simpSessionId"));
-			    		
-			    		System.out.println(Long.parseLong(shib.getUin()));	
-			    
-			    	}
-			    	else {
-			    		shib.setRole(user.getRole());
-			    	}
+		    		shib = confirmCreateUser(shib);
 		    		
 		    	}
 		    	
@@ -236,4 +203,6 @@ public class StompInterceptor extends ChannelInterceptorAdapter {
 		return message;
 	}
 	
+	public abstract Credentials confirmCreateUser(Credentials shib);
+
 }

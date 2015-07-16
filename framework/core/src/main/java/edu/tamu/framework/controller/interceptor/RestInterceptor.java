@@ -7,7 +7,7 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.app.controller.interceptor;
+package edu.tamu.framework.controller.interceptor;
 
 import java.util.ArrayList;
 import java.util.List;
