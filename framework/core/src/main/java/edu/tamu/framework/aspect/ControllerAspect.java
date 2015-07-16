@@ -7,7 +7,7 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.app.aspect;
+package edu.tamu.framework.aspect;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -33,8 +33,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import edu.tamu.app.model.AppUser;
-import edu.tamu.app.model.repo.UserRepo;
 import edu.tamu.framework.aspect.annotation.Auth;
 import edu.tamu.framework.enums.Roles;
 import edu.tamu.framework.model.APIres;
@@ -51,16 +49,13 @@ import edu.tamu.framework.util.WebSocketRequestUtility;
  */
 @Component
 @Aspect
-public class ControllerAspect {
+public abstract class ControllerAspect {
 	
 	@Value("${app.security.jwt.secret_key}") 
 	private String secret_key;
 	
 	@Value("${app.authority.admins}")
-	private String[] admins;
-	
-	@Autowired
-	private UserRepo userRepo;
+	String[] admins;
 	
 	@Autowired
 	public ObjectMapper objectMapper;
@@ -186,12 +181,14 @@ public class ControllerAspect {
     	return new PreProcessObject(shib, requestId, arguments);
     }
     
+    public abstract String getUserRole(String uin);
+    
     private Credentials authorizeRole(Credentials shib) {
     	if(shib.getRole() == null) {
 			
-			AppUser user = userRepo.getUserByUin(Long.parseLong(shib.getUin()));
+			String role = getUserRole(shib.getUin());
 			
-			if(user == null) {
+			if(role == null) {
 				shib.setRole("ROLE_USER");
 				
 				String shibUin = shib.getUin();
@@ -202,12 +199,13 @@ public class ControllerAspect {
 				}
 			}
 			else {
-				shib.setRole(user.getRole());
+				shib.setRole(role);
 			}
 			
 		}
 		return shib;
-    }
+    	
+    };
     
     public class PreProcessObject {
 
