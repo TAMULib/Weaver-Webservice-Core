@@ -7,18 +7,13 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.app.config;
+package edu.tamu.framework.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.AbstractWebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
-
-import edu.tamu.app.controller.interceptor.StompInterceptor;
 
 /** 
  * Web Socket Configuration.
@@ -28,21 +23,7 @@ import edu.tamu.app.controller.interceptor.StompInterceptor;
  */
 @Configuration
 @EnableWebSocketMessageBroker
-public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
-	
-	@Autowired
-	public StompInterceptor stompInterceptor;
-	
-	/**
-	 * Stomp interceptor bean.
-	 * 
-	 * @return		StompInterceptor
-	 * 
-	 */
-	@Bean
-	public StompInterceptor configureStompInterceptor() {
-		return new StompInterceptor();
-	}
+public abstract class CoreWebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 	
 	/**
 	 * Configure message broker. Enables simple broker queue and channel. 
@@ -69,17 +50,6 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 		registry.addEndpoint("/connect").withSockJS();
 		registry.addEndpoint("/user").withSockJS();
 		registry.addEndpoint("/admin").withSockJS();
-	}
-	
-	/**
-	 * Configure client inbound channel. Sets stomp interceptor. 
-	 * 
-	 * @param       registration   	ChannelRegistration
-	 * 
-	 */
-	@Override
-	public void configureClientInboundChannel(ChannelRegistration registration) {
-		registration.setInterceptors(stompInterceptor);
 	}
 
 }

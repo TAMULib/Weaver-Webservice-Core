@@ -7,7 +7,7 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.app.config;
+package edu.tamu.framework.config;
 
 import java.io.IOException;
 

@@ -7,7 +7,7 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.app.config;
+package edu.tamu.framework.config;
 
 import java.util.List;
 
@@ -32,7 +32,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-import edu.tamu.app.controller.interceptor.RestInterceptor;
+import edu.tamu.framework.controller.interceptor.RestInterceptor;
 
 /** 
  * Web MVC Configuration for application controller.
