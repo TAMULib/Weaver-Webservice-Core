@@ -1,4 +1,4 @@
-package edu.tamu.app.enums;
+package edu.tamu.framework.enums;
 
 public enum Roles {
 	ROLE_ANONYMOUS, 

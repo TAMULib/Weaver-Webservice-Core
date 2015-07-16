@@ -7,7 +7,7 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.app.model;
+package edu.tamu.framework.model;
 
 import java.util.Map;
 

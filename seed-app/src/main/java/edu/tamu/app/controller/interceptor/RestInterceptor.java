@@ -30,10 +30,10 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import edu.tamu.app.model.Credentials;
-import edu.tamu.app.model.HttpRequest;
-import edu.tamu.app.util.HttpRequestUtility;
-import edu.tamu.app.util.jwt.JwtService;
+import edu.tamu.framework.model.Credentials;
+import edu.tamu.framework.model.HttpRequest;
+import edu.tamu.framework.util.HttpRequestUtility;
+import edu.tamu.framework.util.JwtService;
 
 /**
  * REST interceptor. Intercepts AJAX request to decode and 

@@ -7,7 +7,7 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.app.util.jwt;
+package edu.tamu.framework.util;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;

@@ -1,4 +1,4 @@
-package edu.tamu.app.util;
+package edu.tamu.framework.util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Service;
 
-import edu.tamu.app.model.HttpRequest;
+import edu.tamu.framework.model.HttpRequest;
 
 @Service
 public class HttpRequestUtility {

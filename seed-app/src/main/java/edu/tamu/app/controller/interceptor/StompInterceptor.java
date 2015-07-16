@@ -32,14 +32,14 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Component;
 
 import edu.tamu.app.ApplicationContextProvider;
-import edu.tamu.app.model.Credentials;
-import edu.tamu.app.model.RequestId;
-import edu.tamu.app.model.WebSocketRequest;
-import edu.tamu.app.model.impl.AppUser;
+import edu.tamu.app.model.AppUser;
 import edu.tamu.app.model.repo.UserRepo;
-import edu.tamu.app.util.WebSocketRequestUtility;
-import edu.tamu.app.util.jwt.JwtService;
 import edu.tamu.framework.model.APIres;
+import edu.tamu.framework.model.Credentials;
+import edu.tamu.framework.model.RequestId;
+import edu.tamu.framework.model.WebSocketRequest;
+import edu.tamu.framework.util.JwtService;
+import edu.tamu.framework.util.WebSocketRequestUtility;
 
 /**
  * Stomp interceptor. Checks command, decodes and verifies token, 

@@ -2,7 +2,7 @@ package edu.tamu.app.model.repo.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import edu.tamu.app.model.impl.AppUser;
+import edu.tamu.app.model.AppUser;
 import edu.tamu.app.model.repo.UserRepo;
 import edu.tamu.app.model.repo.UserRepoCustom;
 

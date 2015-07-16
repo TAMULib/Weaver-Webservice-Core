@@ -1,4 +1,4 @@
-package edu.tamu.app.model;
+package edu.tamu.framework.model;
 
 public class RequestId {
 	

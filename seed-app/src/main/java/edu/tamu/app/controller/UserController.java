@@ -23,16 +23,15 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import edu.tamu.app.aspect.annotation.Auth;
-import edu.tamu.app.aspect.annotation.Data;
-import edu.tamu.app.aspect.annotation.ReqId;
-import edu.tamu.app.aspect.annotation.Shib;
-import edu.tamu.app.model.Credentials;
-import edu.tamu.app.model.RequestId;
-import edu.tamu.app.model.impl.AppUser;
+import edu.tamu.app.model.AppUser;
 import edu.tamu.app.model.repo.UserRepo;
-
+import edu.tamu.framework.aspect.annotation.Auth;
+import edu.tamu.framework.aspect.annotation.Data;
+import edu.tamu.framework.aspect.annotation.ReqId;
+import edu.tamu.framework.aspect.annotation.Shib;
 import edu.tamu.framework.model.APIres;
+import edu.tamu.framework.model.Credentials;
+import edu.tamu.framework.model.RequestId;
 
 /** 
  * User Controller

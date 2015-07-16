@@ -9,13 +9,11 @@
  */
 package edu.tamu.app;
 
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 
 /** 
  * Web server initialization.
@@ -23,10 +21,8 @@ import org.springframework.context.annotation.Configuration;
  * @author
  *
  */
-@ComponentScan
-@Configuration
-@EnableAutoConfiguration
-@EnableConfigurationProperties
+@ComponentScan(basePackages={"edu.tamu.framework", "edu.tamu.app"})
+@SpringBootApplication
 public class WebServerInit extends SpringBootServletInitializer {
 
 	/**

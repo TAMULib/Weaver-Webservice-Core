@@ -17,6 +17,7 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
 import edu.tamu.app.config.TestDataSourceConfiguration;
+import edu.tamu.app.model.AppUser;
 import edu.tamu.app.model.repo.UserRepo;
 
 @RunWith(SpringJUnit4ClassRunner.class)

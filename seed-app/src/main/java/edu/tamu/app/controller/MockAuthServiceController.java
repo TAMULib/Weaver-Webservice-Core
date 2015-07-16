@@ -25,8 +25,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import edu.tamu.app.aspect.annotation.SkipAop;
-import edu.tamu.app.model.jwt.JWTtoken;
+import edu.tamu.framework.aspect.annotation.SkipAop;
+import edu.tamu.framework.model.jwt.JWTtoken;
 
 /** 
  * 

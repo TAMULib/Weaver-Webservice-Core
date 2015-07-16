@@ -33,15 +33,15 @@ import org.springframework.web.context.request.RequestContextHolder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import edu.tamu.app.aspect.annotation.Auth;
-import edu.tamu.app.model.Credentials;
-import edu.tamu.app.model.RequestId;
-import edu.tamu.app.model.impl.AppUser;
+import edu.tamu.app.model.AppUser;
 import edu.tamu.app.model.repo.UserRepo;
-import edu.tamu.app.util.HttpRequestUtility;
-import edu.tamu.app.util.WebSocketRequestUtility;
-import edu.tamu.app.enums.Roles;
+import edu.tamu.framework.aspect.annotation.Auth;
+import edu.tamu.framework.enums.Roles;
 import edu.tamu.framework.model.APIres;
+import edu.tamu.framework.model.Credentials;
+import edu.tamu.framework.model.RequestId;
+import edu.tamu.framework.util.HttpRequestUtility;
+import edu.tamu.framework.util.WebSocketRequestUtility;
 
 /** 
  * Controller Aspect
@@ -77,7 +77,7 @@ public class ControllerAspect {
 	@Autowired
 	private SecurityContext securityContext;
 
-    @Around("execution(* edu.tamu.app.controller.*.*(..)) && !@annotation(edu.tamu.app.aspect.annotation.SkipAop) && @annotation(auth)")
+    @Around("execution(* edu.tamu.app.controller.*.*(..)) && !@annotation(edu.tamu.framework.aspect.annotation.SkipAop) && @annotation(auth)")
     public APIres polpulateCredentialsAndAuthorize(ProceedingJoinPoint joinPoint, Auth auth) throws Throwable {
     	
     	PreProcessObject preProcessObject = preProcess(joinPoint);
@@ -95,7 +95,7 @@ public class ControllerAspect {
 		
     }
     
-    @Around("execution(* edu.tamu.app.controller.*.*(..)) && !@annotation(edu.tamu.app.aspect.annotation.SkipAop) && !@annotation(edu.tamu.app.aspect.annotation.Auth)")
+    @Around("execution(* edu.tamu.app.controller.*.*(..)) && !@annotation(edu.tamu.framework.aspect.annotation.SkipAop) && !@annotation(edu.tamu.framework.aspect.annotation.Auth)")
     public APIres populateCredentials(ProceedingJoinPoint joinPoint) throws Throwable {
     	
     	PreProcessObject preProcessObject = preProcess(joinPoint);

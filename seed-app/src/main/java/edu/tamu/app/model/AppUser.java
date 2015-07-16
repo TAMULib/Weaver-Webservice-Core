@@ -7,7 +7,7 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.app.model.impl;
+package edu.tamu.app.model;
 
 import javax.persistence.Entity;
 

@@ -7,7 +7,7 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.app.model.jwt;
+package edu.tamu.framework.model.jwt;
 
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
@@ -22,7 +22,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import edu.tamu.app.util.jwt.JwtService;
+import edu.tamu.framework.util.JwtService;
 
 /** 
  * JSON Web Token.
