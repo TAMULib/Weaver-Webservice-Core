@@ -17,7 +17,7 @@
 	<parent>
 		<groupId>edu.tamu</groupId>
 		<artifactId>webservice-framework</artifactId>
-		<version>1.0-SNAPSHOT</version>
+		<version>1.0-RELEASE</version>
 	</parent>
 	 
 	
@@ -29,9 +29,9 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>edu.tamu</groupId>
+			<groupId>edu.tamu.framework</groupId>
 			<artifactId>webservice-framework-core</artifactId>
-			<version>1.0-SNAPSHOT</version>
+			<version>1.0</version>
 		</dependency>
 	</dependencies>
 	
@@ -60,6 +60,13 @@
 		</plugins>
 	</build>
 
+	<repositories>
+		<repository>
+			<id>tamu-releases</id>
+			<url>https://maven.library.tamu.edu/content/repositories/releases</url>
+		</repository>
+	</repositories>
+	
 	<pluginRepositories>
 		<pluginRepository>
 			<id>spring-releases</id>

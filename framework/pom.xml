@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>edu.tamu</groupId>
   <artifactId>webservice-framework</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0</version>
   <name>webservice-framework</name>
   <url>http://maven.apache.org</url>
   
