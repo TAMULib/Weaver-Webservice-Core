@@ -9,9 +9,9 @@ import org.springframework.stereotype.Service;
 import edu.tamu.framework.model.WebSocketRequest;
 
 @Service
-public class WebSocketRequestUtility {
+public abstract class WebSocketRequestUtility {
 	
-	private List<WebSocketRequest> requests = new ArrayList<WebSocketRequest>();
+	protected List<WebSocketRequest> requests = new ArrayList<WebSocketRequest>();
 
 	public List<WebSocketRequest> getRequests() {
 		return requests;
@@ -30,16 +30,24 @@ public class WebSocketRequestUtility {
 	}
 	
 	public synchronized Message<?> getAndRemoveMessageByDestinationAndUser(String destination, String user) {
+		
 		Message<?> message = null;		
-		for(int index = 0; index <= requests.size(); index++) {
-			WebSocketRequest request = requests.get(index);			
+		for(int index = 0; index < requests.size(); index++) {
+			
+			WebSocketRequest request = requests.get(index);
+			
 			if(request.getUser().equals(user) && request.getDestination().contains(destination)) {
 				message = request.getMessage();
 				requests.remove(index);
 				break;
 			}
+						
+			if(message == null)
+				message = getMessageAndSetRequest(destination, user, index);
 		}
 		return message;
 	}
+	
+	public abstract Message<?> getMessageAndSetRequest(String destination, String user, int index);
 
 }
