@@ -7,7 +7,7 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework;
+package edu.tamu.framework.context;
 
 import org.springframework.beans.BeansException;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
