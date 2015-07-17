@@ -31,7 +31,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Component;
 
-import edu.tamu.framework.ApplicationContextProvider;
+import edu.tamu.framework.context.ApplicationContextProvider;
 import edu.tamu.framework.model.APIres;
 import edu.tamu.framework.model.Credentials;
 import edu.tamu.framework.model.RequestId;
