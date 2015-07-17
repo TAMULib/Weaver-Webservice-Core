@@ -1,10 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>edu.tamu</groupId>
-  <artifactId>webservice-framework</artifactId>
+  <groupId>edu.tamu.framework</groupId>
+  <artifactId>webservice-framework-parent</artifactId>
   <version>1.0</version>
-  <name>webservice-framework</name>
+  <name>webservice-framework-parent</name>
   <url>http://maven.apache.org</url>
   
   	<parent>

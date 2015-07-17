@@ -15,9 +15,9 @@
 		</properties> </developer> </developers> -->
 
 	<parent>
-		<groupId>edu.tamu</groupId>
-		<artifactId>webservice-framework</artifactId>
-		<version>1.0-RELEASE</version>
+		<groupId>edu.tamu.framework</groupId>
+		<artifactId>webservice-framework-parent</artifactId>
+		<version>1.0</version>
 	</parent>
 	 
 	
