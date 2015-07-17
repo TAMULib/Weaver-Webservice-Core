@@ -1,4 +1,4 @@
-package edu.tamu.framework.util;
+package edu.tamu.framework.service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import edu.tamu.framework.model.HttpRequest;
 
 @Service
-public class HttpRequestUtility {
+public class HttpRequestService {
 	
 	private List<HttpRequest> requests = new ArrayList<HttpRequest>();
 

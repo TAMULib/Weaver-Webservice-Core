@@ -14,11 +14,11 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import edu.tamu.framework.model.User;
+import edu.tamu.framework.model.CoreUser;
 
 @Entity
 @Table(name="core_users")
-public abstract class AbstractUserImpl implements User{
+public abstract class AbstractCoreUserImpl implements CoreUser{
 	
 	@Id
 	@Column(name="uin", nullable=false)
@@ -27,9 +27,9 @@ public abstract class AbstractUserImpl implements User{
 	@Column(name="role")
 	private String role;
 	
-	public AbstractUserImpl() {}
+	public AbstractCoreUserImpl() {}
 	
-	public AbstractUserImpl(Long uin) {
+	public AbstractCoreUserImpl(Long uin) {
 		this.uin = uin;
 	}
 	

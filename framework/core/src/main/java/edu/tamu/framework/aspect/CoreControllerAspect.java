@@ -34,12 +34,12 @@ import org.springframework.web.context.request.RequestContextHolder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.tamu.framework.aspect.annotation.Auth;
-import edu.tamu.framework.enums.Roles;
-import edu.tamu.framework.model.APIres;
+import edu.tamu.framework.enums.CoreRoles;
+import edu.tamu.framework.model.ApiResponse;
 import edu.tamu.framework.model.Credentials;
 import edu.tamu.framework.model.RequestId;
-import edu.tamu.framework.util.HttpRequestUtility;
-import edu.tamu.framework.util.WebSocketRequestUtility;
+import edu.tamu.framework.service.HttpRequestService;
+import edu.tamu.framework.service.WebSocketRequestService;
 
 /** 
  * Controller Aspect
@@ -64,16 +64,16 @@ public abstract class CoreControllerAspect {
 	private SimpMessagingTemplate simpMessagingTemplate;
 	
 	@Autowired
-	private WebSocketRequestUtility webSocketRequestUtility;
+	private WebSocketRequestService webSocketRequestUtility;
 	
 	@Autowired
-	private HttpRequestUtility httpRequestUtility;
+	private HttpRequestService httpRequestUtility;
 	
 	@Autowired
 	private SecurityContext securityContext;
 
     @Around("execution(* edu.tamu.app.controller.*.*(..)) && !@annotation(edu.tamu.framework.aspect.annotation.SkipAop) && @annotation(auth)")
-    public APIres polpulateCredentialsAndAuthorize(ProceedingJoinPoint joinPoint, Auth auth) throws Throwable {
+    public ApiResponse polpulateCredentialsAndAuthorize(ProceedingJoinPoint joinPoint, Auth auth) throws Throwable {
     	
     	PreProcessObject preProcessObject = preProcess(joinPoint);
     	
@@ -81,17 +81,17 @@ public abstract class CoreControllerAspect {
     		return preProcessObject.error;
     	}
         
-        if(Roles.valueOf(preProcessObject.shib.getRole()).ordinal() < Roles.valueOf(auth.role()).ordinal()) {
+        if(CoreRoles.valueOf(preProcessObject.shib.getRole()).ordinal() < CoreRoles.valueOf(auth.role()).ordinal()) {
         	System.out.println("DENIED");
-        	return new APIres("restricted", "You are not authorized for this request.", new RequestId(preProcessObject.requestId));
+        	return new ApiResponse("restricted", "You are not authorized for this request.", new RequestId(preProcessObject.requestId));
         }
                 
-        return (APIres) joinPoint.proceed(preProcessObject.arguments);	
+        return (ApiResponse) joinPoint.proceed(preProcessObject.arguments);	
 		
     }
     
     @Around("execution(* edu.tamu.app.controller.*.*(..)) && !@annotation(edu.tamu.framework.aspect.annotation.SkipAop) && !@annotation(edu.tamu.framework.aspect.annotation.Auth)")
-    public APIres populateCredentials(ProceedingJoinPoint joinPoint) throws Throwable {
+    public ApiResponse populateCredentials(ProceedingJoinPoint joinPoint) throws Throwable {
     	
     	PreProcessObject preProcessObject = preProcess(joinPoint);
     	
@@ -99,7 +99,7 @@ public abstract class CoreControllerAspect {
     		return preProcessObject.error;
     	}
     	
-        return (APIres) joinPoint.proceed(preProcessObject.arguments);
+        return (ApiResponse) joinPoint.proceed(preProcessObject.arguments);
         
     }
     
@@ -212,9 +212,9 @@ public abstract class CoreControllerAspect {
     	Credentials shib;
     	String requestId;
     	Object[] arguments;
-    	APIres error;
+    	ApiResponse error;
     	
-    	public PreProcessObject(APIres error) {
+    	public PreProcessObject(ApiResponse error) {
     		this.error = error;
     	}
     	

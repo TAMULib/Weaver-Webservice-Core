@@ -30,7 +30,7 @@ import org.springframework.stereotype.Component;
  *
  */
 @Component
-public class CorsFilter implements Filter {
+public class CoreCorsFilter implements Filter {
 
 	@Value("${app.security.allow-access}")
 	private String[] hosts;
@@ -59,6 +59,7 @@ public class CorsFilter implements Filter {
 		response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
 		response.setHeader("Access-Control-Max-Age", "3600");
 		response.setHeader("Access-Control-Allow-Headers", "Content-Type, x-requested-with, jwt, data");
+		
 		chain.doFilter(req, res);
 	}
 

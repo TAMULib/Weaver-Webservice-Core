@@ -7,7 +7,7 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.controller.interceptor;
+package edu.tamu.framework.interceptor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,12 +32,12 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Component;
 
 import edu.tamu.framework.context.ApplicationContextProvider;
-import edu.tamu.framework.model.APIres;
+import edu.tamu.framework.model.ApiResponse;
 import edu.tamu.framework.model.Credentials;
 import edu.tamu.framework.model.RequestId;
 import edu.tamu.framework.model.WebSocketRequest;
-import edu.tamu.framework.util.JwtService;
-import edu.tamu.framework.util.WebSocketRequestUtility;
+import edu.tamu.framework.service.WebSocketRequestService;
+import edu.tamu.framework.util.JwtUtility;
 
 /**
  * Stomp interceptor. Checks command, decodes and verifies token, 
@@ -53,10 +53,10 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 	String[] admins;
 	
 	@Autowired
-	private JwtService jwtService;
+	private JwtUtility jwtService;
 	
 	@Autowired
-	private WebSocketRequestUtility webSocketRequestUtility;
+	private WebSocketRequestService webSocketRequestUtility;
 	
 	@Autowired
 	private SecurityContext securityContext;
@@ -105,13 +105,13 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 	    		System.out.println("\n" + securityContext.getAuthentication().getName() + "\n");
 	    		
 	    		System.out.println("JWT error: " + error);
-	    		((SimpMessagingTemplate) ApplicationContextProvider.appContext.getBean("brokerMessagingTemplate")).convertAndSend(accessor.getDestination().replace("ws", "queue") + "-user" + accessor.getSessionId(), new APIres("failure", error, new RequestId(requestId)));
+	    		((SimpMessagingTemplate) ApplicationContextProvider.appContext.getBean("brokerMessagingTemplate")).convertAndSend(accessor.getDestination().replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse("failure", error, new RequestId(requestId)));
 	    		return null;
 	    	}
 	    	
 	    	if(jwtService.isExpired(credentialMap)) {
 				System.out.println("Token expired!!!");	
-				((SimpMessagingTemplate) ApplicationContextProvider.appContext.getBean("brokerMessagingTemplate")).convertAndSend(accessor.getDestination().replace("ws", "queue") + "-user" + accessor.getSessionId(), new APIres("refresh", "EXPIRED_JWT", new RequestId(requestId)));
+				((SimpMessagingTemplate) ApplicationContextProvider.appContext.getBean("brokerMessagingTemplate")).convertAndSend(accessor.getDestination().replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse("refresh", "EXPIRED_JWT", new RequestId(requestId)));
 				return null;		
 			}
 			

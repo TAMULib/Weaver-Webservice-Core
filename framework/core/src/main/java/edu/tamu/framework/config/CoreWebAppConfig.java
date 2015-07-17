@@ -32,7 +32,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-import edu.tamu.framework.controller.interceptor.RestInterceptor;
+import edu.tamu.framework.interceptor.CoreRestInterceptor;
 
 /** 
  * Web MVC Configuration for application controller.
@@ -43,7 +43,7 @@ import edu.tamu.framework.controller.interceptor.RestInterceptor;
 @Configuration
 @ComponentScan(basePackages = "edu.tamu.app.controller")
 @ConfigurationProperties(prefix="app.controller")
-public class WebAppConfig extends WebMvcConfigurerAdapter{	
+public class CoreWebAppConfig extends WebMvcConfigurerAdapter{	
 
 	/**
 	 * Configures message converters.
@@ -108,8 +108,8 @@ public class WebAppConfig extends WebMvcConfigurerAdapter{
 	 *
 	 */
 	@Bean
-	public RestInterceptor restInterceptor() {
-	    return new RestInterceptor();
+	public CoreRestInterceptor restInterceptor() {
+	    return new CoreRestInterceptor();
 	}
 
 	/**

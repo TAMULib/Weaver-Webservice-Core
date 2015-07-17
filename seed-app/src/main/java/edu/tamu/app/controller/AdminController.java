@@ -25,7 +25,7 @@ import edu.tamu.app.model.repo.UserRepo;
 import edu.tamu.framework.aspect.annotation.Auth;
 import edu.tamu.framework.aspect.annotation.ReqId;
 import edu.tamu.framework.aspect.annotation.Shib;
-import edu.tamu.framework.model.APIres;
+import edu.tamu.framework.model.ApiResponse;
 import edu.tamu.framework.model.Credentials;
 import edu.tamu.framework.model.RequestId;
 
@@ -51,7 +51,7 @@ public class AdminController {
 	@MessageMapping("/confirm-user")
 	@SendToUser
 	@Auth(role="ROLE_ADMIN")
-	public APIres confirmUser(@Shib Object shibObj, @ReqId String requestId) throws Exception {
+	public ApiResponse confirmUser(@Shib Object shibObj, @ReqId String requestId) throws Exception {
 
 		Credentials shib = (Credentials) shibObj;
 		
@@ -69,14 +69,14 @@ public class AdminController {
 			
 			userMap.put("list", userRepo.findAll());
 			
-			this.simpMessagingTemplate.convertAndSend("/channel/users", new APIres("success", userMap, new RequestId(requestId)));
+			this.simpMessagingTemplate.convertAndSend("/channel/users", new ApiResponse("success", userMap, new RequestId(requestId)));
 			
-			return new APIres("success", userMap, new RequestId(requestId));
+			return new ApiResponse("success", userMap, new RequestId(requestId));
 		}
 		
 		userMap.put("list", userRepo.findAll());
 				
-		return new APIres("success", userMap, new RequestId(requestId));
+		return new ApiResponse("success", userMap, new RequestId(requestId));
 	}
 	
 }

@@ -36,7 +36,7 @@ import static org.apache.commons.codec.binary.Base64.encodeBase64URLSafeString;;
  *
  */
 @Service
-public class  JwtService {
+public class  JwtUtility {
 	
 	@Value("${app.security.jwt.secret_key}") 
 	private String secret_key;
@@ -49,7 +49,7 @@ public class  JwtService {
 	 * Constructor.
 	 *
 	 */
-	public JwtService() {
+	public JwtUtility() {
 		
 	}
 	

@@ -29,7 +29,7 @@ import edu.tamu.framework.aspect.annotation.Auth;
 import edu.tamu.framework.aspect.annotation.Data;
 import edu.tamu.framework.aspect.annotation.ReqId;
 import edu.tamu.framework.aspect.annotation.Shib;
-import edu.tamu.framework.model.APIres;
+import edu.tamu.framework.model.ApiResponse;
 import edu.tamu.framework.model.Credentials;
 import edu.tamu.framework.model.RequestId;
 
@@ -66,14 +66,14 @@ public class UserController {
 	@MessageMapping("/credentials")
 	@SendToUser
 	@Auth
-	public APIres credentials(@Shib Object credentials, @ReqId String requestId) throws Exception {
+	public ApiResponse credentials(@Shib Object credentials, @ReqId String requestId) throws Exception {
 		
 		Credentials shib = (Credentials) credentials;
 		shib.setRole(userRepo.getUserByUin(Long.parseLong(shib.getUin())).getRole());
 		
 		if(shib != null && userRepo.getUserByUin(Long.parseLong(shib.getUin())) == null) 
-			return new APIres("failure", "user not registered");		
-		return shib != null ? new APIres("success", shib, new RequestId(requestId)) : new APIres("refresh", "EXPIRED_JWT", new RequestId(requestId));
+			return new ApiResponse("failure", "user not registered");		
+		return shib != null ? new ApiResponse("success", shib, new RequestId(requestId)) : new ApiResponse("refresh", "EXPIRED_JWT", new RequestId(requestId));
 	}
 	
 	/**
@@ -89,12 +89,12 @@ public class UserController {
 	@MessageMapping("/all")
 	@SendToUser
 	@Auth(role="ROLE_MANAGER")
-	public APIres allUsers(@ReqId String requestId) throws Exception {
+	public ApiResponse allUsers(@ReqId String requestId) throws Exception {
 			
 		Map<String,List<AppUser>> map = new HashMap<String,List<AppUser>>();
 		map.put("list", userRepo.findAll());	
 		
-		return new APIres("success", map, new RequestId(requestId));
+		return new ApiResponse("success", map, new RequestId(requestId));
 	}
 	
 	/**
@@ -110,7 +110,7 @@ public class UserController {
 	@MessageMapping("/update-role")
 	@SendToUser
 	@Auth(role="ROLE_MANAGER")
-	public APIres updateRole(@Data String data, @ReqId String requestId) throws Exception {		
+	public ApiResponse updateRole(@Data String data, @ReqId String requestId) throws Exception {		
 		
 		Map<String,String> map = new HashMap<String,String>();		
 		try {
@@ -126,9 +126,9 @@ public class UserController {
 		userMap.put("list", userRepo.findAll());
 		userMap.put("changedUserUin", map.get("uin"));
 		
-		this.simpMessagingTemplate.convertAndSend("/channel/users", new APIres("success", userMap, new RequestId(requestId)));
+		this.simpMessagingTemplate.convertAndSend("/channel/users", new ApiResponse("success", userMap, new RequestId(requestId)));
 		
-		return new APIres("success", "ok", new RequestId(requestId));
+		return new ApiResponse("success", "ok", new RequestId(requestId));
 	}
 
 }

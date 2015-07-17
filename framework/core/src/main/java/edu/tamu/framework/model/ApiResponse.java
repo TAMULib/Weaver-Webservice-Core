@@ -18,7 +18,7 @@ import java.util.HashMap;
  * @author 
  *
  */
-public class APIres {
+public class ApiResponse {
 	
 	public String response;
     public HashMap<String, Object> content;
@@ -31,7 +31,7 @@ public class APIres {
      * @return 
    	 * 
    	 */
-     public APIres(String response, Object ... objects) {
+     public ApiResponse(String response, Object ... objects) {
 	   this.response = response;
 	   
 	   HashMap<String, Object> content = new HashMap<String, Object>();
@@ -59,7 +59,7 @@ public class APIres {
         * @return 
         * 
         */
-       public APIres(String response) {
+       public ApiResponse(String response) {
            this.response = response;
            this.content = null;
        }

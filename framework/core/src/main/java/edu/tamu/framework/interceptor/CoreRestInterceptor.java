@@ -7,7 +7,7 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.controller.interceptor;
+package edu.tamu.framework.interceptor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,8 +32,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.tamu.framework.model.Credentials;
 import edu.tamu.framework.model.HttpRequest;
-import edu.tamu.framework.util.HttpRequestUtility;
-import edu.tamu.framework.util.JwtService;
+import edu.tamu.framework.service.HttpRequestService;
+import edu.tamu.framework.util.JwtUtility;
 
 /**
  * REST interceptor. Intercepts AJAX request to decode and 
@@ -43,7 +43,7 @@ import edu.tamu.framework.util.JwtService;
  *
  */
 @Component
-public class RestInterceptor extends HandlerInterceptorAdapter {
+public class CoreRestInterceptor extends HandlerInterceptorAdapter {
 
 	@Value("${app.security.jwt.secret_key}")
 	private String secret_key;
@@ -55,10 +55,10 @@ public class RestInterceptor extends HandlerInterceptorAdapter {
 	private ObjectMapper objectMapper;
 	
 	@Autowired
-	private JwtService jwtService;
+	private JwtUtility jwtService;
 	
 	@Autowired
-	private HttpRequestUtility httpRequestUtility;
+	private HttpRequestService httpRequestUtility;
 	
 	@Autowired
 	private SecurityContext securityContext;

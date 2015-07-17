@@ -4,8 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import edu.tamu.app.model.AppUser;
-
-import edu.tamu.framework.controller.interceptor.CoreStompInterceptor;
+import edu.tamu.framework.interceptor.CoreStompInterceptor;
 import edu.tamu.framework.model.Credentials;
 import edu.tamu.app.model.repo.UserRepo;
 

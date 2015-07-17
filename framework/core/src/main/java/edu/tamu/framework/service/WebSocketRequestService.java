@@ -1,4 +1,4 @@
-package edu.tamu.framework.util;
+package edu.tamu.framework.service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import edu.tamu.framework.model.WebSocketRequest;
 
 @Service
-public abstract class WebSocketRequestUtility {
+public abstract class WebSocketRequestService {
 	
 	protected List<WebSocketRequest> requests = new ArrayList<WebSocketRequest>();
 
