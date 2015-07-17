@@ -49,7 +49,7 @@ import edu.tamu.framework.util.WebSocketRequestUtility;
  */
 @Component
 @Aspect
-public abstract class ControllerAspect {
+public abstract class CoreControllerAspect {
 	
 	@Value("${app.security.jwt.secret_key}") 
 	private String secret_key;
