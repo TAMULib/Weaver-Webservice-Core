@@ -56,7 +56,7 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 	private JwtUtility jwtService;
 	
 	@Autowired
-	private WebSocketRequestService webSocketRequestUtility;
+	private WebSocketRequestService webSocketRequestService;
 	
 	@Autowired
 	private SecurityContext securityContext;
@@ -133,7 +133,7 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 			
 			Message<?> newMessage = MessageBuilder.withPayload("VALID_JWT").setHeaders(accessor).build();
 			
-			webSocketRequestUtility.addRequest(new WebSocketRequest(newMessage, accessor.getDestination(), securityContext.getAuthentication().getName()));
+			webSocketRequestService.addRequest(new WebSocketRequest(newMessage, accessor.getDestination(), securityContext.getAuthentication().getName()));
 			
 			return newMessage;
 			

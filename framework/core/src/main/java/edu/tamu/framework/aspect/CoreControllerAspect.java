@@ -64,7 +64,7 @@ public abstract class CoreControllerAspect {
 	private SimpMessagingTemplate simpMessagingTemplate;
 	
 	@Autowired
-	private WebSocketRequestService webSocketRequestUtility;
+	private WebSocketRequestService webSocketRequestService;
 	
 	@Autowired
 	private HttpRequestService httpRequestUtility;
@@ -131,7 +131,7 @@ public abstract class CoreControllerAspect {
     		
     	} else {
     		
-    		message = webSocketRequestUtility.getAndRemoveMessageByDestinationAndUser(method.getAnnotation(MessageMapping.class).value()[0], securityContext.getAuthentication().getName());
+    		message = webSocketRequestService.getAndRemoveMessageByDestinationAndUser(method.getAnnotation(MessageMapping.class).value()[0], securityContext.getAuthentication().getName());
     		
     		accessor = StompHeaderAccessor.wrap(message);
     		

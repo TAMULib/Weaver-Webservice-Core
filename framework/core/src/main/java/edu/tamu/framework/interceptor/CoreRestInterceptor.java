@@ -58,7 +58,7 @@ public class CoreRestInterceptor extends HandlerInterceptorAdapter {
 	private JwtUtility jwtService;
 	
 	@Autowired
-	private HttpRequestService httpRequestUtility;
+	private HttpRequestService httpRequestService;
 	
 	@Autowired
 	private SecurityContext securityContext;
@@ -129,7 +129,7 @@ public class CoreRestInterceptor extends HandlerInterceptorAdapter {
 		
 		securityContext.setAuthentication(auth);		
 		
-		httpRequestUtility.addRequest(new HttpRequest(request, request.getServletPath(), shib.getNetid()));
+		httpRequestService.addRequest(new HttpRequest(request, request.getServletPath(), shib.getNetid()));
 		
         return true;
     }
