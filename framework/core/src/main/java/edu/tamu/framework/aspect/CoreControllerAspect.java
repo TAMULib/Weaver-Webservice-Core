@@ -67,7 +67,7 @@ public abstract class CoreControllerAspect {
 	private WebSocketRequestService webSocketRequestService;
 	
 	@Autowired
-	private HttpRequestService httpRequestUtility;
+	private HttpRequestService httpRequestService;
 	
 	@Autowired
 	private SecurityContext securityContext;
@@ -123,7 +123,7 @@ public abstract class CoreControllerAspect {
         
     	if (RequestContextHolder.getRequestAttributes() != null) {
     		
-    		request = httpRequestUtility.getAndRemoveRequestByDestinationAndUser(method.getAnnotation(RequestMapping.class).value()[0], securityContext.getAuthentication().getName());
+    		request = httpRequestService.getAndRemoveRequestByDestinationAndUser(method.getAnnotation(RequestMapping.class).value()[0], securityContext.getAuthentication().getName());
     		
     		shib = (Credentials) request.getAttribute("shib");
     		
