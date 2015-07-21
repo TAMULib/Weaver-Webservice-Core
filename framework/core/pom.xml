@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>edu.tamu.framework</groupId>
   <artifactId>webservice-framework-core</artifactId>
-  <version>1.0</version>
+  <version>1.0.0-SNAPSHOT</version>
   <name>webservice-framework-core</name>
   <url>http://maven.apache.org</url>
   
@@ -25,5 +25,16 @@
 			</plugin>
 		</plugins>
 	</build>
+	
+ 	<distributionManagement>
+	 <repository>
+			<id>tamu-releases</id>
+			<url>https://maven.library.tamu.edu/content/repositories/releases</url>
+	  </repository>
+	  <snapshotRepository>
+	     <id>tamu-snapshots</id>
+	     <url>https://maven.library.tamu.edu/content/repositories/snapshots/</url>
+	  </snapshotRepository>
+	</distributionManagement>
  
 </project>
