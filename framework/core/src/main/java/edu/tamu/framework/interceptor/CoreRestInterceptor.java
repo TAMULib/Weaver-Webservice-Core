@@ -10,6 +10,7 @@
 package edu.tamu.framework.interceptor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -51,6 +52,9 @@ public class CoreRestInterceptor extends HandlerInterceptorAdapter {
 	@Value("${app.authority.admins}")
 	private String[] admins;
 	
+	@Value("${app.whitelist}")
+	private String[] whitelist;
+	
 	@Autowired
 	private ObjectMapper objectMapper;
 	
@@ -79,27 +83,50 @@ public class CoreRestInterceptor extends HandlerInterceptorAdapter {
 	@Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 				
-		Map<String, String> credentialMap = jwtService.validateJWT(request.getHeader("jwt"));
+		Map<String, String> credentialMap = new HashMap<String, String>();
 		
-		String error = credentialMap.get("ERROR"); 
-    	if(error != null) {
-    		
-    		System.out.println("JWT error: " + error);
-    		
-    		switch(error) {
-    			case "MISSING_JWT":
-    				throw new MissingJwtException();	
-    			case "INVALID_JWT":
-    				throw new InvalidJwtException();
-    		}
-    		
-    	}
-    	
-    	if(jwtService.isExpired(credentialMap)) {
-    		System.out.println("Token expired!");
-			throw new ExpiredJwtException();		
+		if(request.getHeader("jwt") == null) {
+			
+			String ip = request.getHeader("X-FORWARDED-FOR");
+			if (ip == null) {
+				ip = request.getRemoteAddr();
+			}
+			
+			boolean accepted = false;
+			
+			for(String accept : whitelist) {
+				if(ip.equals(accept)) {					
+					credentialMap.put("lastName", "Admin");
+					credentialMap.put("firstName", "Server");
+					credentialMap.put("netid", ip);
+					credentialMap.put("affiliation", "Server");
+					credentialMap.put("uin", "123456789");
+					credentialMap.put("exp", "1436982214754");
+					credentialMap.put("email", "helpdesk@library.tamu.edu");
+					accepted = true;
+					break;
+				}
+			}
+			
+			if(!accepted) {
+				throw new MissingJwtException();
+			}
+			
 		}
-		
+		else {
+			credentialMap = jwtService.validateJWT(request.getHeader("jwt"));
+			
+			String error = credentialMap.get("ERROR"); 
+	    	if(error != null) {	    		
+	    		System.out.println("JWT error: " + error);	    		
+	    		throw new InvalidJwtException();	    		
+	    	}
+	    	
+	    	if(jwtService.isExpired(credentialMap)) {
+	    		System.out.println("Token expired!");
+				throw new ExpiredJwtException();		
+			}
+		}		
 			
 		Credentials shib = new Credentials(credentialMap);
 		String shibUin = shib.getUin();
