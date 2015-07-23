@@ -26,14 +26,14 @@
 	</build>
 	
  	<distributionManagement>
-	 <repository>
+		<repository>
 			<id>tamu-releases</id>
 			<url>https://maven.library.tamu.edu/content/repositories/releases</url>
-	  </repository>
-	  <snapshotRepository>
-	     <id>tamu-snapshots</id>
-	     <url>https://maven.library.tamu.edu/content/repositories/snapshots/</url>
-	  </snapshotRepository>
+	  	</repository>
+	  	<snapshotRepository>
+	     	<id>tamu-snapshots</id>
+	     	<url>https://maven.library.tamu.edu/content/repositories/snapshots/</url>
+	  	</snapshotRepository>
 	</distributionManagement>
  
 </project>
