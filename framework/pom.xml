@@ -16,8 +16,28 @@
 	<modules>
 		<module>core</module>
 	</modules>
+	
+	<packaging>pom</packaging>
+	
+	<repositories>
+		<repository>
+			<id>spring-releases</id>
+			<url>https://repo.spring.io/libs-release</url>
+		</repository>
+	</repositories>
+	
+	<distributionManagement>
+	 	<repository>
+			<id>tamu-releases</id>
+			<url>https://maven.library.tamu.edu/content/repositories/releases</url>
+	  	</repository>
+	  	<snapshotRepository>
+	     	<id>tamu-snapshots</id>
+	     	<url>https://maven.library.tamu.edu/content/repositories/snapshots/</url>
+	  	</snapshotRepository>
+	</distributionManagement>
 
-  <dependencies>
+  	<dependencies>
   		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-websocket</artifactId>
@@ -94,26 +114,6 @@
 		        </exclusion>
 		    </exclusions>
 		</dependency>
-  </dependencies>
-	  
-	<repositories>
-		<repository>
-			<id>spring-releases</id>
-			<url>https://repo.spring.io/libs-release</url>
-		</repository>
-	</repositories>
-	
-	<distributionManagement>
-	 <repository>
-			<id>tamu-releases</id>
-			<url>https://maven.library.tamu.edu/content/repositories/releases</url>
-	  </repository>
-	  <snapshotRepository>
-	     <id>tamu-snapshots</id>
-	     <url>https://maven.library.tamu.edu/content/repositories/snapshots/</url>
-	  </snapshotRepository>
-	</distributionManagement>
-	
-
-	<packaging>pom</packaging>
+  	</dependencies>
+  	
 </project>
