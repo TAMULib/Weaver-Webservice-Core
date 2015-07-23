@@ -10,6 +10,7 @@
 package edu.tamu.framework.interceptor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -82,7 +83,7 @@ public class CoreRestInterceptor extends HandlerInterceptorAdapter {
 	@Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 				
-		Map<String, String> credentialMap = jwtService.validateJWT(request.getHeader("jwt"));
+		Map<String, String> credentialMap = new HashMap<String, String>();
 		
 		if(request.getHeader("jwt") == null) {
 			
