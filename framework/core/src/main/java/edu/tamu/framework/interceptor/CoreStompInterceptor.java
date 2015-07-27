@@ -31,7 +31,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Component;
 
-import edu.tamu.framework.context.ApplicationContextProvider;
 import edu.tamu.framework.model.ApiResponse;
 import edu.tamu.framework.model.Credentials;
 import edu.tamu.framework.model.RequestId;
@@ -60,6 +59,9 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 	
 	@Autowired
 	private SecurityContext securityContext;
+	
+	@Autowired 
+	private SimpMessagingTemplate simpMessagingTemplate; 
 	
 	private List<String> currentUsers = new ArrayList<String>();
 	
@@ -105,13 +107,13 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 	    		System.out.println("\n" + securityContext.getAuthentication().getName() + "\n");
 	    		
 	    		System.out.println("JWT error: " + error);
-	    		((SimpMessagingTemplate) ApplicationContextProvider.appContext.getBean("brokerMessagingTemplate")).convertAndSend(accessor.getDestination().replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse("failure", error, new RequestId(requestId)));
+	    		simpMessagingTemplate.convertAndSend(accessor.getDestination().replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse("failure", error, new RequestId(requestId)));
 	    		return null;
 	    	}
 	    	
 	    	if(jwtService.isExpired(credentialMap)) {
 				System.out.println("Token expired!!!");	
-				((SimpMessagingTemplate) ApplicationContextProvider.appContext.getBean("brokerMessagingTemplate")).convertAndSend(accessor.getDestination().replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse("refresh", "EXPIRED_JWT", new RequestId(requestId)));
+				simpMessagingTemplate.convertAndSend(accessor.getDestination().replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse("refresh", "EXPIRED_JWT", new RequestId(requestId)));
 				return null;		
 			}
 			

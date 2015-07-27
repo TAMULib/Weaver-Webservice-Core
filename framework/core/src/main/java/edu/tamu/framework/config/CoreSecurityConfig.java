@@ -24,7 +24,7 @@ import org.springframework.security.config.annotation.web.servlet.configuration.
 @Configuration
 @EnableWebSecurity
 @EnableWebMvcSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class CoreSecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	/**
 	 * Configures web security. Disables cross-site request forgery.
