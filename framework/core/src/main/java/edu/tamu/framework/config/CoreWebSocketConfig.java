@@ -10,6 +10,8 @@
 package edu.tamu.framework.config;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
+import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.AbstractWebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -23,6 +25,7 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
  */
 @Configuration
 @EnableWebSocketMessageBroker
+@Component
 public abstract class CoreWebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 	
 	/**
@@ -51,6 +54,6 @@ public abstract class CoreWebSocketConfig extends AbstractWebSocketMessageBroker
 		registry.addEndpoint("/user").withSockJS();
 		registry.addEndpoint("/admin").withSockJS();
 	}
-
+	
 }
 

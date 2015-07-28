@@ -60,12 +60,14 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 	@Autowired
 	private SecurityContext securityContext;
 	
-	@Autowired 
-	private SimpMessagingTemplate simpMessagingTemplate; 
-	
 	private List<String> currentUsers = new ArrayList<String>();
 	
+	private SimpMessagingTemplate simpMessagingTemplate;
 	
+	public CoreStompInterceptor(SimpMessagingTemplate simpMessagingTemplate) {
+		this.simpMessagingTemplate = simpMessagingTemplate;
+	}
+		
 	/**
 	 * Override method to perform preprocessing before sending message.
 	 * 
@@ -206,5 +208,5 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 	}
 	
 	public abstract Credentials confirmCreateUser(Credentials shib);
-
+	
 }
