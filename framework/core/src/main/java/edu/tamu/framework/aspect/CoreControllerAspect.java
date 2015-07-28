@@ -24,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Component;
@@ -59,9 +58,6 @@ public abstract class CoreControllerAspect {
 	
 	@Autowired
 	public ObjectMapper objectMapper;
-	
-	@Autowired 
-	private SimpMessagingTemplate simpMessagingTemplate;
 	
 	@Autowired
 	private WebSocketRequestService webSocketRequestService;
