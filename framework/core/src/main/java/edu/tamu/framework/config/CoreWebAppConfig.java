@@ -41,7 +41,7 @@ import edu.tamu.framework.interceptor.CoreRestInterceptor;
  *
  */
 @Configuration
-@ComponentScan(basePackages = {"edu.tamu.framework.config", "edu.tamu.framework.interceptor", "edu.tamu.framework.controller", "edu.tamu.app.controller"})
+@ComponentScan(basePackages = {"edu.tamu.framework.config", "edu.tamu.framework.interceptor", "edu.tamu.framework.controller"})
 @ConfigurationProperties(prefix="app.controller")
 public class CoreWebAppConfig extends WebMvcConfigurerAdapter {	
 
