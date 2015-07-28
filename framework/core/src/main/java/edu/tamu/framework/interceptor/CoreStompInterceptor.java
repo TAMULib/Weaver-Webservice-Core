@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHeaders;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptorAdapter;
@@ -37,6 +36,7 @@ import edu.tamu.framework.model.RequestId;
 import edu.tamu.framework.model.WebSocketRequest;
 import edu.tamu.framework.service.WebSocketRequestService;
 import edu.tamu.framework.util.JwtUtility;
+import edu.tamu.framework.util.MessagingUtility;
 
 /**
  * Stomp interceptor. Checks command, decodes and verifies token, 
@@ -60,14 +60,11 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 	@Autowired
 	private SecurityContext securityContext;
 	
+	@Autowired
+	private MessagingUtility messagingUtility;
+	
 	private List<String> currentUsers = new ArrayList<String>();
 	
-	private SimpMessagingTemplate simpMessagingTemplate;
-	
-	public CoreStompInterceptor(SimpMessagingTemplate simpMessagingTemplate) {
-		this.simpMessagingTemplate = simpMessagingTemplate;
-	}
-		
 	/**
 	 * Override method to perform preprocessing before sending message.
 	 * 
@@ -109,13 +106,13 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 	    		System.out.println("\n" + securityContext.getAuthentication().getName() + "\n");
 	    		
 	    		System.out.println("JWT error: " + error);
-	    		simpMessagingTemplate.convertAndSend(accessor.getDestination().replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse("failure", error, new RequestId(requestId)));
+	    		messagingUtility.convertAndSend(accessor.getDestination().replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse("failure", error, new RequestId(requestId)));
 	    		return null;
 	    	}
 	    	
 	    	if(jwtService.isExpired(credentialMap)) {
 				System.out.println("Token expired!!!");	
-				simpMessagingTemplate.convertAndSend(accessor.getDestination().replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse("refresh", "EXPIRED_JWT", new RequestId(requestId)));
+				messagingUtility.convertAndSend(accessor.getDestination().replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse("refresh", "EXPIRED_JWT", new RequestId(requestId)));
 				return null;		
 			}
 			
