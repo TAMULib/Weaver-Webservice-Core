@@ -41,9 +41,9 @@ import edu.tamu.framework.interceptor.CoreRestInterceptor;
  *
  */
 @Configuration
-@ComponentScan(basePackages = "edu.tamu.app.controller")
+@ComponentScan(basePackages = {"edu.tamu.framework.config", "edu.tamu.framework.interceptor", "edu.tamu.framework.controller", "edu.tamu.app.controller"})
 @ConfigurationProperties(prefix="app.controller")
-public class CoreWebAppConfig extends WebMvcConfigurerAdapter{	
+public class CoreWebAppConfig extends WebMvcConfigurerAdapter {	
 
 	/**
 	 * Configures message converters.
@@ -85,8 +85,7 @@ public class CoreWebAppConfig extends WebMvcConfigurerAdapter{
 	@Bean
 	public ObjectMapper objectMapper() {
 	    ObjectMapper objectMapper = new ObjectMapper();
-	    objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-	    
+	    objectMapper.enable(SerializationFeature.INDENT_OUTPUT);	    
 	    return objectMapper;
 	}
 	
@@ -122,5 +121,5 @@ public class CoreWebAppConfig extends WebMvcConfigurerAdapter{
 	public void addInterceptors(InterceptorRegistry registry) {
 	    registry.addInterceptor(restInterceptor()).addPathPatterns("/rest/**");
 	}
-	
+		
 }
