@@ -99,7 +99,7 @@ public class CoreWebAppConfig extends WebMvcConfigurerAdapter {
 	public SecurityContext securityContext() {
 		return SecurityContextHolder.getContext();
 	}
-	    
+		    
     /**
 	 * Rest interceptor bean.
 	 *
