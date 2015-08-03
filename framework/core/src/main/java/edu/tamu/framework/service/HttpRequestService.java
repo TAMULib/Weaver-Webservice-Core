@@ -32,7 +32,7 @@ public class HttpRequestService {
 	
 	public synchronized HttpServletRequest getAndRemoveRequestByDestinationAndUser(String destination, String user) {
 		HttpServletRequest httpServletRequest = null;
-		for(int index = 0; index <= requests.size(); index++) {
+		for(int index = 0; index < requests.size(); index++) {
 			HttpRequest request = requests.get(index);
 			if(request.getUser().equals(user) && request.getDestination().contains(destination)) {
 				httpServletRequest = request.getRequest();
