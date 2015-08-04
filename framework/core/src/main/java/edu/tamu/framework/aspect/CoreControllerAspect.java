@@ -135,8 +135,10 @@ public abstract class CoreControllerAspect {
     		
     		requestId = accessor.getNativeHeader("id").get(0);
     		shib =(Credentials) accessor.getSessionAttributes().get("shib");
-    		    		
-    		data = accessor.getNativeHeader("data").get(0).toString();
+
+    		if(accessor.getNativeHeader("data") != null) {
+    			data = accessor.getNativeHeader("data").get(0).toString();
+    		}
     	}  
     	    	
 		shib = authorizeRole(shib);
