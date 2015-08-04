@@ -118,7 +118,7 @@ public abstract class CoreControllerAspect {
 		
     	if (RequestContextHolder.getRequestAttributes() != null) {
     		
-    		String destination = "/" + clazz.getAnnotationsByType(RequestMapping.class)[0].value()[0] + "" + method.getAnnotation(RequestMapping.class).value()[0];
+    		String destination = clazz.getAnnotationsByType(RequestMapping.class)[0].value()[0] + "" + method.getAnnotation(RequestMapping.class).value()[0];
     		String user = securityContext.getAuthentication().getName();
     		
     		request = httpRequestService.getAndRemoveRequestByDestinationAndUser(destination, user);
