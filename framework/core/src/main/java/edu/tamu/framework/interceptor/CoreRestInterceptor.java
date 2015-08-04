@@ -90,7 +90,11 @@ public class CoreRestInterceptor extends HandlerInterceptorAdapter {
 			
 			String ip = request.getHeader("X-FORWARDED-FOR");
 			
-			System.out.println("X-FORWARDED-FOR: " + ip);
+			if(ip == null) {
+				ip = request.getRemoteAddr();
+			}
+			
+			System.out.println("Referrer: " + ip);
 			
 			Enumeration<String> headers = request.getHeaderNames();
 			
