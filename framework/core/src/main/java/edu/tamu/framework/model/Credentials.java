@@ -27,6 +27,8 @@ public class Credentials {
 	private String email;
 	private String role;
 		
+	public Credentials() {}
+	
 	/**
 	 * Constructor
 	 * 
