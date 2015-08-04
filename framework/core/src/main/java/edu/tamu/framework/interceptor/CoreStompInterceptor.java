@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
-import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
@@ -76,14 +75,13 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 	 * 
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public Message<?> preSend(Message<?> message, MessageChannel channel) {
 				
 		StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 		StompCommand command = accessor.getCommand();
 		
 		if(accessor.getDestination() != null) {
-		  System.out.println(accessor.getDestination());
+			System.out.println(accessor.getDestination());
 		}
 		
 		System.out.println(command.name());
@@ -92,18 +90,18 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 			
 			String requestId = accessor.getNativeHeader("id").get(0);
 			
-			MessageHeaders headers = message.getHeaders();	
-			Map<String, Object> headerMap = (Map<String, Object>) headers.get("nativeHeaders");		
+//			MessageHeaders headers = message.getHeaders();	
+//			Map<String, Object> headerMap = (Map<String, Object>) headers.get("nativeHeaders");		
 			
-			String jwt = headerMap.get("jwt").toString();			
-			jwt = jwt.substring(1, jwt.length()-1);
+//			String jwt = headerMap.get("jwt").toString();	
+//			jwt = jwt.substring(1, jwt.length()-1);
+			
+			String jwt = accessor.getNativeHeader("jwt").get(0);
 			
 			Map<String, String> credentialMap = jwtService.validateJWT(jwt);
 			
 			String error = credentialMap.get("ERROR"); 
 	    	if(error != null) {
-	    		
-	    		
 	    		System.out.println("\n" + securityContext.getAuthentication().getName() + "\n");
 	    		
 	    		System.out.println("JWT error: " + error);
@@ -116,8 +114,7 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 				simpMessagingTemplate.convertAndSend(accessor.getDestination().replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse("refresh", "EXPIRED_JWT", new RequestId(requestId)));
 				return null;		
 			}
-			
-			
+						
 			Credentials shib = new Credentials(credentialMap);
 			String shibUin = shib.getUin();
 			for(String uin : admins) {
@@ -125,8 +122,7 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 					shib.setRole("ROLE_ADMIN");					
 				}
 			}
-			
-						
+									
 			Map<String, Object> shibMap = new HashMap<String, Object>();
 			
 			shibMap.put("shib", shib);
@@ -134,21 +130,22 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 			accessor.setSessionAttributes(shibMap);
 			
 			Message<?> newMessage = MessageBuilder.withPayload("VALID_JWT").setHeaders(accessor).build();
-			
+						
 			webSocketRequestService.addRequest(new WebSocketRequest(newMessage, accessor.getDestination(), securityContext.getAuthentication().getName()));
 			
-			return newMessage;
-			
+			return newMessage;			
 		}
 		else if("CONNECT".equals(command.name())) {
 			
-			MessageHeaders headers = message.getHeaders();
-		    Map<String, Object> headerMap = (Map<String, Object>) headers.get("nativeHeaders");
-		    String jwt = headerMap.get("jwt").toString();
+//			MessageHeaders headers = message.getHeaders();
+//		    Map<String, Object> headerMap = (Map<String, Object>) headers.get("nativeHeaders");
+//		    String jwt = headerMap.get("jwt").toString();
 		    
+		    String jwt = accessor.getNativeHeader("jwt").get(0);
+		    		    
 		    if(!"[undefined]".equals(jwt)) {
 		    	
-		    	jwt = jwt.substring(1, jwt.length()-1);
+		    	//jwt = jwt.substring(1, jwt.length()-1);
 		    	
 		    	Map<String, String> credentialMap = jwtService.validateJWT(jwt);
 		    	
@@ -165,8 +162,7 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 		    		shib = confirmCreateUser(shib);
 		    		
 		    	}
-		    	
-		    	
+		    			    	
 				List<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
 				
 				grantedAuthorities.add(new SimpleGrantedAuthority(shib.getRole()));
@@ -182,7 +178,7 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 				auth.setAuthenticated(true);
 				
 				securityContext.setAuthentication(auth);
-				
+								
 		    }
 		    
 		}
