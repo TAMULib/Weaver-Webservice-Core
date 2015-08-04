@@ -116,10 +116,13 @@ public abstract class CoreControllerAspect {
     	MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
         Class<?> clazz = methodSignature.getDeclaringType();
         Method method = clazz.getDeclaredMethod(methodSignature.getName(), methodSignature.getParameterTypes());
-        
+		
     	if (RequestContextHolder.getRequestAttributes() != null) {
     		
-    		request = httpRequestService.getAndRemoveRequestByDestinationAndUser(method.getAnnotation(RequestMapping.class).value()[0], securityContext.getAuthentication().getName());
+    		String destination = "/" + clazz.getAnnotationsByType(RequestMapping.class)[0].value()[0] + "" + method.getAnnotation(RequestMapping.class).value()[0];
+    		String user = securityContext.getAuthentication().getName();
+    		
+    		request = httpRequestService.getAndRemoveRequestByDestinationAndUser(destination, user);
     		
     		shib = (Credentials) request.getAttribute("shib");
     		
@@ -157,7 +160,7 @@ public abstract class CoreControllerAspect {
   		
   		for(String arg : argMap.keySet()) {
   	
-  			switch(arg) {	  			
+  			switch(arg) {
 	  			case "Shib": {
 	  				arguments[argMap.get(arg)] = shib;
 	  			} break;
