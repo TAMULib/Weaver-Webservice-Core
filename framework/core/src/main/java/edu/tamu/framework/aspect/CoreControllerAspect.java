@@ -108,8 +108,7 @@ public abstract class CoreControllerAspect {
     	
     	Credentials shib = null;
     	String requestId = null;
-    	String data = null;
-    	
+    	String data = null;    	
     	
     	Object[] arguments = joinPoint.getArgs();
     	

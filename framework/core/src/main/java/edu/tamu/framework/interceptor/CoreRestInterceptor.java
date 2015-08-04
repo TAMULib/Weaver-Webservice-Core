@@ -147,17 +147,17 @@ public class CoreRestInterceptor extends HandlerInterceptorAdapter {
 		if(("ROLE_ANONYMOUS").equals(shib.getRole())) {
 			shib.setNetid(shib.getNetid() + "-" + currentUsers.size());			
 		}
-		
+
 		currentUsers.add(shib.getNetid());
-		
+
 		Authentication auth = new AnonymousAuthenticationToken(shib.getUin(), shib.getNetid(), grantedAuthorities);
-		
+
 		auth.setAuthenticated(true);
+
+		securityContext.setAuthentication(auth);
 		
-		securityContext.setAuthentication(auth);		
-		
-		httpRequestService.addRequest(new HttpRequest(request, request.getServletPath(), shib.getNetid()));
-		
+		httpRequestService.addRequest(new HttpRequest(request, request.getRequestURI(), shib.getNetid()));
+
         return true;
     }
 	

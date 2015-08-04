@@ -90,12 +90,6 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 			
 			String requestId = accessor.getNativeHeader("id").get(0);
 			
-//			MessageHeaders headers = message.getHeaders();	
-//			Map<String, Object> headerMap = (Map<String, Object>) headers.get("nativeHeaders");		
-			
-//			String jwt = headerMap.get("jwt").toString();	
-//			jwt = jwt.substring(1, jwt.length()-1);
-			
 			String jwt = accessor.getNativeHeader("jwt").get(0);
 			
 			Map<String, String> credentialMap = jwtService.validateJWT(jwt);
@@ -137,15 +131,9 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 		}
 		else if("CONNECT".equals(command.name())) {
 			
-//			MessageHeaders headers = message.getHeaders();
-//		    Map<String, Object> headerMap = (Map<String, Object>) headers.get("nativeHeaders");
-//		    String jwt = headerMap.get("jwt").toString();
-		    
 		    String jwt = accessor.getNativeHeader("jwt").get(0);
 		    		    
 		    if(!"[undefined]".equals(jwt)) {
-		    	
-		    	//jwt = jwt.substring(1, jwt.length()-1);
 		    	
 		    	Map<String, String> credentialMap = jwtService.validateJWT(jwt);
 		    	
