@@ -10,6 +10,7 @@
 package edu.tamu.framework.interceptor;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -88,6 +89,16 @@ public class CoreRestInterceptor extends HandlerInterceptorAdapter {
 		if(request.getHeader("jwt") == null) {
 			
 			String ip = request.getHeader("X-FORWARDED-FOR");
+			
+			System.out.println("X-FORWARDED-FOR: " + ip);
+			
+			Enumeration<String> headers = request.getHeaderNames();
+			
+			while(headers.hasMoreElements()) {
+				String key = (String) headers.nextElement();
+				System.out.println(key + ": "+request.getHeader(key));
+			}
+			
 			if (ip == null) {
 				ip = request.getRemoteAddr();
 			}
