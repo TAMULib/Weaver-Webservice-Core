@@ -26,6 +26,7 @@ public class Credentials {
 	private String exp;
 	private String email;
 	private String role;
+	private String affiliation;
 		
 	public Credentials() {}
 	
@@ -43,6 +44,7 @@ public class Credentials {
 		this.exp = token.get("exp");
 		this.email = token.get("email");
 		this.role = token.get("role");
+		this.affiliation = token.get("affiliation");
 	}
 	
 	/**
@@ -177,6 +179,20 @@ public class Credentials {
 	 */
 	public void setNetid(String netid) {
 		this.netid = netid;
+	}
+	
+	/**
+	 * @return affiliation
+	 */
+	public String getAffiliation() {
+		return affiliation;
+	}
+
+	/**
+	 * @param affiliation
+	 */
+	public void setAffiliation(String affiliation) {
+		this.affiliation = affiliation;
 	}
 	
 }
