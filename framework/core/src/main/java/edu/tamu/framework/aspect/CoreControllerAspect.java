@@ -71,7 +71,7 @@ public abstract class CoreControllerAspect {
     @Around("execution(* edu.tamu.app.controller.*.*(..)) && !@annotation(edu.tamu.framework.aspect.annotation.SkipAop) && @annotation(auth)")
     public ApiResponse polpulateCredentialsAndAuthorize(ProceedingJoinPoint joinPoint, Auth auth) throws Throwable {
     	
-    	PreProcessObject preProcessObject = preProcess(joinPoint);
+    	PreProcessObject preProcessObject = preProcess(joinPoint, true);
     	
     	if(preProcessObject.error != null) {
     		return preProcessObject.error;
@@ -89,7 +89,7 @@ public abstract class CoreControllerAspect {
     @Around("execution(* edu.tamu.app.controller.*.*(..)) && !@annotation(edu.tamu.framework.aspect.annotation.SkipAop) && !@annotation(edu.tamu.framework.aspect.annotation.Auth)")
     public ApiResponse populateCredentials(ProceedingJoinPoint joinPoint) throws Throwable {
     	
-    	PreProcessObject preProcessObject = preProcess(joinPoint);
+    	PreProcessObject preProcessObject = preProcess(joinPoint, false);
     	
     	if(preProcessObject.error != null) {
     		return preProcessObject.error;
@@ -99,7 +99,7 @@ public abstract class CoreControllerAspect {
         
     }
     
-    private PreProcessObject preProcess(ProceedingJoinPoint joinPoint) throws Throwable {
+    private PreProcessObject preProcess(ProceedingJoinPoint joinPoint, boolean authorize) throws Throwable {
     	    	    	
     	HttpServletRequest request = null;
     	
@@ -140,9 +140,11 @@ public abstract class CoreControllerAspect {
     			data = accessor.getNativeHeader("data").get(0).toString();
     		}
     	}  
-    	    	
-		shib = authorizeRole(shib);
-				
+    	
+    	if(authorize) {
+    		shib = authorizeRole(shib);
+    	}
+    	
 		Map<String, Integer> argMap = new HashMap<String, Integer>();
   		
   		int index = 0;
