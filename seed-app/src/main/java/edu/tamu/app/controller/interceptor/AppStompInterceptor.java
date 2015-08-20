@@ -38,15 +38,21 @@ public class AppStompInterceptor extends CoreStompInterceptor {
     		newUser.setUin(Long.parseLong(shib.getUin()));					
     		newUser.setRole(shib.getRole());
     		
-    		userRepo.save(newUser);
-        	
-        	//System.out.println(shib.getFirstName() + " " + shib.getLastName() + " connected with session id " + headers.get("simpSessionId"));
+    		newUser.setFirstName(shib.getFirstName());
+    		newUser.setLastName(shib.getLastName());
     		
-    		System.out.println(Long.parseLong(shib.getUin()));	
-    
+    		userRepo.save(newUser);
     	}
     	else {
-    		shib.setRole(user.getRole());
+    		if(shib.getRole() == null) {
+    			shib.setRole("ROLE_USER");
+    		}
+        	String shibUin = shib.getUin();
+    		for(String uin : admins) {
+    			if(uin.equals(shibUin)) {
+    				shib.setRole("ROLE_ADMIN");					
+    			}
+    		}
     	}
 		
 		return shib;

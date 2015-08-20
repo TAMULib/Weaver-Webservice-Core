@@ -67,6 +67,9 @@ public class AdminController {
 			
 			userRepo.save(newUser);
 			
+			newUser.setFirstName(shib.getFirstName());
+    		newUser.setLastName(shib.getLastName());
+			
 			userMap.put("list", userRepo.findAll());
 			
 			this.simpMessagingTemplate.convertAndSend("/channel/users", new ApiResponse("success", userMap, new RequestId(requestId)));

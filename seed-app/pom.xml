@@ -7,19 +7,11 @@
 	<name>Spring Seed App</name>
 	<description>A simple spring seed application for Library projects.</description>
 
-	<!--This section should be completed when initial development has begun 
-		(ctrl+shift+f to format) -->
-	<!--<developers> <developer> <id></id> <name></name> <email><email> <url></url> 
-		<organization></organization> <organizationUrl></organizationUrl> <roles> 
-		<role></role> <role></role> </roles> <timezone></timezone> <properties> <picUrl></picUrl> 
-		</properties> </developer> </developers> -->
-
 	<parent>
 		<groupId>edu.tamu.framework</groupId>
 		<artifactId>webservice-framework-parent</artifactId>
 		<version>1.0.0</version>
 	</parent>
-	 
 	
 	<properties>
 		<start-class>edu.tamu.app.WebServerInit</start-class>
