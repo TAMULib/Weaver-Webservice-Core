@@ -65,10 +65,10 @@ public class AdminController {
 			newUser.setUin(Long.parseLong(shib.getUin()));					
 			newUser.setRole(shib.getRole());
 			
-			userRepo.save(newUser);
-			
 			newUser.setFirstName(shib.getFirstName());
     		newUser.setLastName(shib.getLastName());
+			
+			userRepo.save(newUser);
 			
 			userMap.put("list", userRepo.findAll());
 			
