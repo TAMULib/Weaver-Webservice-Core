@@ -110,12 +110,10 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 			}
 						
 			Credentials shib = new Credentials(credentialMap);
-			String shibUin = shib.getUin();
-			for(String uin : admins) {
-				if(uin.equals(shibUin)) {
-					shib.setRole("ROLE_ADMIN");					
-				}
-			}
+
+			if(!("ROLE_ANONYMOUS").equals(shib.getRole())) {
+	    		shib = confirmCreateUser(shib);
+	    	}
 									
 			Map<String, Object> shibMap = new HashMap<String, Object>();
 			
@@ -146,9 +144,7 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 		    	Credentials shib = new Credentials(credentialMap);
 		    	
 		    	if(!("ROLE_ANONYMOUS").equals(shib.getRole())) {
-		    		
 		    		shib = confirmCreateUser(shib);
-		    		
 		    	}
 		    			    	
 				List<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
