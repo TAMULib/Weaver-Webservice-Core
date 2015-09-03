@@ -10,12 +10,17 @@
 package edu.tamu.framework.util;
 
 import java.security.InvalidKeyException;
+import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.Mac;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +32,7 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import static org.apache.commons.codec.binary.Base64.decodeBase64;
 import static org.apache.commons.codec.binary.Base64.encodeBase64URLSafeString;;
 
 /** 
@@ -89,19 +95,37 @@ public class  JwtUtility {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Map<String, String> validateJWT(String jwt) {
+	public Map<String, String> validateJWT(String jwe) {
 		
-		MacSigner hmac = new MacSigner(secret_key);
-		Jwt token = null;
 		Map<String, String> tokenMap = new HashMap<String, String>();
 		
-		if(jwt == null) {
+		if(jwe == null) {
 			tokenMap.put("ERROR", "MISSING_JWT");
 			return tokenMap;
 		}
-		 	
+		
+		System.out.println("Decrypting jwe!");
+		
+		Key key = new SecretKeySpec(secret_key.getBytes(), "AES");
+        Cipher c = null;
+        byte[] decordedValue = decodeBase64(jwe);
+        byte[] decValue = null;
+
+        try {
+			c = Cipher.getInstance("AES");
+			c.init(Cipher.DECRYPT_MODE, key);
+			decValue = c.doFinal(decordedValue);
+		} catch (NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException | InvalidKeyException e1) {
+			System.out.println("Could not decrypt token!" + e1);
+			tokenMap.put("ERROR", "UNDECRYPTED_JWT");
+			return tokenMap;
+		}
+        	    
+		MacSigner hmac = new MacSigner(secret_key);
+		Jwt token = null;
+		
 		try {
-			token = JwtHelper.decodeAndVerify(jwt, hmac);
+			token = JwtHelper.decodeAndVerify(new String(decValue), hmac);
 		} catch (Exception e) {
 			System.out.println("Invalid token! Not verified!");
 			tokenMap.put("ERROR", "INVALID_JWT");

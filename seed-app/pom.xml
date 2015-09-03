@@ -3,14 +3,14 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>edu.tamu</groupId>
 	<artifactId>springseed</artifactId>
-	<version>0.0.1</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<name>Spring Seed App</name>
 	<description>A simple spring seed application for Library projects.</description>
 
 	<parent>
 		<groupId>edu.tamu.framework</groupId>
 		<artifactId>webservice-framework-parent</artifactId>
-		<version>1.0.0</version>
+		<version>1.0.1-SNAPSHOT</version>
 	</parent>
 	
 	<properties>
@@ -23,7 +23,7 @@
 		<dependency>
 			<groupId>edu.tamu.framework</groupId>
 			<artifactId>webservice-framework-core</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 	
