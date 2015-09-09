@@ -45,7 +45,7 @@ import edu.tamu.framework.util.JwtUtility;
  *
  */
 @Component
-public class CoreRestInterceptor extends HandlerInterceptorAdapter {
+public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 
 	@Value("${app.security.jwt.secret_key}")
 	private String secret_key;
@@ -83,7 +83,8 @@ public class CoreRestInterceptor extends HandlerInterceptorAdapter {
 	 */
 	@Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-				
+		System.out.println("Development Framework.");
+		
 		Map<String, String> credentialMap = new HashMap<String, String>();
 		
 		if(request.getHeader("jwt") == null) {
@@ -144,12 +145,7 @@ public class CoreRestInterceptor extends HandlerInterceptorAdapter {
 		}		
 			
 		Credentials shib = new Credentials(credentialMap);
-		String shibUin = shib.getUin();
-		for(String uin : admins) {
-			if(uin.equals(shibUin)) {
-				shib.setRole("ROLE_ADMIN");
-			}
-		}
+		shib = confirmCreateUser(shib);
 		
 		request.setAttribute("shib", shib);
 		
@@ -220,4 +216,5 @@ public class CoreRestInterceptor extends HandlerInterceptorAdapter {
 		private static final long serialVersionUID = 1L;
 	}
 	
+	public abstract Credentials confirmCreateUser(Credentials shib);
 }

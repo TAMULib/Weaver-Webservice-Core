@@ -123,6 +123,8 @@ public abstract class CoreControllerAspect {
     		
     		request = httpRequestService.getAndRemoveRequestByDestinationAndUser(destination, user);
     		
+    		System.out.println("The request: " + request);
+    		
     		shib = (Credentials) request.getAttribute("shib");
     		
     		data = (String) request.getAttribute("data");
