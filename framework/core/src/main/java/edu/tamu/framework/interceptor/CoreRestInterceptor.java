@@ -82,9 +82,7 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 	 * @exception	Exception
 	 */
 	@Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-		System.out.println("Development Framework.");
-		
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {		
 		Map<String, String> credentialMap = new HashMap<String, String>();
 		
 		if(request.getHeader("jwt") == null) {

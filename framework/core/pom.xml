@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>edu.tamu.framework</groupId>
 		<artifactId>webservice-framework-parent</artifactId>
-		<version>1.0.0</version>
+		<version>1.1.0</version>
 	</parent>
 	
 	<build>
