@@ -18,6 +18,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -70,6 +71,8 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 	
 	private List<String> currentUsers = new ArrayList<String>();
 	
+	private static final Logger logger = Logger.getLogger(CoreRestInterceptor.class);
+	
 	/**
 	 * Handle request to decode and verify. Return error or continue to controller.
 	 * 
@@ -93,13 +96,13 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 				ip = request.getRemoteAddr();
 			}
 			
-			System.out.println("Referrer: " + ip);
+			logger.debug("Referrer: " + ip);
 			
 			Enumeration<String> headers = request.getHeaderNames();
 			
 			while(headers.hasMoreElements()) {
 				String key = (String) headers.nextElement();
-				System.out.println(key + ": "+request.getHeader(key));
+				logger.debug(key + ": "+request.getHeader(key));
 			}
 			
 			if (ip == null) {
@@ -130,14 +133,25 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 		else {
 			credentialMap = jwtService.validateJWT(request.getHeader("jwt"));
 			
+			Enumeration<String> headers = request.getHeaderNames();
+			while(headers.hasMoreElements()) {
+				String key = (String) headers.nextElement();
+				logger.debug(key + ": "+request.getHeader(key));
+			}
+			
+			logger.debug("Credential Map");
+			for(String key : credentialMap.keySet()) {
+				logger.debug(key+" - "+credentialMap.get(key));
+			}
+			
 			String error = credentialMap.get("ERROR"); 
 	    	if(error != null) {	    		
-	    		System.out.println("JWT error: " + error);	    		
+	    		logger.error("JWT error: " + error);	    		
 	    		throw new InvalidJwtException();	    		
 	    	}
 	    	
 	    	if(jwtService.isExpired(credentialMap)) {
-	    		System.out.println("Token expired!");
+	    		logger.info("The token for "+credentialMap.get("firstName")+" "+credentialMap.get("lastName")+" ("+credentialMap.get("uin")+") has expired. Attempting to get new token.");
 				throw new ExpiredJwtException();		
 			}
 		}		
@@ -171,13 +185,9 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
     }
 	
 	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-		
+		logger.debug(securityContext.getAuthentication().getName() + "has finished their http request.");
 		currentUsers.remove(securityContext.getAuthentication().getName());
-		
-		System.out.println(currentUsers.size() + " users making http requests.");
-		
-		System.out.println(securityContext.getAuthentication().getName() + ", you're http request finished.");
-		
+		logger.debug("There are now " + currentUsers.size() + " users making http requests.");
 	}
     
 	

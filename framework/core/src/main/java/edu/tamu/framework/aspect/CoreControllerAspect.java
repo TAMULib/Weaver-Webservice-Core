@@ -16,6 +16,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -68,6 +69,8 @@ public abstract class CoreControllerAspect {
 	@Autowired
 	private SecurityContext securityContext;
 
+	private static final Logger logger = Logger.getLogger(CoreControllerAspect.class);
+	
     @Around("execution(* edu.tamu.app.controller.*.*(..)) && !@annotation(edu.tamu.framework.aspect.annotation.SkipAop) && @annotation(auth)")
     public ApiResponse polpulateCredentialsAndAuthorize(ProceedingJoinPoint joinPoint, Auth auth) throws Throwable {
     	
@@ -78,7 +81,7 @@ public abstract class CoreControllerAspect {
     	}
         
         if(CoreRoles.valueOf(preProcessObject.shib.getRole()).ordinal() < CoreRoles.valueOf(auth.role()).ordinal()) {
-        	System.out.println("DENIED");
+        	logger.info(preProcessObject.shib.getFirstName() + " " + preProcessObject.shib.getLastName() + "(" + preProcessObject.shib.getUin() + ") attempted restricted access.");
         	return new ApiResponse("restricted", "You are not authorized for this request.", new RequestId(preProcessObject.requestId));
         }
                 
@@ -123,7 +126,7 @@ public abstract class CoreControllerAspect {
     		
     		request = httpRequestService.getAndRemoveRequestByDestinationAndUser(destination, user);
     		
-    		System.out.println("The request: " + request);
+    		logger.debug("The request: " + request);
     		
     		shib = (Credentials) request.getAttribute("shib");
     		

@@ -12,8 +12,6 @@ public class HttpUtility {
 
 	public String makeHttpRequest(String urlString, String method) throws Exception {
 		
-		//System.out.println(urlString);
-		
 		URL url = new URL(urlString);
 		
 		HttpURLConnection con = (HttpURLConnection) url.openConnection();
