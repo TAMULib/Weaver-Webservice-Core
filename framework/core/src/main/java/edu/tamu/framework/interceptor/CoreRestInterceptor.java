@@ -96,13 +96,14 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 				ip = request.getRemoteAddr();
 			}
 			
-			logger.debug("Referrer: " + ip);
+			logger.debug("Referrer: " + ip);			
 			
-			Enumeration<String> headers = request.getHeaderNames();
-			
-			while(headers.hasMoreElements()) {
-				String key = (String) headers.nextElement();
-				logger.debug(key + ": "+request.getHeader(key));
+			if(logger.isDebugEnabled()) {
+				Enumeration<String> headers = request.getHeaderNames();
+				while(headers.hasMoreElements()) {
+					String key = (String) headers.nextElement();
+					logger.debug(key + ": "+request.getHeader(key));
+				}
 			}
 			
 			if (ip == null) {
@@ -133,15 +134,17 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 		else {
 			credentialMap = jwtService.validateJWT(request.getHeader("jwt"));
 			
-			Enumeration<String> headers = request.getHeaderNames();
-			while(headers.hasMoreElements()) {
-				String key = (String) headers.nextElement();
-				logger.debug(key + ": "+request.getHeader(key));
-			}
-			
-			logger.debug("Credential Map");
-			for(String key : credentialMap.keySet()) {
-				logger.debug(key+" - "+credentialMap.get(key));
+			if(logger.isDebugEnabled()) {
+				Enumeration<String> headers = request.getHeaderNames();
+				while(headers.hasMoreElements()) {
+					String key = (String) headers.nextElement();
+					logger.debug(key + ": "+request.getHeader(key));
+				}
+				
+				logger.debug("Credential Map");
+				for(String key : credentialMap.keySet()) {
+					logger.debug(key+" - "+credentialMap.get(key));
+				}
 			}
 			
 			String error = credentialMap.get("ERROR"); 

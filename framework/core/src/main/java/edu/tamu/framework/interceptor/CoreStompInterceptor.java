@@ -101,9 +101,11 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 			
 			logger.info(credentialMap.get("firstName") + " " + credentialMap.get("lastName") + " (" + credentialMap.get("uin") + ") requesting " + accessor.getDestination());
 			
-			logger.debug("Credential Map");
-			for(String key : credentialMap.keySet()) {
-				logger.debug(key+" - "+credentialMap.get(key));
+			if(logger.isDebugEnabled()) {
+				logger.debug("Credential Map");
+				for(String key : credentialMap.keySet()) {
+					logger.debug(key+" - "+credentialMap.get(key));
+				}
 			}
 			
 			String error = credentialMap.get("ERROR"); 
@@ -147,10 +149,12 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 		    	
 		    	Map<String, String> credentialMap = jwtService.validateJWT(jwt);
 		    	
-		    	logger.debug("Credential Map");
-				for(String key : credentialMap.keySet()) {
-					logger.debug(key+" - "+credentialMap.get(key));
-				}
+		    	if(logger.isDebugEnabled()) {
+			    	logger.debug("Credential Map");
+					for(String key : credentialMap.keySet()) {
+						logger.debug(key+" - "+credentialMap.get(key));
+					}
+		    	}
 		    	
 		    	String error = credentialMap.get("ERROR"); 
 		    	if(error != null) {
@@ -184,7 +188,7 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 		    
 		}
 		else if("DISCONNECT".equals(command.name())) {
-			logger.info("Disconnecting websocket connection for "+securityContext.getAuthentication().getName()+".");
+			logger.debug("Disconnecting websocket connection for "+securityContext.getAuthentication().getName()+".");
 			currentUsers.remove(securityContext.getAuthentication().getName());
 			logger.debug("There are now " + currentUsers.size() + " users with websocket connections.");				
 		}
