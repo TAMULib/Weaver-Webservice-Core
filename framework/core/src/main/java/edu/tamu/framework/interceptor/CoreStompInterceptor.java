@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -65,6 +67,8 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 	
 	private List<String> currentUsers = new ArrayList<String>();
 	
+	private static final Logger logger = Logger.getLogger(CoreStompInterceptor.class);
+	
 	/**
 	 * Override method to perform preprocessing before sending message.
 	 * 
@@ -81,12 +85,13 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 		StompCommand command = accessor.getCommand();
 		
 		if(accessor.getDestination() != null) {
-			System.out.println(accessor.getDestination());
+			logger.debug("Accessor Destination: " + accessor.getDestination());
 		}
 		
-		System.out.println(command.name());
+		logger.debug(command.name());
 		
 		if("SEND".equals(command.name())) {
+			logger.debug("Sending.");
 			
 			String requestId = accessor.getNativeHeader("id").get(0);
 			
@@ -94,17 +99,25 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 			
 			Map<String, String> credentialMap = jwtService.validateJWT(jwt);
 			
+			logger.info(credentialMap.get("firstName") + " " + credentialMap.get("lastName") + " (" + credentialMap.get("uin") + ") requesting " + accessor.getDestination());
+			
+			if(logger.isDebugEnabled()) {
+				logger.debug("Credential Map");
+				for(String key : credentialMap.keySet()) {
+					logger.debug(key+" - "+credentialMap.get(key));
+				}
+			}
+			
 			String error = credentialMap.get("ERROR"); 
 	    	if(error != null) {
-	    		System.out.println("\n" + securityContext.getAuthentication().getName() + "\n");
-	    		
-	    		System.out.println("JWT error: " + error);
+	    		logger.error("Security Context Name: " + securityContext.getAuthentication().getName());	    		
+	    		logger.error("JWT error: " + error);
 	    		simpMessagingTemplate.convertAndSend(accessor.getDestination().replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse("failure", error, new RequestId(requestId)));
 	    		return null;
 	    	}
 	    	
 	    	if(jwtService.isExpired(credentialMap)) {
-				System.out.println("Token expired!!!");	
+				logger.info("The token for "+credentialMap.get("firstName")+" "+credentialMap.get("lastName")+" ("+credentialMap.get("uin")+") has expired. Attempting to get new token.");
 				simpMessagingTemplate.convertAndSend(accessor.getDestination().replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse("refresh", "EXPIRED_JWT", new RequestId(requestId)));
 				return null;		
 			}
@@ -128,6 +141,7 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 			return newMessage;			
 		}
 		else if("CONNECT".equals(command.name())) {
+			logger.debug("Connecting.");
 			
 		    String jwt = accessor.getNativeHeader("jwt").get(0);
 		    		    
@@ -135,9 +149,16 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 		    	
 		    	Map<String, String> credentialMap = jwtService.validateJWT(jwt);
 		    	
+		    	if(logger.isDebugEnabled()) {
+			    	logger.debug("Credential Map");
+					for(String key : credentialMap.keySet()) {
+						logger.debug(key+" - "+credentialMap.get(key));
+					}
+		    	}
+		    	
 		    	String error = credentialMap.get("ERROR"); 
 		    	if(error != null) {
-		    		System.err.println("Unknown error: " + error);
+		    		logger.error("JWT error: " + error);
 		    		return MessageBuilder.withPayload(error).setHeaders(accessor).build();
 		    	}
 		    	
@@ -167,19 +188,15 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 		    
 		}
 		else if("DISCONNECT".equals(command.name())) {
-			
+			logger.debug("Disconnecting websocket connection for "+securityContext.getAuthentication().getName()+".");
 			currentUsers.remove(securityContext.getAuthentication().getName());
-			
-			System.out.println(currentUsers.size() + " users with websocket connections.");
-			
-			System.out.println(securityContext.getAuthentication().getName() + ", you're web socket connection finished.");
-						
+			logger.debug("There are now " + currentUsers.size() + " users with websocket connections.");				
 		}
 		else if("SUBSCRIBE".equals(command.name())) {
-			System.out.println("Subscribing.");
+			logger.debug("Subscribing.");
 		}
 		else if("UNSUBSCRIBE".equals(command.name())) {
-			System.out.println("Unsubscribing.");
+			logger.debug("Unsubscribing.");
 		}
 		
 		return message;

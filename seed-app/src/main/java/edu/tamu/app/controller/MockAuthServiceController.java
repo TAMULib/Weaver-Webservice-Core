@@ -14,6 +14,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -49,6 +50,8 @@ public class MockAuthServiceController {
 	@Value("${app.authority.admins}")
 	private String[] admins;
 
+	private static final Logger logger = Logger.getLogger(MockAuthServiceController.class);
+	
 	/**
 	 * Token endpoint. Returns a token with credentials from Shibboleth in payload.
 	 *
@@ -110,7 +113,7 @@ public class MockAuthServiceController {
 	@SkipAop
 	private JWTtoken makeToken(String mockUser, Map<String, String> headers) throws InvalidKeyException, JsonProcessingException, NoSuchAlgorithmException, IllegalStateException, UnsupportedEncodingException {		
 		
-		System.out.println("Creating token for mock " + mockUser);
+		logger.info("Creating token for mock " + mockUser);
 		
 		JWTtoken token = new JWTtoken(secret_key);
 		
@@ -118,7 +121,7 @@ public class MockAuthServiceController {
 			for(String k : shibKeys) {
 				String p = headers.get(env.getProperty("shib."+k, ""));
 				token.makeClaim(k, p);
-				System.out.println("Adding " + k +": " + p + " to JWT.");
+				logger.info("Adding " + k +": " + p + " to JWT.");
 			}
 		}
 		else if(mockUser.equals("admin")) {

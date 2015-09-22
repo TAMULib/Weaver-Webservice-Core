@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import org.apache.log4j.Logger;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -17,6 +19,8 @@ public abstract class CoreContextInitializedHandler implements ApplicationListen
 
 	@Autowired
 	public SymlinkRepo symlinkRepo;
+	
+	private static final Logger logger = Logger.getLogger(CoreContextInitializedHandler.class);
 	
     /**
      * Method for event context refreshes.
@@ -33,11 +37,11 @@ public abstract class CoreContextInitializedHandler implements ApplicationListen
     private void createSymlinks(ContextRefreshedEvent event) {
     	if(symlinkRepo.getSymlinks() != null) {
 	    	symlinkRepo.getSymlinks().values().stream().forEach(symlink->{
-	    		System.out.println("Creating symlink: " + symlink.getPath()+" => "+symlink.getTarget());
+	    		logger.info("Creating symlink: " + symlink.getPath()+" => "+symlink.getTarget());
 	    		try {
 					Files.createSymbolicLink( Paths.get(event.getApplicationContext().getResource("classpath:static").getFile().getAbsolutePath() + File.separator +  symlink.getPath()), Paths.get(symlink.target));
 				} catch (IOException e) {
-					System.out.println("FAILED TO CREATE SYMLINK!!!");				
+					logger.error("Failed to create symlink. " + e.getMessage());				
 					e.printStackTrace();
 				}
 	    	});
