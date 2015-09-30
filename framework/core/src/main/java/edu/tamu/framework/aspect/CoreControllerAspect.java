@@ -74,7 +74,7 @@ public abstract class CoreControllerAspect {
     @Around("execution(* edu.tamu.app.controller.*.*(..)) && !@annotation(edu.tamu.framework.aspect.annotation.SkipAop) && @annotation(auth)")
     public ApiResponse polpulateCredentialsAndAuthorize(ProceedingJoinPoint joinPoint, Auth auth) throws Throwable {
     	
-    	PreProcessObject preProcessObject = preProcess(joinPoint, true);
+    	PreProcessObject preProcessObject = preProcess(joinPoint);
     	
     	if(preProcessObject.error != null) {
     		return preProcessObject.error;
@@ -92,7 +92,7 @@ public abstract class CoreControllerAspect {
     @Around("execution(* edu.tamu.app.controller.*.*(..)) && !@annotation(edu.tamu.framework.aspect.annotation.SkipAop) && !@annotation(edu.tamu.framework.aspect.annotation.Auth)")
     public ApiResponse populateCredentials(ProceedingJoinPoint joinPoint) throws Throwable {
     	
-    	PreProcessObject preProcessObject = preProcess(joinPoint, false);
+    	PreProcessObject preProcessObject = preProcess(joinPoint);
     	
     	if(preProcessObject.error != null) {
     		return preProcessObject.error;
@@ -102,7 +102,7 @@ public abstract class CoreControllerAspect {
         
     }
     
-    private PreProcessObject preProcess(ProceedingJoinPoint joinPoint, boolean authorize) throws Throwable {
+    private PreProcessObject preProcess(ProceedingJoinPoint joinPoint) throws Throwable {
     	    	    	
     	HttpServletRequest request = null;
     	
@@ -146,10 +146,6 @@ public abstract class CoreControllerAspect {
     		}
     	}  
     	
-    	if(authorize) {
-    		shib = authorizeRole(shib);
-    	}
-    	
 		Map<String, Integer> argMap = new HashMap<String, Integer>();
   		
   		int index = 0;
@@ -187,32 +183,6 @@ public abstract class CoreControllerAspect {
 		        
     	return new PreProcessObject(shib, requestId, arguments);
     }
-    
-    public abstract String getUserRole(String uin);
-    
-    private Credentials authorizeRole(Credentials shib) {
-    	if(shib.getRole() == null) {
-			
-			String role = getUserRole(shib.getUin());
-			
-			if(role == null) {
-				shib.setRole("ROLE_USER");
-				
-				String shibUin = shib.getUin();
-				for(String uin : admins) {
-					if(uin.equals(shibUin)) {
-						shib.setRole("ROLE_ADMIN");					
-					}
-				}
-			}
-			else {
-				shib.setRole(role);
-			}
-			
-		}
-		return shib;
-    	
-    };
     
     public class PreProcessObject {
 

@@ -65,9 +65,23 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 	@Autowired @Lazy
 	private SimpMessagingTemplate simpMessagingTemplate;
 	
+	private static Credentials anonymousShib;
+	
 	private List<String> currentUsers = new ArrayList<String>();
 	
 	private static final Logger logger = Logger.getLogger(CoreStompInterceptor.class);
+	
+	public CoreStompInterceptor() {
+		anonymousShib = new Credentials();
+		anonymousShib.setAffiliation("NA");
+		anonymousShib.setLastName("Anonymous");
+		anonymousShib.setFirstName("Role");
+		anonymousShib.setNetid("anonymous");
+		anonymousShib.setUin("000000000");
+		anonymousShib.setExp("1436982214754");
+		anonymousShib.setEmail("helpdesk@library.tamu.edu");
+		anonymousShib.setRole( "ROLE_ANONYMOUS");
+	}
 	
 	/**
 	 * Override method to perform preprocessing before sending message.
@@ -80,7 +94,7 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 	 */
 	@Override
 	public Message<?> preSend(Message<?> message, MessageChannel channel) {
-				
+		
 		StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 		StompCommand command = accessor.getCommand();
 		
@@ -90,43 +104,57 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 		
 		logger.debug(command.name());
 		
+		String jwt = null;
+		
+		if(accessor.getNativeHeader("jwt") != null) {
+			jwt = accessor.getNativeHeader("jwt").get(0);
+		}
+		
 		if("SEND".equals(command.name())) {
+			
 			logger.debug("Sending.");
 			
 			String requestId = accessor.getNativeHeader("id").get(0);
 			
-			String jwt = accessor.getNativeHeader("jwt").get(0);
+			Credentials shib;
 			
-			Map<String, String> credentialMap = jwtService.validateJWT(jwt);
+			if(!"undefined".equals(jwt)) {
+				
+				Map<String, String> credentialMap = new HashMap<String, String>();
 			
-			logger.info(credentialMap.get("firstName") + " " + credentialMap.get("lastName") + " (" + credentialMap.get("uin") + ") requesting " + accessor.getDestination());
-			
-			if(logger.isDebugEnabled()) {
-				logger.debug("Credential Map");
-				for(String key : credentialMap.keySet()) {
-					logger.debug(key+" - "+credentialMap.get(key));
+				credentialMap = jwtService.validateJWT(jwt);
+				
+				logger.info(credentialMap.get("firstName") + " " + credentialMap.get("lastName") + " (" + credentialMap.get("uin") + ") requesting " + accessor.getDestination());
+				
+				if(logger.isDebugEnabled()) {
+					logger.debug("Credential Map");
+					for(String key : credentialMap.keySet()) {
+						logger.debug(key+" - "+credentialMap.get(key));
+					}
 				}
+				
+				String error = credentialMap.get("ERROR"); 
+		    	if(error != null) {
+		    		logger.error("Security Context Name: " + securityContext.getAuthentication().getName());	    		
+		    		logger.error("JWT error: " + error);
+		    		simpMessagingTemplate.convertAndSend(accessor.getDestination().replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse("failure", error, new RequestId(requestId)));
+		    		return null;
+		    	}
+		    	
+		    	if(jwtService.isExpired(credentialMap)) {
+					logger.info("The token for "+credentialMap.get("firstName")+" "+credentialMap.get("lastName")+" ("+credentialMap.get("uin")+") has expired. Attempting to get new token.");
+					simpMessagingTemplate.convertAndSend(accessor.getDestination().replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse("refresh", "EXPIRED_JWT", new RequestId(requestId)));
+					return null;		
+				}
+							
+				shib = new Credentials(credentialMap);
+				
+		    	shib = confirmCreateUser(shib);
+		    	
 			}
-			
-			String error = credentialMap.get("ERROR"); 
-	    	if(error != null) {
-	    		logger.error("Security Context Name: " + securityContext.getAuthentication().getName());	    		
-	    		logger.error("JWT error: " + error);
-	    		simpMessagingTemplate.convertAndSend(accessor.getDestination().replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse("failure", error, new RequestId(requestId)));
-	    		return null;
-	    	}
-	    	
-	    	if(jwtService.isExpired(credentialMap)) {
-				logger.info("The token for "+credentialMap.get("firstName")+" "+credentialMap.get("lastName")+" ("+credentialMap.get("uin")+") has expired. Attempting to get new token.");
-				simpMessagingTemplate.convertAndSend(accessor.getDestination().replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse("refresh", "EXPIRED_JWT", new RequestId(requestId)));
-				return null;		
+			else {
+				shib = anonymousShib;
 			}
-						
-			Credentials shib = new Credentials(credentialMap);
-
-			if(!("ROLE_ANONYMOUS").equals(shib.getRole())) {
-	    		shib = confirmCreateUser(shib);
-	    	}
 									
 			Map<String, Object> shibMap = new HashMap<String, Object>();
 			
@@ -134,7 +162,7 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 			
 			accessor.setSessionAttributes(shibMap);
 			
-			Message<?> newMessage = MessageBuilder.withPayload("VALID_JWT").setHeaders(accessor).build();
+			Message<?> newMessage = MessageBuilder.withPayload("VALID").setHeaders(accessor).build();
 						
 			webSocketRequestService.addRequest(new WebSocketRequest(newMessage, accessor.getDestination(), securityContext.getAuthentication().getName()));
 			
@@ -143,9 +171,9 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 		else if("CONNECT".equals(command.name())) {
 			logger.debug("Connecting.");
 			
-		    String jwt = accessor.getNativeHeader("jwt").get(0);
-		    		    
-		    if(!"[undefined]".equals(jwt)) {
+			Credentials shib;
+					    
+			if(jwt != null) {
 		    	
 		    	Map<String, String> credentialMap = jwtService.validateJWT(jwt);
 		    	
@@ -162,29 +190,27 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 		    		return MessageBuilder.withPayload(error).setHeaders(accessor).build();
 		    	}
 		    	
-		    	Credentials shib = new Credentials(credentialMap);
+		    	shib = new Credentials(credentialMap);
 		    	
-		    	if(!("ROLE_ANONYMOUS").equals(shib.getRole())) {
-		    		shib = confirmCreateUser(shib);
-		    	}
-		    			    	
-				List<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
-				
-				grantedAuthorities.add(new SimpleGrantedAuthority(shib.getRole()));
-				
-				if(("ROLE_ANONYMOUS").equals(shib.getRole())) {
-					shib.setNetid(shib.getNetid() + "-" + currentUsers.size());					
-				}
-				
+	    		shib = confirmCreateUser(shib);
+		    					
 				currentUsers.add(shib.getNetid());
-				
-				Authentication auth = new AnonymousAuthenticationToken(shib.getUin(), shib.getNetid(), grantedAuthorities);
-				
-				auth.setAuthenticated(true);
-				
-				securityContext.setAuthentication(auth);
-								
+											
 		    }
+			else {
+				shib = anonymousShib;
+				shib.setNetid(shib.getNetid() + "-" + currentUsers.size());
+			}
+			
+			List<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
+			
+			grantedAuthorities.add(new SimpleGrantedAuthority(shib.getRole()));
+			
+			Authentication auth = new AnonymousAuthenticationToken(shib.getUin(), shib.getNetid(), grantedAuthorities);
+			
+			auth.setAuthenticated(true);
+			
+			securityContext.setAuthentication(auth);
 		    
 		}
 		else if("DISCONNECT".equals(command.name())) {

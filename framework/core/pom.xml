@@ -35,4 +35,7 @@
 	  	</snapshotRepository>
 	</distributionManagement>
  
+ 	<dependencies>
+ 		
+ 	</dependencies>
 </project>
