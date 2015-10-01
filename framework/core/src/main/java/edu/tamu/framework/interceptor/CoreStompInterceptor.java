@@ -118,7 +118,7 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 			
 			Credentials shib;
 			
-			if(!"undefined".equals(jwt)) {
+			if(jwt != null && !"undefined".equals(jwt)) {
 				
 				Map<String, String> credentialMap = new HashMap<String, String>();
 			
@@ -173,7 +173,7 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 			
 			Credentials shib;
 					    
-			if(jwt != null) {
+			if(jwt != null && !"undefined".equals(jwt)) {
 		    	
 		    	Map<String, String> credentialMap = jwtService.validateJWT(jwt);
 		    	
