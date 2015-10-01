@@ -99,6 +99,8 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 		
 		String jwt = request.getHeader("jwt");
 		
+		Credentials shib = null; 
+		
 		if(jwt == null) {
 			
 			String ip = request.getHeader("X-FORWARDED-FOR");
@@ -133,14 +135,14 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 					credentialMap.put("exp", "1436982214754");
 					credentialMap.put("email", "helpdesk@library.tamu.edu");
 					accepted = true;
+					shib = new Credentials(credentialMap);
 					break;
 				}
 			}
 			
 			if(!accepted) {
-				throw new MissingJwtException();
+				shib = anonymousShib;
 			}
-			
 		}
 		else {
 			credentialMap = jwtService.validateJWT(request.getHeader("jwt"));
@@ -168,11 +170,10 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 	    		logger.info("The token for "+credentialMap.get("firstName")+" "+credentialMap.get("lastName")+" ("+credentialMap.get("uin")+") has expired. Attempting to get new token.");
 				throw new ExpiredJwtException();		
 			}
+	    	
+	    	shib = confirmCreateUser(new Credentials(credentialMap));
 		}		
-			
-		Credentials shib = new Credentials(credentialMap);
 		
-		shib = confirmCreateUser(shib);
 		
 		request.setAttribute("shib", shib);
 		

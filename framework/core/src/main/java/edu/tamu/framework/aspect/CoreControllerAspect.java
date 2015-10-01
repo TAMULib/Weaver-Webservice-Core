@@ -22,7 +22,6 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
@@ -50,12 +49,6 @@ import edu.tamu.framework.service.WebSocketRequestService;
 @Component
 @Aspect
 public abstract class CoreControllerAspect {
-	
-	@Value("${app.security.jwt.secret_key}") 
-	private String secret_key;
-	
-	@Value("${app.authority.admins}")
-	String[] admins;
 	
 	@Autowired
 	public ObjectMapper objectMapper;
