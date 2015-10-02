@@ -4,4 +4,5 @@
 .settings
 .settings/
 .DS_Store
+framework/core/.factorypath
 framework/core/target/

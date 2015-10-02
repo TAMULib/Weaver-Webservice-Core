@@ -9,6 +9,8 @@
  */
 package edu.tamu.framework.aspect;
 
+import static edu.tamu.framework.enums.ApiResponseType.ERROR;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -22,7 +24,6 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
@@ -37,7 +38,6 @@ import edu.tamu.framework.aspect.annotation.Auth;
 import edu.tamu.framework.enums.CoreRoles;
 import edu.tamu.framework.model.ApiResponse;
 import edu.tamu.framework.model.Credentials;
-import edu.tamu.framework.model.RequestId;
 import edu.tamu.framework.service.HttpRequestService;
 import edu.tamu.framework.service.WebSocketRequestService;
 
@@ -50,12 +50,6 @@ import edu.tamu.framework.service.WebSocketRequestService;
 @Component
 @Aspect
 public abstract class CoreControllerAspect {
-	
-	@Value("${app.security.jwt.secret_key}") 
-	private String secret_key;
-	
-	@Value("${app.authority.admins}")
-	String[] admins;
 	
 	@Autowired
 	public ObjectMapper objectMapper;
@@ -74,7 +68,7 @@ public abstract class CoreControllerAspect {
     @Around("execution(* edu.tamu.app.controller.*.*(..)) && !@annotation(edu.tamu.framework.aspect.annotation.SkipAop) && @annotation(auth)")
     public ApiResponse polpulateCredentialsAndAuthorize(ProceedingJoinPoint joinPoint, Auth auth) throws Throwable {
     	
-    	PreProcessObject preProcessObject = preProcess(joinPoint, true);
+    	PreProcessObject preProcessObject = preProcess(joinPoint);
     	
     	if(preProcessObject.error != null) {
     		return preProcessObject.error;
@@ -82,27 +76,32 @@ public abstract class CoreControllerAspect {
         
         if(CoreRoles.valueOf(preProcessObject.shib.getRole()).ordinal() < CoreRoles.valueOf(auth.role()).ordinal()) {
         	logger.info(preProcessObject.shib.getFirstName() + " " + preProcessObject.shib.getLastName() + "(" + preProcessObject.shib.getUin() + ") attempted restricted access.");
-        	return new ApiResponse("restricted", "You are not authorized for this request.", new RequestId(preProcessObject.requestId));
+            return new ApiResponse(preProcessObject.requestId, ERROR, "You are not authorized for this request.");
         }
                 
-        return (ApiResponse) joinPoint.proceed(preProcessObject.arguments);	
-		
+        ApiResponse apiresponse = (ApiResponse) joinPoint.proceed(preProcessObject.arguments);
+    	apiresponse.getMeta().setId(preProcessObject.requestId);
+    	
+        return apiresponse;		
     }
     
     @Around("execution(* edu.tamu.app.controller.*.*(..)) && !@annotation(edu.tamu.framework.aspect.annotation.SkipAop) && !@annotation(edu.tamu.framework.aspect.annotation.Auth)")
     public ApiResponse populateCredentials(ProceedingJoinPoint joinPoint) throws Throwable {
     	
-    	PreProcessObject preProcessObject = preProcess(joinPoint, false);
+    	PreProcessObject preProcessObject = preProcess(joinPoint);
     	
     	if(preProcessObject.error != null) {
     		return preProcessObject.error;
     	}
     	
-        return (ApiResponse) joinPoint.proceed(preProcessObject.arguments);
+    	ApiResponse apiresponse = (ApiResponse) joinPoint.proceed(preProcessObject.arguments);
+    	apiresponse.getMeta().setId(preProcessObject.requestId);
+    	
+        return apiresponse;
         
     }
     
-    private PreProcessObject preProcess(ProceedingJoinPoint joinPoint, boolean authorize) throws Throwable {
+    private PreProcessObject preProcess(ProceedingJoinPoint joinPoint) throws Throwable {
     	    	    	
     	HttpServletRequest request = null;
     	
@@ -146,10 +145,6 @@ public abstract class CoreControllerAspect {
     		}
     	}  
     	
-    	if(authorize) {
-    		shib = authorizeRole(shib);
-    	}
-    	
 		Map<String, Integer> argMap = new HashMap<String, Integer>();
   		
   		int index = 0;
@@ -170,10 +165,8 @@ public abstract class CoreControllerAspect {
   	
   			switch(arg) {
 	  			case "Shib": {
+	  				System.out.println("Shib is null " + shib == null);
 	  				arguments[argMap.get(arg)] = shib;
-	  			} break;
-	  			case "ReqId": {
-	  				arguments[argMap.get(arg)] = requestId;
 	  			} break;
 	  			case "Data": {
 	  				arguments[argMap.get(arg)] = data;
@@ -188,33 +181,7 @@ public abstract class CoreControllerAspect {
     	return new PreProcessObject(shib, requestId, arguments);
     }
     
-    public abstract String getUserRole(String uin);
-    
-    private Credentials authorizeRole(Credentials shib) {
-    	if(shib.getRole() == null) {
-			
-			String role = getUserRole(shib.getUin());
-			
-			if(role == null) {
-				shib.setRole("ROLE_USER");
-				
-				String shibUin = shib.getUin();
-				for(String uin : admins) {
-					if(uin.equals(shibUin)) {
-						shib.setRole("ROLE_ADMIN");					
-					}
-				}
-			}
-			else {
-				shib.setRole(role);
-			}
-			
-		}
-		return shib;
-    	
-    };
-    
-    public class PreProcessObject {
+    protected class PreProcessObject {
 
     	Credentials shib;
     	String requestId;

@@ -31,8 +31,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import edu.tamu.framework.model.Credentials;
 import edu.tamu.framework.model.HttpRequest;
 import edu.tamu.framework.service.HttpRequestService;
@@ -58,9 +56,6 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 	private String[] whitelist;
 	
 	@Autowired
-	private ObjectMapper objectMapper;
-	
-	@Autowired
 	private JwtUtility jwtService;
 	
 	@Autowired
@@ -69,9 +64,23 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 	@Autowired
 	private SecurityContext securityContext;
 	
+	private static Credentials anonymousShib;
+	
 	private List<String> currentUsers = new ArrayList<String>();
 	
 	private static final Logger logger = Logger.getLogger(CoreRestInterceptor.class);
+	
+	public CoreRestInterceptor() {
+		anonymousShib = new Credentials();
+		anonymousShib.setAffiliation("NA");
+		anonymousShib.setLastName("Anonymous");
+		anonymousShib.setFirstName("Role");
+		anonymousShib.setNetid("anonymous");
+		anonymousShib.setUin("000000000");
+		anonymousShib.setExp("1436982214754");
+		anonymousShib.setEmail("helpdesk@library.tamu.edu");
+		anonymousShib.setRole( "ROLE_ANONYMOUS");
+	}
 	
 	/**
 	 * Handle request to decode and verify. Return error or continue to controller.
@@ -88,7 +97,11 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {		
 		Map<String, String> credentialMap = new HashMap<String, String>();
 		
-		if(request.getHeader("jwt") == null) {
+		String jwt = request.getHeader("jwt");
+		
+		Credentials shib = null; 
+		
+		if(jwt == null) {
 			
 			String ip = request.getHeader("X-FORWARDED-FOR");
 			
@@ -102,7 +115,7 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 				Enumeration<String> headers = request.getHeaderNames();
 				while(headers.hasMoreElements()) {
 					String key = (String) headers.nextElement();
-					logger.debug(key + ": "+request.getHeader(key));
+					logger.debug(key + ": " + request.getHeader(key));
 				}
 			}
 			
@@ -122,14 +135,14 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 					credentialMap.put("exp", "1436982214754");
 					credentialMap.put("email", "helpdesk@library.tamu.edu");
 					accepted = true;
+					shib = new Credentials(credentialMap);
 					break;
 				}
 			}
 			
 			if(!accepted) {
-				throw new MissingJwtException();
+				shib = anonymousShib;
 			}
-			
 		}
 		else {
 			credentialMap = jwtService.validateJWT(request.getHeader("jwt"));
@@ -157,10 +170,10 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 	    		logger.info("The token for "+credentialMap.get("firstName")+" "+credentialMap.get("lastName")+" ("+credentialMap.get("uin")+") has expired. Attempting to get new token.");
 				throw new ExpiredJwtException();		
 			}
+	    	
+	    	shib = confirmCreateUser(new Credentials(credentialMap));
 		}		
-			
-		Credentials shib = new Credentials(credentialMap);
-		shib = confirmCreateUser(shib);
+		
 		
 		request.setAttribute("shib", shib);
 		
