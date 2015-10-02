@@ -38,19 +38,19 @@ public class ApiResponse {
 	}
 	
 	public ApiResponse(ApiResponseType type, String message, Object... payload) {
-		this(type, payload);
 		this.meta.setMessage(message);
+		this(type, payload);
 	}
 	
 	public ApiResponse(String id, ApiResponseType type, String message, Object... payload) {
-		this(type, payload);
 		this.meta.setId(id);
 		this.meta.setMessage(message);
+		this(type, payload);
 	}
 	
 	public ApiResponse(String id, ApiResponseType type, Object... payload) {
-		this(type, payload);
 		this.meta.setId(id);
+		this(type, payload);
 	}
 	
 	public ApiResponse(ApiResponseType type, Object... payload) {
