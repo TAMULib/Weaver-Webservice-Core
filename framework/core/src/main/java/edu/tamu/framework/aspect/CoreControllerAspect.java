@@ -165,7 +165,6 @@ public abstract class CoreControllerAspect {
   	
   			switch(arg) {
 	  			case "Shib": {
-	  				System.out.println("Shib is null " + shib == null);
 	  				arguments[argMap.get(arg)] = shib;
 	  			} break;
 	  			case "Data": {
