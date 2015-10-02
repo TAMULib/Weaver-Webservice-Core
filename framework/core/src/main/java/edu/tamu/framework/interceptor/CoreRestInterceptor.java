@@ -46,12 +46,6 @@ import edu.tamu.framework.util.JwtUtility;
 @Component
 public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 
-	@Value("${app.security.jwt.secret_key}")
-	private String secret_key;
-	
-	@Value("${app.authority.admins}")
-	private String[] admins;
-	
 	@Value("${app.whitelist}")
 	private String[] whitelist;
 	

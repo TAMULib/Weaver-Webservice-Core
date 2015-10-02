@@ -1,5 +1,5 @@
 /* 
- * APIres.java 
+ * ApiResponse.java 
  * 
  * Version: 
  *     $Id$ 

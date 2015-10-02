@@ -1,3 +1,12 @@
+/* 
+ * Symlink.java 
+ * 
+ * Version: 
+ *     $Id$ 
+ * 
+ * Revisions: 
+ *     $Log$ 
+ */
 package edu.tamu.framework.model;
 
 public class Symlink {
@@ -5,9 +14,7 @@ public class Symlink {
 	public String path;
 	public String target;
 	
-	public Symlink() {
-		// TODO Auto-generated constructor stub
-	}
+	public Symlink() { }
 	
 	public Symlink(String path, String target) {
 		this.path = path;

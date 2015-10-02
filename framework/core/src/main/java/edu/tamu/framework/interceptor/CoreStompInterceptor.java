@@ -19,7 +19,6 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -50,9 +49,6 @@ import edu.tamu.framework.util.JwtUtility;
  */
 @Component
 public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
-	
-	@Value("${app.authority.admins}")
-	String[] admins;
 	
 	@Autowired
 	private JwtUtility jwtService;

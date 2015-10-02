@@ -1,3 +1,12 @@
+/* 
+ * WebSocketRequestService.java 
+ * 
+ * Version: 
+ *     $Id$ 
+ * 
+ * Revisions: 
+ *     $Log$ 
+ */
 package edu.tamu.framework.service;
 
 import java.util.ArrayList;

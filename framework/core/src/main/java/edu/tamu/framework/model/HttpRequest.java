@@ -1,3 +1,12 @@
+/* 
+ * HttpRequest.java 
+ * 
+ * Version: 
+ *     $Id$ 
+ * 
+ * Revisions: 
+ *     $Log$ 
+ */
 package edu.tamu.framework.model;
 
 import javax.servlet.http.HttpServletRequest;

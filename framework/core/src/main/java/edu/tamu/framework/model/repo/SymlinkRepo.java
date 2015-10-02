@@ -1,5 +1,15 @@
+/* 
+ * SymlinkRepo.java 
+ * 
+ * Version: 
+ *     $Id$ 
+ * 
+ * Revisions: 
+ *     $Log$ 
+ */
 package edu.tamu.framework.model.repo;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -12,6 +22,10 @@ import edu.tamu.framework.model.Symlink;
 public class SymlinkRepo {
 
 	private Map<String, Symlink> symlinks;
+	
+	public SymlinkRepo() {
+		symlinks = new HashMap<String, Symlink>();
+	}
 
 	/**
 	 * @return the symlinks

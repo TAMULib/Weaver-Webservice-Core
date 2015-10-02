@@ -1,5 +1,5 @@
 /* 
- * UserImpl.java 
+ * AbstractCoreUserImpl.java 
  * 
  * Version: 
  *     $Id$ 
