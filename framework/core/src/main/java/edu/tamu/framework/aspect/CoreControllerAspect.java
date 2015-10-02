@@ -9,6 +9,8 @@
  */
 package edu.tamu.framework.aspect;
 
+import static edu.tamu.framework.enums.ApiResponseType.ERROR;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -36,7 +38,6 @@ import edu.tamu.framework.aspect.annotation.Auth;
 import edu.tamu.framework.enums.CoreRoles;
 import edu.tamu.framework.model.ApiResponse;
 import edu.tamu.framework.model.Credentials;
-import edu.tamu.framework.model.RequestId;
 import edu.tamu.framework.service.HttpRequestService;
 import edu.tamu.framework.service.WebSocketRequestService;
 
@@ -75,11 +76,13 @@ public abstract class CoreControllerAspect {
         
         if(CoreRoles.valueOf(preProcessObject.shib.getRole()).ordinal() < CoreRoles.valueOf(auth.role()).ordinal()) {
         	logger.info(preProcessObject.shib.getFirstName() + " " + preProcessObject.shib.getLastName() + "(" + preProcessObject.shib.getUin() + ") attempted restricted access.");
-        	return new ApiResponse("restricted", "You are not authorized for this request.", new RequestId(preProcessObject.requestId));
+            return new ApiResponse(preProcessObject.requestId, ERROR, "You are not authorized for this request.");
         }
                 
-        return (ApiResponse) joinPoint.proceed(preProcessObject.arguments);	
-		
+        ApiResponse apiresponse = (ApiResponse) joinPoint.proceed(preProcessObject.arguments);
+    	apiresponse.getMeta().setId(preProcessObject.requestId);
+    	
+        return apiresponse;		
     }
     
     @Around("execution(* edu.tamu.app.controller.*.*(..)) && !@annotation(edu.tamu.framework.aspect.annotation.SkipAop) && !@annotation(edu.tamu.framework.aspect.annotation.Auth)")
@@ -91,7 +94,10 @@ public abstract class CoreControllerAspect {
     		return preProcessObject.error;
     	}
     	
-        return (ApiResponse) joinPoint.proceed(preProcessObject.arguments);
+    	ApiResponse apiresponse = (ApiResponse) joinPoint.proceed(preProcessObject.arguments);
+    	apiresponse.getMeta().setId(preProcessObject.requestId);
+    	
+        return apiresponse;
         
     }
     
@@ -159,10 +165,8 @@ public abstract class CoreControllerAspect {
   	
   			switch(arg) {
 	  			case "Shib": {
+	  				System.out.println("Shib is null " + shib == null);
 	  				arguments[argMap.get(arg)] = shib;
-	  			} break;
-	  			case "ReqId": {
-	  				arguments[argMap.get(arg)] = requestId;
 	  			} break;
 	  			case "Data": {
 	  				arguments[argMap.get(arg)] = data;
@@ -177,7 +181,7 @@ public abstract class CoreControllerAspect {
     	return new PreProcessObject(shib, requestId, arguments);
     }
     
-    public class PreProcessObject {
+    protected class PreProcessObject {
 
     	Credentials shib;
     	String requestId;

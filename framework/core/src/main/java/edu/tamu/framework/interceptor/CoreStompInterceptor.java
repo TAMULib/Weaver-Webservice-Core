@@ -9,13 +9,15 @@
  */
 package edu.tamu.framework.interceptor;
 
+import static edu.tamu.framework.enums.ApiResponseType.ERROR;
+import static edu.tamu.framework.enums.ApiResponseType.REFRESH;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -35,7 +37,6 @@ import org.springframework.stereotype.Component;
 
 import edu.tamu.framework.model.ApiResponse;
 import edu.tamu.framework.model.Credentials;
-import edu.tamu.framework.model.RequestId;
 import edu.tamu.framework.model.WebSocketRequest;
 import edu.tamu.framework.service.WebSocketRequestService;
 import edu.tamu.framework.util.JwtUtility;
@@ -137,13 +138,13 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 		    	if(error != null) {
 		    		logger.error("Security Context Name: " + securityContext.getAuthentication().getName());	    		
 		    		logger.error("JWT error: " + error);
-		    		simpMessagingTemplate.convertAndSend(accessor.getDestination().replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse("failure", error, new RequestId(requestId)));
+		    		simpMessagingTemplate.convertAndSend(accessor.getDestination().replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse(requestId, ERROR, error));
 		    		return null;
 		    	}
 		    	
 		    	if(jwtService.isExpired(credentialMap)) {
 					logger.info("The token for "+credentialMap.get("firstName")+" "+credentialMap.get("lastName")+" ("+credentialMap.get("uin")+") has expired. Attempting to get new token.");
-					simpMessagingTemplate.convertAndSend(accessor.getDestination().replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse("refresh", "EXPIRED_JWT", new RequestId(requestId)));
+					simpMessagingTemplate.convertAndSend(accessor.getDestination().replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse(requestId, REFRESH));
 					return null;		
 				}
 							
