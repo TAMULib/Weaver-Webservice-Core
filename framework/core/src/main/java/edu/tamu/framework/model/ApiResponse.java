@@ -40,7 +40,7 @@ public class ApiResponse {
 	public ApiResponse(ApiResponseType type, Object... payload) {
 		this();
 		this.meta.setType(type);
-		this.meta.setMessage(this.meta.message != null ? this.meta.message : type.getMessage());   
+		this.meta.setMessage(type.getMessage());   
 		
 		for (Object obj : payload) {
 

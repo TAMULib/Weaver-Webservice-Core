@@ -138,7 +138,7 @@ public abstract class CoreControllerAspect {
     		accessor = StompHeaderAccessor.wrap(message);
     		
     		requestId = accessor.getNativeHeader("id").get(0);
-    		shib =(Credentials) accessor.getSessionAttributes().get("shib");
+    		shib = (Credentials) accessor.getSessionAttributes().get("shib");
 
     		if(accessor.getNativeHeader("data") != null) {
     			data = accessor.getNativeHeader("data").get(0).toString();
