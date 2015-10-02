@@ -37,24 +37,7 @@ public class ApiResponse {
 		this.meta.setMessage(type.getMessage());
 	}
 	
-	public ApiResponse(ApiResponseType type, String message, Object... payload) {
-		this.meta.setMessage(message);
-		this(type, payload);
-	}
-	
-	public ApiResponse(String id, ApiResponseType type, String message, Object... payload) {
-		this.meta.setId(id);
-		this.meta.setMessage(message);
-		this(type, payload);
-	}
-	
-	public ApiResponse(String id, ApiResponseType type, Object... payload) {
-		this.meta.setId(id);
-		this(type, payload);
-	}
-	
 	public ApiResponse(ApiResponseType type, Object... payload) {
-
 		this();
 		this.meta.setType(type);
 		this.meta.setMessage(this.meta.message != null ? this.meta.message : type.getMessage());   
@@ -73,7 +56,23 @@ public class ApiResponse {
 		}
 
 	}
-
+	
+	public ApiResponse(ApiResponseType type, String message, Object... payload) {		
+		this(type, payload);
+		this.meta.setMessage(message);
+	}
+	
+	public ApiResponse(String id, ApiResponseType type, String message, Object... payload) {		
+		this(type, payload);
+		this.meta.setId(id);
+		this.meta.setMessage(message);
+	}
+	
+	public ApiResponse(String id, ApiResponseType type, Object... payload) {		
+		this(type, payload);
+		this.meta.setId(id);
+	}
+	
 	public Meta getMeta() {
 		return meta;
 	}
