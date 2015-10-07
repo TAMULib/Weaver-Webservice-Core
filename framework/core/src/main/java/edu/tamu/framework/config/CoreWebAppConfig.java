@@ -99,27 +99,5 @@ public class CoreWebAppConfig extends WebMvcConfigurerAdapter {
 	public SecurityContext securityContext() {
 		return SecurityContextHolder.getContext();
 	}
-		    
-//    /**
-//	 * Rest interceptor bean.
-//	 *
-//	 * @return      RestInterceptor
-//	 *
-//	 */
-//	@Bean
-//	public CoreRestInterceptor restInterceptor() {
-//	    return new CoreRestInterceptor();
-//	}
-//
-//	/**
-//	 * Add interceptor to interceptor registry.
-//	 *
-//	 * @param       registry	   InterceptorRegistry
-//	 *
-//	 */
-//	@Override
-//	public void addInterceptors(InterceptorRegistry registry) {
-//	    registry.addInterceptor(restInterceptor()).addPathPatterns("/rest/**");
-//	}
 		
 }

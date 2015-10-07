@@ -93,7 +93,7 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 		
 		String jwt = request.getHeader("jwt");
 		
-		Credentials shib = null; 
+		Credentials shib = null;
 		
 		if(jwt == null) {
 			
@@ -195,7 +195,7 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
     }
 	
 	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-		logger.debug(securityContext.getAuthentication().getName() + "has finished their http request.");
+		logger.debug(securityContext.getAuthentication().getName() + " has finished their http request.");
 		currentUsers.remove(securityContext.getAuthentication().getName());
 		logger.debug("There are now " + currentUsers.size() + " users making http requests.");
 	}

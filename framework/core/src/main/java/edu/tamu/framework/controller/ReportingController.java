@@ -1,6 +1,7 @@
 package edu.tamu.framework.controller;
 
 import static edu.tamu.framework.enums.ApiResponseType.SUCCESS;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -23,6 +24,7 @@ import edu.tamu.framework.model.Credentials;
 import edu.tamu.framework.util.EmailUtility;
 
 @RestController
+@RequestMapping("/rest")
 @MessageMapping("/report")
 public class ReportingController {
 	
@@ -35,7 +37,7 @@ public class ReportingController {
 	private SimpleDateFormat format = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
 	
 	@MessageMapping("/error")
-	@RequestMapping("/report/error")
+	@RequestMapping(value = "/report/error", method = POST)
 	@SendToUser
 	public ApiResponse reportError(@Shib Object shibObj, @Data String data) throws Exception {
 
