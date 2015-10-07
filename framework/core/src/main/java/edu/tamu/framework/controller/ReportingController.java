@@ -9,6 +9,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.annotation.SendToUser;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -33,6 +34,7 @@ public class ReportingController {
 	private SimpleDateFormat format = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
 	
 	@MessageMapping("/error")
+	@RequestMapping("/report/error")
 	@SendToUser
 	public ApiResponse reportError(@Shib Object shibObj, @Data String data) throws Exception {
 

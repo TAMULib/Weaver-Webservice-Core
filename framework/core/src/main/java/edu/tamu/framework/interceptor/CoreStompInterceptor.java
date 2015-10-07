@@ -130,11 +130,11 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 					}
 				}
 				
-				String error = credentialMap.get("ERROR"); 
-		    	if(error != null) {
+				String errorMessage = credentialMap.get("ERROR"); 
+		    	if(errorMessage != null) {
 		    		logger.error("Security Context Name: " + securityContext.getAuthentication().getName());	    		
-		    		logger.error("JWT error: " + error);
-		    		simpMessagingTemplate.convertAndSend(accessor.getDestination().replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse(requestId, ERROR, error));
+		    		logger.error("JWT error: " + errorMessage);
+		    		simpMessagingTemplate.convertAndSend(accessor.getDestination().replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse(requestId, ERROR, errorMessage));
 		    		return null;
 		    	}
 		    	
@@ -147,7 +147,7 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 				shib = new Credentials(credentialMap);
 				
 		    	shib = confirmCreateUser(shib);
-		    	
+
 			}
 			else {
 				shib = anonymousShib;
@@ -181,16 +181,16 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 					}
 		    	}
 		    	
-		    	String error = credentialMap.get("ERROR"); 
-		    	if(error != null) {
-		    		logger.error("JWT error: " + error);
-		    		return MessageBuilder.withPayload(error).setHeaders(accessor).build();
+		    	String errorMessage = credentialMap.get("ERROR"); 
+		    	if(errorMessage != null) {
+		    		logger.error("JWT error: " + errorMessage);
+		    		return MessageBuilder.withPayload(errorMessage).setHeaders(accessor).build();
 		    	}
 		    	
 		    	shib = new Credentials(credentialMap);
 		    	
 	    		shib = confirmCreateUser(shib);
-		    					
+	    			
 				currentUsers.add(shib.getNetid());
 											
 		    }
@@ -211,9 +211,9 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 		    
 		}
 		else if("DISCONNECT".equals(command.name())) {
-			logger.debug("Disconnecting websocket connection for "+securityContext.getAuthentication().getName()+".");
+			logger.debug("Disconnecting websocket connection for " + securityContext.getAuthentication().getName() + ".");
 			currentUsers.remove(securityContext.getAuthentication().getName());
-			logger.debug("There are now " + currentUsers.size() + " users with websocket connections.");				
+			logger.debug("There are now " + currentUsers.size() + " users with websocket connections.");
 		}
 		else if("SUBSCRIBE".equals(command.name())) {
 			logger.debug("Subscribing.");
