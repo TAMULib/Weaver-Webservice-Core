@@ -2,6 +2,7 @@ package edu.tamu.framework.controller;
 
 import static edu.tamu.framework.enums.ApiResponseType.SUCCESS;
 
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,6 +30,8 @@ public class ReportingController {
 	@Autowired
 	private ObjectMapper objectMapper;
 	
+	private SimpleDateFormat format = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
+	
 	@MessageMapping("/error")
 	@SendToUser
 	public ApiResponse reportError(@Shib Object shibObj, @Data String data) throws Exception {
@@ -45,11 +48,17 @@ public class ReportingController {
 		
 		errorReport.put("user", shib.getFirstName() + " " + shib.getLastName() + " (" + shib.getUin() + ")");
 		
-		System.out.println(errorReport);
+		String content = "Error Report\n\n";
 		
-		emailUtility.sendEmail("MyLibrary Error Report", data);
+		content += "channel: " +  errorReport.get("channel") + "\n";
+		content += "time: " +  format.parse(errorReport.get("time")) + "\n";
+		content += "type: " +  errorReport.get("type") + "\n";
+		content += "message: " +  errorReport.get("message") + "\n";
+		content += "user: " +  errorReport.get("user") + "\n";
+		
+		emailUtility.sendEmail("MyLibrary Error Report", content);
 		
 		return new ApiResponse(SUCCESS);
 	}
-
+	
 }
