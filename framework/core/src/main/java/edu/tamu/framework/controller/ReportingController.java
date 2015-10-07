@@ -3,6 +3,7 @@ package edu.tamu.framework.controller;
 import static edu.tamu.framework.enums.ApiResponseType.SUCCESS;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,7 +54,7 @@ public class ReportingController {
 		String content = "Error Report\n\n";
 		
 		content += "channel: " +  errorReport.get("channel") + "\n";
-		content += "time: " +  format.parse(errorReport.get("time")) + "\n";
+		content += "time: " +  format.format(new Date(Long.parseLong(errorReport.get("time"))*1000)) + "\n";
 		content += "type: " +  errorReport.get("type") + "\n";
 		content += "message: " +  errorReport.get("message") + "\n";
 		content += "user: " +  errorReport.get("user") + "\n";
