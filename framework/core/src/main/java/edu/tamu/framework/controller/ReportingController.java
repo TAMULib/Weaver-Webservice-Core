@@ -3,7 +3,6 @@ package edu.tamu.framework.controller;
 import static edu.tamu.framework.enums.ApiResponseType.SUCCESS;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,8 +33,6 @@ public class ReportingController {
 	@Autowired
 	private ObjectMapper objectMapper;
 	
-	private SimpleDateFormat format = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
-	
 	@MessageMapping("/error")
 	@RequestMapping(value = "/report/error", method = POST)
 	@SendToUser
@@ -56,7 +53,7 @@ public class ReportingController {
 		String content = "Error Report\n\n";
 		
 		content += "channel: " +  errorReport.get("channel") + "\n";
-		content += "time: " +  format.format(new Date(Long.parseLong(errorReport.get("time"))*1000)) + "\n";
+		content += "time: " +  new Date(Long.parseLong(errorReport.get("time"))*1000) + "\n";
 		content += "type: " +  errorReport.get("type") + "\n";
 		content += "message: " +  errorReport.get("message") + "\n";
 		content += "user: " +  errorReport.get("user") + "\n";
