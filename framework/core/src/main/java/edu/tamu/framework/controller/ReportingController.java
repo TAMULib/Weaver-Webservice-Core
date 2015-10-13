@@ -58,7 +58,7 @@ public class ReportingController {
 		content += "message: " +  errorReport.get("message") + "\n";
 		content += "user: " +  errorReport.get("user") + "\n";
 		
-		emailUtility.sendEmail("MyLibrary Error Report", content);
+		emailUtility.sendEmail("Error Report", content);
 		
 		return new ApiResponse(SUCCESS);
 	}
