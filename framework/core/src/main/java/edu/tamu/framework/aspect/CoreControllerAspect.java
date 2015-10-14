@@ -10,6 +10,7 @@
 package edu.tamu.framework.aspect;
 
 import static edu.tamu.framework.enums.ApiResponseType.ERROR;
+import static edu.tamu.framework.enums.ApiResponseType.WARNING;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -95,7 +96,13 @@ public abstract class CoreControllerAspect {
     	}
     	
     	ApiResponse apiresponse = (ApiResponse) joinPoint.proceed(preProcessObject.arguments);
-    	apiresponse.getMeta().setId(preProcessObject.requestId);
+    	
+    	if(apiresponse != null) {
+    		apiresponse.getMeta().setId(preProcessObject.requestId);
+    	}
+    	else {
+    		apiresponse = new ApiResponse(WARNING, "Endpoint returns void!");
+    	}
     	
         return apiresponse;
         
