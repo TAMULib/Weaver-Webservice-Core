@@ -128,6 +128,7 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 					credentialMap.put("uin", "123456789");
 					credentialMap.put("exp", "1436982214754");
 					credentialMap.put("email", "helpdesk@library.tamu.edu");
+					credentialMap.put("role", "ROLE_ADMIN");
 					accepted = true;
 					shib = new Credentials(credentialMap);
 					break;
