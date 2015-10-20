@@ -63,9 +63,7 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 	private SimpMessagingTemplate simpMessagingTemplate;
 	
 	private static Credentials anonymousShib;
-	
-	private List<String> currentUsers = new ArrayList<String>();
-	
+
 	private static final Logger logger = Logger.getLogger(CoreStompInterceptor.class);
 	
 	public CoreStompInterceptor() {
@@ -107,119 +105,116 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 			jwt = accessor.getNativeHeader("jwt").get(0);
 		}
 		
-		if("SEND".equals(command.name())) {
-			
-			logger.debug("Sending.");
-			
-			String requestId = accessor.getNativeHeader("id").get(0);
-			
-			Credentials shib;
-			
-			if(jwt != null && !"undefined".equals(jwt)) {
+		switch(command) {
+			case ABORT: { } break;
+			case ACK: { } break;
+			case BEGIN: { } break;
+			case COMMIT: { } break;
+			case CONNECT: {
+				Credentials shib;
+			    
+				if(jwt != null && !"undefined".equals(jwt)) {
+			    	
+			    	Map<String, String> credentialMap = jwtService.validateJWT(jwt);
+			    	
+			    	if(logger.isDebugEnabled()) {
+				    	logger.debug("Credential Map");
+						for(String key : credentialMap.keySet()) {
+							logger.debug(key+" - "+credentialMap.get(key));
+						}
+			    	}
+			    	
+			    	String errorMessage = credentialMap.get("ERROR"); 
+			    	if(errorMessage != null) {
+			    		logger.error("JWT error: " + errorMessage);
+			    		return MessageBuilder.withPayload(errorMessage).setHeaders(accessor).build();
+			    	}
+			    	
+			    	shib = new Credentials(credentialMap);
+			    	
+		    		shib = confirmCreateUser(shib);
+												
+			    }
+				else {
+					shib = anonymousShib;
+					shib.setNetid(shib.getNetid() + "-" + Math.round(Math.random()*100000));
+				}
 				
-				Map<String, String> credentialMap = new HashMap<String, String>();
-			
-				credentialMap = jwtService.validateJWT(jwt);
+				List<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
 				
-				logger.info(credentialMap.get("firstName") + " " + credentialMap.get("lastName") + " (" + credentialMap.get("uin") + ") requesting " + accessor.getDestination());
+				grantedAuthorities.add(new SimpleGrantedAuthority(shib.getRole()));
 				
-				if(logger.isDebugEnabled()) {
-					logger.debug("Credential Map");
-					for(String key : credentialMap.keySet()) {
-						logger.debug(key+" - "+credentialMap.get(key));
+				Authentication auth = new AnonymousAuthenticationToken(shib.getUin(), shib.getNetid(), grantedAuthorities);
+				
+				auth.setAuthenticated(true);
+				
+				securityContext.setAuthentication(auth);
+			} break;
+			case CONNECTED: { } break;
+			case DISCONNECT: { 
+				logger.debug("Disconnecting websocket connection for " + securityContext.getAuthentication().getName() + ".");
+			} break;
+			case ERROR: { } break;
+			case MESSAGE: { } break;
+			case NACK: { } break;
+			case RECEIPT: { } break;
+			case SEND: {
+				String requestId = accessor.getNativeHeader("id").get(0);
+				
+				Credentials shib;
+				
+				if(jwt != null && !"undefined".equals(jwt)) {
+					
+					Map<String, String> credentialMap = new HashMap<String, String>();
+				
+					credentialMap = jwtService.validateJWT(jwt);
+					
+					logger.info(credentialMap.get("firstName") + " " + credentialMap.get("lastName") + " (" + credentialMap.get("uin") + ") requesting " + accessor.getDestination());
+					
+					if(logger.isDebugEnabled()) {
+						logger.debug("Credential Map");
+						for(String key : credentialMap.keySet()) {
+							logger.debug(key+" - "+credentialMap.get(key));
+						}
 					}
-				}
-				
-				String errorMessage = credentialMap.get("ERROR"); 
-		    	if(errorMessage != null) {
-		    		logger.error("Security Context Name: " + securityContext.getAuthentication().getName());	    		
-		    		logger.error("JWT error: " + errorMessage);
-		    		simpMessagingTemplate.convertAndSend(accessor.getDestination().replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse(requestId, ERROR, errorMessage));
-		    		return null;
-		    	}
-		    	
-		    	if(jwtService.isExpired(credentialMap)) {
-					logger.info("The token for "+credentialMap.get("firstName")+" "+credentialMap.get("lastName")+" ("+credentialMap.get("uin")+") has expired. Attempting to get new token.");
-					simpMessagingTemplate.convertAndSend(accessor.getDestination().replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse(requestId, REFRESH));
-					return null;		
-				}
-							
-				shib = new Credentials(credentialMap);
-				
-		    	shib = confirmCreateUser(shib);
+					
+					String errorMessage = credentialMap.get("ERROR"); 
+			    	if(errorMessage != null) {
+			    		logger.error("Security Context Name: " + securityContext.getAuthentication().getName());	    		
+			    		logger.error("JWT error: " + errorMessage);
+			    		simpMessagingTemplate.convertAndSend(accessor.getDestination().replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse(requestId, ERROR, errorMessage));
+			    		return null;
+			    	}
+			    	
+			    	if(jwtService.isExpired(credentialMap)) {
+						logger.info("The token for "+credentialMap.get("firstName")+" "+credentialMap.get("lastName")+" ("+credentialMap.get("uin")+") has expired. Attempting to get new token.");
+						simpMessagingTemplate.convertAndSend(accessor.getDestination().replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse(requestId, REFRESH));
+						return null;		
+					}
+								
+					shib = new Credentials(credentialMap);
+					
+			    	shib = confirmCreateUser(shib);
 
-			}
-			else {
-				shib = anonymousShib;
-			}
-									
-			Map<String, Object> shibMap = new HashMap<String, Object>();
-			
-			shibMap.put("shib", shib);
-			
-			accessor.setSessionAttributes(shibMap);
-			
-			Message<?> newMessage = MessageBuilder.withPayload("VALID").setHeaders(accessor).build();
-						
-			webSocketRequestService.addRequest(new WebSocketRequest(newMessage, accessor.getDestination(), securityContext.getAuthentication().getName()));
-			
-			return newMessage;			
-		}
-		else if("CONNECT".equals(command.name())) {
-			logger.debug("Connecting.");
-			
-			Credentials shib;
-					    
-			if(jwt != null && !"undefined".equals(jwt)) {
-		    	
-		    	Map<String, String> credentialMap = jwtService.validateJWT(jwt);
-		    	
-		    	if(logger.isDebugEnabled()) {
-			    	logger.debug("Credential Map");
-					for(String key : credentialMap.keySet()) {
-						logger.debug(key+" - "+credentialMap.get(key));
-					}
-		    	}
-		    	
-		    	String errorMessage = credentialMap.get("ERROR"); 
-		    	if(errorMessage != null) {
-		    		logger.error("JWT error: " + errorMessage);
-		    		return MessageBuilder.withPayload(errorMessage).setHeaders(accessor).build();
-		    	}
-		    	
-		    	shib = new Credentials(credentialMap);
-		    	
-	    		shib = confirmCreateUser(shib);
-	    			
-				currentUsers.add(shib.getNetid());
-											
-		    }
-			else {
-				shib = anonymousShib;
-				shib.setNetid(shib.getNetid() + "-" + currentUsers.size());
-			}
-			
-			List<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
-			
-			grantedAuthorities.add(new SimpleGrantedAuthority(shib.getRole()));
-			
-			Authentication auth = new AnonymousAuthenticationToken(shib.getUin(), shib.getNetid(), grantedAuthorities);
-			
-			auth.setAuthenticated(true);
-			
-			securityContext.setAuthentication(auth);
-		    
-		}
-		else if("DISCONNECT".equals(command.name())) {
-			logger.debug("Disconnecting websocket connection for " + securityContext.getAuthentication().getName() + ".");
-			currentUsers.remove(securityContext.getAuthentication().getName());
-			logger.debug("There are now " + currentUsers.size() + " users with websocket connections.");
-		}
-		else if("SUBSCRIBE".equals(command.name())) {
-			logger.debug("Subscribing.");
-		}
-		else if("UNSUBSCRIBE".equals(command.name())) {
-			logger.debug("Unsubscribing.");
+				}
+				else {
+					shib = anonymousShib;
+				}
+										
+				Map<String, Object> shibMap = new HashMap<String, Object>();
+				
+				shibMap.put("shib", shib);
+				
+				accessor.setSessionAttributes(shibMap);
+				
+				message = MessageBuilder.withPayload("VALID").setHeaders(accessor).build();
+							
+				webSocketRequestService.addRequest(new WebSocketRequest(message, accessor.getDestination(), securityContext.getAuthentication().getName()));	
+			} break;
+			case STOMP: { } break;
+			case SUBSCRIBE: { } break;
+			case UNSUBSCRIBE: { } break;
+			default: { } break;
 		}
 		
 		return message;
