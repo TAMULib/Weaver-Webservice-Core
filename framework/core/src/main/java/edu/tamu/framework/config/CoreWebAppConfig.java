@@ -32,6 +32,10 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+import edu.tamu.framework.events.StompConnectEvent;
+import edu.tamu.framework.events.StompDisconnectEvent;
+import edu.tamu.framework.service.StompConnectionService;
+
 /** 
  * Web MVC Configuration for application controller.
  * 
@@ -98,6 +102,21 @@ public class CoreWebAppConfig extends WebMvcConfigurerAdapter {
 	@Bean
 	public SecurityContext securityContext() {
 		return SecurityContextHolder.getContext();
+	}
+	
+	@Bean
+	public StompConnectionService stopmConnectionService() {
+		return new StompConnectionService();
+	}
+	
+	@Bean
+	public StompConnectEvent stompConnectEvent() {
+		return new StompConnectEvent();
+	}
+	
+	@Bean
+	public StompDisconnectEvent stompDisconnectEvent() {
+		return new StompDisconnectEvent();
 	}
 		
 }
