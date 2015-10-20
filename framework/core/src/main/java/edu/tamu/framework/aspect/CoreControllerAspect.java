@@ -81,7 +81,13 @@ public abstract class CoreControllerAspect {
         }
                 
         ApiResponse apiresponse = (ApiResponse) joinPoint.proceed(preProcessObject.arguments);
-    	apiresponse.getMeta().setId(preProcessObject.requestId);
+        
+        if(apiresponse != null) {
+    		apiresponse.getMeta().setId(preProcessObject.requestId);
+    	}
+    	else {
+    		apiresponse = new ApiResponse(WARNING, "Endpoint returns void!");
+    	}
     	
         return apiresponse;		
     }
@@ -129,23 +135,26 @@ public abstract class CoreControllerAspect {
     		
     		String destination = clazz.getAnnotationsByType(RequestMapping.class)[0].value()[0] + "" + method.getAnnotation(RequestMapping.class).value()[0];
     		
-    		String user = securityContext.getAuthentication().getName();
-    		
-    		request = httpRequestService.getAndRemoveRequestByDestinationAndUser(destination, user);
+    		request = httpRequestService.getAndRemoveRequestByDestinationAndUser(destination, securityContext.getAuthentication().getName());
     		
     		logger.debug("The request: " + request);
     		
     		shib = (Credentials) request.getAttribute("shib");
     		
-    		data = (String) request.getAttribute("data");
+    		if(request.getAttribute("data") != null) {
+    			data = (String) request.getAttribute("data");
+    		}
     		
     	} else {
     		
     		message = webSocketRequestService.getAndRemoveMessageByDestinationAndUser(method.getAnnotation(MessageMapping.class).value()[0], securityContext.getAuthentication().getName());
     		
+    		logger.debug("The message: " + message);
+    		
     		accessor = StompHeaderAccessor.wrap(message);
     		
     		requestId = accessor.getNativeHeader("id").get(0);
+    		
     		shib = (Credentials) accessor.getSessionAttributes().get("shib");
 
     		if(accessor.getNativeHeader("data") != null) {
@@ -161,6 +170,7 @@ public abstract class CoreControllerAspect {
   			for (Annotation annotation : annotations) {
 
   				String annotationString = annotation.toString();
+  				
   				annotationString = annotationString.substring(annotationString.lastIndexOf('.')+1).replace("()", "");
 		
   				argMap.put(annotationString, index);
