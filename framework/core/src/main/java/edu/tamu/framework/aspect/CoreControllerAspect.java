@@ -26,16 +26,16 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
-import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.RequestContextHolder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.tamu.framework.aspect.annotation.Auth;
+import edu.tamu.framework.aspect.annotation.interfaces.ApiMapping;
 import edu.tamu.framework.enums.CoreRoles;
 import edu.tamu.framework.model.ApiResponse;
 import edu.tamu.framework.model.Credentials;
@@ -63,6 +63,9 @@ public abstract class CoreControllerAspect {
 	
 	@Autowired
 	private SecurityContext securityContext;
+	
+	@Autowired
+	private SimpMessagingTemplate simpMessagingTemplate;
 
 	private static final Logger logger = Logger.getLogger(CoreControllerAspect.class);
 	
@@ -70,11 +73,7 @@ public abstract class CoreControllerAspect {
     public ApiResponse polpulateCredentialsAndAuthorize(ProceedingJoinPoint joinPoint, Auth auth) throws Throwable {
     	
     	PreProcessObject preProcessObject = preProcess(joinPoint);
-    	
-    	if(preProcessObject.error != null) {
-    		return preProcessObject.error;
-    	}
-        
+    	        
         if(CoreRoles.valueOf(preProcessObject.shib.getRole()).ordinal() < CoreRoles.valueOf(auth.role()).ordinal()) {
         	logger.info(preProcessObject.shib.getFirstName() + " " + preProcessObject.shib.getLastName() + "(" + preProcessObject.shib.getUin() + ") attempted restricted access.");
             return new ApiResponse(preProcessObject.requestId, ERROR, "You are not authorized for this request.");
@@ -88,19 +87,19 @@ public abstract class CoreControllerAspect {
     	else {
     		apiresponse = new ApiResponse(WARNING, "Endpoint returns void!");
     	}
+        
+        if(preProcessObject.protocol == Protocol.WEBSOCKET) {
+        	simpMessagingTemplate.convertAndSend(preProcessObject.destination, apiresponse);
+        }
     	
-        return apiresponse;		
+        return apiresponse;
     }
     
     @Around("execution(* edu.tamu.*.controller.*.*(..)) && !@annotation(edu.tamu.framework.aspect.annotation.SkipAop) && !@annotation(edu.tamu.framework.aspect.annotation.Auth)")
     public ApiResponse populateCredentials(ProceedingJoinPoint joinPoint) throws Throwable {
     	
     	PreProcessObject preProcessObject = preProcess(joinPoint);
-    	
-    	if(preProcessObject.error != null) {
-    		return preProcessObject.error;
-    	}
-    	
+    	    	
     	ApiResponse apiresponse = (ApiResponse) joinPoint.proceed(preProcessObject.arguments);
     	
     	if(apiresponse != null) {
@@ -109,6 +108,10 @@ public abstract class CoreControllerAspect {
     	else {
     		apiresponse = new ApiResponse(WARNING, "Endpoint returns void!");
     	}
+    	
+    	if(preProcessObject.protocol == Protocol.WEBSOCKET) {
+        	simpMessagingTemplate.convertAndSend(preProcessObject.destination, apiresponse);
+        }
     	
         return apiresponse;
         
@@ -131,11 +134,19 @@ public abstract class CoreControllerAspect {
         Class<?> clazz = methodSignature.getDeclaringType();
         Method method = clazz.getDeclaredMethod(methodSignature.getName(), methodSignature.getParameterTypes());
 		
+        Protocol protocol;
+        
+        String destination = "";
+        
     	if (RequestContextHolder.getRequestAttributes() != null) {
     		
-    		String destination = clazz.getAnnotationsByType(RequestMapping.class)[0].value()[0] + "" + method.getAnnotation(RequestMapping.class).value()[0];
+    		protocol = Protocol.HTTP;
     		
-    		request = httpRequestService.getAndRemoveRequestByDestinationAndUser(destination, securityContext.getAuthentication().getName());
+    		String classAnnotation = clazz.getAnnotationsByType(ApiMapping.class)[0].value()[0];
+    		
+    		String methodAnnotation = method.getAnnotation(ApiMapping.class).value()[0];
+    		
+    		request = httpRequestService.getAndRemoveRequestByDestinationAndUser(classAnnotation + methodAnnotation, securityContext.getAuthentication().getName());
     		
     		logger.debug("The request: " + request);
     		
@@ -147,11 +158,15 @@ public abstract class CoreControllerAspect {
     		
     	} else {
     		
-    		message = webSocketRequestService.getAndRemoveMessageByDestinationAndUser(method.getAnnotation(MessageMapping.class).value()[0], securityContext.getAuthentication().getName());
+    		protocol = Protocol.WEBSOCKET;
+    		
+    		message = webSocketRequestService.getAndRemoveMessageByDestinationAndUser(method.getAnnotation(ApiMapping.class).value()[0], securityContext.getAuthentication().getName());
     		
     		logger.debug("The message: " + message);
     		
     		accessor = StompHeaderAccessor.wrap(message);
+    		
+    		destination = accessor.getDestination().replace("ws", "queue") + "-user" + accessor.getSessionId();
     		
     		requestId = accessor.getNativeHeader("id").get(0);
     		
@@ -195,7 +210,7 @@ public abstract class CoreControllerAspect {
   	
   		}
 		        
-    	return new PreProcessObject(shib, requestId, arguments);
+    	return new PreProcessObject(shib, requestId, arguments, protocol, destination);
     }
     
     protected class PreProcessObject {
@@ -203,12 +218,9 @@ public abstract class CoreControllerAspect {
     	Credentials shib;
     	String requestId;
     	Object[] arguments;
-    	ApiResponse error;
-    	
-    	public PreProcessObject(ApiResponse error) {
-    		this.error = error;
-    	}
-    	
+    	Protocol protocol;
+    	String destination;
+    	    	
     	public PreProcessObject(Credentials shib, Object[] arguments) {
     		this.shib = shib;
     		this.arguments = arguments;
@@ -216,10 +228,29 @@ public abstract class CoreControllerAspect {
     	
     	public PreProcessObject(Credentials shib, String requestId, Object[] arguments) {
     		this.shib = shib;
-    		this.requestId =requestId;
+    		this.requestId = requestId;
     		this.arguments = arguments;
     	}
     	
+    	public PreProcessObject(Credentials shib, String requestId, Object[] arguments, Protocol protocol) {
+    		this.shib = shib;
+    		this.requestId = requestId;
+    		this.arguments = arguments;
+    		this.protocol = protocol;
+    	}
+    	
+    	public PreProcessObject(Credentials shib, String requestId, Object[] arguments, Protocol protocol, String destination) {
+    		this.shib = shib;
+    		this.requestId = requestId;
+    		this.arguments = arguments;
+    		this.protocol = protocol;
+    		this.destination = destination;
+    	}
+    	
+    }
+    
+    private enum Protocol {
+    	WEBSOCKET, HTTP
     }
 	
 }

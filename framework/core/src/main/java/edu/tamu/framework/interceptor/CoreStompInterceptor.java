@@ -106,10 +106,10 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 		}
 		
 		switch(command) {
-			case ABORT: { } break;
-			case ACK: { } break;
-			case BEGIN: { } break;
-			case COMMIT: { } break;
+//			case ABORT: { } break;
+//			case ACK: { } break;
+//			case BEGIN: { } break;
+//			case COMMIT: { } break;
 			case CONNECT: {
 				Credentials shib;
 			    
@@ -150,14 +150,14 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 				
 				securityContext.setAuthentication(auth);
 			} break;
-			case CONNECTED: { } break;
+//			case CONNECTED: { } break;
 			case DISCONNECT: { 
 				logger.debug("Disconnecting websocket connection for " + securityContext.getAuthentication().getName() + ".");
 			} break;
-			case ERROR: { } break;
-			case MESSAGE: { } break;
-			case NACK: { } break;
-			case RECEIPT: { } break;
+//			case ERROR: { } break;
+//			case MESSAGE: { } break;
+//			case NACK: { } break;
+//			case RECEIPT: { } break;
 			case SEND: {
 				String requestId = accessor.getNativeHeader("id").get(0);
 				
@@ -211,9 +211,9 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 							
 				webSocketRequestService.addRequest(new WebSocketRequest(message, accessor.getDestination(), securityContext.getAuthentication().getName()));	
 			} break;
-			case STOMP: { } break;
-			case SUBSCRIBE: { } break;
-			case UNSUBSCRIBE: { } break;
+//			case STOMP: { } break;
+//			case SUBSCRIBE: { } break;
+//			case UNSUBSCRIBE: { } break;
 			default: { } break;
 		}
 		
