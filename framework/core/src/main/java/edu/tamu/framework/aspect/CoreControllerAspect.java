@@ -248,12 +248,13 @@ public abstract class CoreControllerAspect {
 		return new PreProcessObject(shib, requestId, arguments, protocol, destination);
     }
     
-    protected String getApiVariable(String mapping, String path) {    	
-    	int i = 0;
-    	int max = Math.min(mapping.length(), path.length());
-    	while(i < max && mapping.charAt(i) == path.charAt(i)) i++;    	
-    	if(i > path.length()) return null;    	
-    	return path.substring(i);
+    protected String getApiVariable(String mapping, String path) {
+    	String variable = path.substring(mapping.indexOf("{"));    	
+    	int stop = variable.indexOf("/");    	
+    	if(stop > -1) {    	
+    		variable = variable.substring(0, stop);
+    	}
+    	return variable;
     }
     
     protected class PreProcessObject {
