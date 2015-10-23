@@ -48,7 +48,7 @@ import edu.tamu.framework.service.StompConnectionService;
 @ComponentScan(basePackages = {"edu.tamu.framework.config", "edu.tamu.framework.interceptor", "edu.tamu.framework.controller"})
 @ConfigurationProperties(prefix="app.controller")
 public class CoreWebAppConfig extends WebMvcConfigurerAdapter {	
-
+	
 	/**
 	 * Configures message converters.
 	 *

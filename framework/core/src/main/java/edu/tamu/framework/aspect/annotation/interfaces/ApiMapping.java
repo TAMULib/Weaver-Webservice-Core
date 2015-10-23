@@ -9,9 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-//@RequestMapping
-//@MessageMapping
 public @interface ApiMapping {
 	String[] value() default {};
-	RequestMethod method() default RequestMethod.GET;
+	RequestMethod[] method() default {RequestMethod.GET};
 }

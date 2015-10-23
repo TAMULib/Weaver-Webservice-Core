@@ -38,7 +38,6 @@ import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.SimpMessageTypeMessageCondition;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.messaging.simp.annotation.support.PrincipalMethodArgumentResolver;
 import org.springframework.messaging.simp.annotation.support.SendToMethodReturnValueHandler;
 import org.springframework.messaging.simp.annotation.support.SubscriptionMethodReturnValueHandler;
@@ -271,34 +270,32 @@ public class WebSocketRequestMappingHandler extends AbstractMethodMessageHandler
 
 	@Override
 	protected CustomSimpMessageMappingInfo getMappingForMethod(Method method, Class<?> handlerType) {
+		
+		System.out.println("\nWEB SOCKET GET MAPPING FOR METHOD\n");
+		
+		System.out.println("CLASS: " + handlerType.getName() + "\n");
+		
+		System.out.println("METHOD: " + method.getName() + "\n");
+		
+		ApiMapping methodAnnotation = AnnotationUtils.findAnnotation(method, ApiMapping.class);
+		
 		ApiMapping typeAnnotation = AnnotationUtils.findAnnotation(handlerType, ApiMapping.class);
-		ApiMapping messageAnnotation = AnnotationUtils.findAnnotation(method, ApiMapping.class);
-		if (messageAnnotation != null) {
-			CustomSimpMessageMappingInfo result = createMessageMappingCondition(messageAnnotation);
+		
+		if (methodAnnotation != null) {
+			CustomSimpMessageMappingInfo result = createMessageMappingInfo(methodAnnotation);
 			if (typeAnnotation != null) {
-				result = createMessageMappingCondition(typeAnnotation).combine(result);
+				result = createMessageMappingInfo(typeAnnotation).combine(result);
 			}
 			return result;
 		}
-		SubscribeMapping subscribeAnnotation = AnnotationUtils.findAnnotation(method, SubscribeMapping.class);
-		if (subscribeAnnotation != null) {
-			CustomSimpMessageMappingInfo result = createSubscribeCondition(subscribeAnnotation);
-			if (typeAnnotation != null) {
-				result = createMessageMappingCondition(typeAnnotation).combine(result);
-			}
-			return result;
-		}
+		
 		return null;
 	}
 	
-	private CustomSimpMessageMappingInfo createMessageMappingCondition(ApiMapping annotation) {
+	private CustomSimpMessageMappingInfo createMessageMappingInfo(ApiMapping annotation) {
 		return new CustomSimpMessageMappingInfo(SimpMessageTypeMessageCondition.MESSAGE, new WebSocketRequestCondition(annotation.value(), this.pathMatcher));
 	}
 
-	private CustomSimpMessageMappingInfo createSubscribeCondition(SubscribeMapping annotation) {
-		return new CustomSimpMessageMappingInfo(SimpMessageTypeMessageCondition.SUBSCRIBE, new WebSocketRequestCondition(annotation.value(), this.pathMatcher));
-	}
-	
 	@Override
 	protected CustomSimpMessageMappingInfo getMatchingMapping(CustomSimpMessageMappingInfo mapping, Message<?> message) {
 		return mapping.getMatchingCondition(message);

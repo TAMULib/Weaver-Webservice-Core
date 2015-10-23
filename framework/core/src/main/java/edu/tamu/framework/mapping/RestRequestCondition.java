@@ -9,58 +9,57 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.web.servlet.mvc.condition.RequestCondition;
 
 public class RestRequestCondition implements RequestCondition<RestRequestCondition> {
 
-	private final Set<String> path;
+	private final Set<String> paths;
 
-    public RestRequestCondition(String... path) {
-        this(Arrays.asList(path));
+    public RestRequestCondition(String... paths) {
+        this(Arrays.asList(paths));
     }
 
     public RestRequestCondition(Collection<String> path) {
-        this.path = Collections.unmodifiableSet(new HashSet<String>(path));
+        this.paths = Collections.unmodifiableSet(new HashSet<String>(path));
     }
 
-    @Override
-    public RestRequestCondition combine(RestRequestCondition other) {
-        Set<String> allRoles = new LinkedHashSet<String>(this.path);
-        allRoles.addAll(other.path);
-        return new RestRequestCondition(allRoles);
-    }
+	@Override
+	public RestRequestCondition combine(RestRequestCondition other) {
+		Set<String> allRoles = new LinkedHashSet<String>(this.paths);
+		allRoles.addAll(other.paths);
+		return new RestRequestCondition(allRoles);
+	}
 
-    @Override
-    public RestRequestCondition getMatchingCondition(HttpServletRequest request) {
-    	
-    	System.out.println("\nREST GET MATCHING CONDITION\n");
-    	 
-        try {
-            String path = request.getServletPath();
-            
-            System.out.println("\n" + path + "\n");
-            
-            boolean match = true;
-            for (String s : this.path) {
-                if(!path.toLowerCase().contains(s.toLowerCase())) {
-                	match = false;
-                }
+	@Override
+	public int compareTo(RestRequestCondition other, HttpServletRequest request) {
+		 return CollectionUtils.removeAll(other.paths, this.paths).size();
+	}
+
+	@Override
+	public RestRequestCondition getMatchingCondition(HttpServletRequest request) {
+		
+		System.out.println("\nREST GET MATCHING CONDITION\n");
+		
+		System.out.println("DESTINATION: " +request.getServletPath() + "\n");
+       
+        String path = request.getServletPath();
+        
+        System.out.println("\n" + path + "\n");
+        
+        boolean match = true;
+        for (String s : this.paths) {
+            if(!path.toLowerCase().contains(s.toLowerCase())) {
+            	match = false;
             }
-            
-            if(match) {
-            	System.out.println("\nMATCH\n");
-            	return this;
-            }
-            
-        } catch (Exception e) {
-            e.printStackTrace(System.err);
         }
+        
+        if(match) {
+        	System.out.println("\nMATCH\n");
+        	return this;
+        }
+        
         return null;
-    }
-
-    @Override
-    public int compareTo(RestRequestCondition other, HttpServletRequest request) {
-        return org.apache.commons.collections.CollectionUtils.removeAll(other.path, this.path).size();
-    }
+	}
 
 }

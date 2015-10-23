@@ -190,7 +190,7 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 
 		securityContext.setAuthentication(auth);
 		
-		httpRequestService.addRequest(new HttpRequest(request, request.getRequestURI(), shib.getNetid()));
+		httpRequestService.addRequest(new HttpRequest(request, response, shib.getNetid()));
 
         return true;
     }

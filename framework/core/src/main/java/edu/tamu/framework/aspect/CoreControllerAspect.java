@@ -113,8 +113,7 @@ public abstract class CoreControllerAspect {
         	simpMessagingTemplate.convertAndSend(preProcessObject.destination, apiresponse);
         }
     	
-        return apiresponse;
-        
+        return apiresponse;        
     }
     
     private PreProcessObject preProcess(ProceedingJoinPoint joinPoint) throws Throwable {
@@ -209,8 +208,8 @@ public abstract class CoreControllerAspect {
   			}
   	
   		}
-		        
-    	return new PreProcessObject(shib, requestId, arguments, protocol, destination);
+  		
+		return new PreProcessObject(shib, requestId, arguments, protocol, destination);
     }
     
     protected class PreProcessObject {

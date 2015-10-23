@@ -86,8 +86,12 @@ public class WebSocketRequestCondition implements MessageCondition<WebSocketRequ
 	@Override
 	public WebSocketRequestCondition getMatchingCondition(Message<?> message) {
 		
+		System.out.println("\nWEB SOCKET GET MATCHING CONDITION\n");
+				
 		StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 		String destination = accessor.getDestination();
+		
+		System.out.println("DESTINATION: " + destination + "\n");
 		
 		if (destination == null) {
 			return null;

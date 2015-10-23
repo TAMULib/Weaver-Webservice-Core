@@ -10,18 +10,19 @@
 package edu.tamu.framework.model;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 public class HttpRequest {
 	
 	private HttpServletRequest request;
 	
+	private HttpServletResponse response;
+	
 	private String user;
-	
-	private String destination;
-	
-	public HttpRequest(HttpServletRequest request, String destination, String user) {
+		
+	public HttpRequest(HttpServletRequest request, HttpServletResponse response, String user) {
 		this.request = request;
-		this.destination = destination;
+		this.response = response;
 		this.user = user;
 	}
 
@@ -31,6 +32,14 @@ public class HttpRequest {
 
 	public void setRequest(HttpServletRequest request) {
 		this.request = request;
+	}
+	
+	public HttpServletResponse getResponse() {
+		return response;
+	}
+
+	public void setResponse(HttpServletResponse response) {
+		this.response = response;
 	}
 
 	public String getUser() {
@@ -42,11 +51,7 @@ public class HttpRequest {
 	}
 	
 	public String getDestination() {
-		return destination;
-	}
-
-	public void setDestination(String destination) {
-		this.destination = destination;
+		return request.getRequestURI();
 	}
 	
 }
