@@ -36,18 +36,11 @@ public class RestRequestMappingHandler extends RequestMappingInfoHandlerMapping 
 	
 	@Override
 	public void setEmbeddedValueResolver(StringValueResolver resolver) {
-		System.out.println("\nREST SET EMBEDDED VALUE RESOLVER\n");
 		this.embeddedValueResolver  = resolver;
 	}
 
 	@Override
 	protected RequestMappingInfo getMappingForMethod(Method method, Class<?> handlerType) {
-		
-		System.out.println("\nREST GET MAPPING FOR METHOD\n");
-		
-		System.out.println("CLASS: " + handlerType.getName() + "\n");
-		
-		System.out.println("METHOD: " + method.getName() + "\n");
 		
 		RequestMappingInfo info = null;
 		

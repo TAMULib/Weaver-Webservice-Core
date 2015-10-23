@@ -191,7 +191,6 @@ public class WebSocketRequestMappingHandler extends AbstractMethodMessageHandler
 	protected void handleMatch(CustomSimpMessageMappingInfo mapping, HandlerMethod handlerMethod, String lookupDestination, Message<?> message) {
 
 		if("SUBSCRIBE".equals(message.getHeaders().get("stompCommand").toString())) {
-			System.out.println("PASS SUBSCRIBE");
 			return;
 		}
 		
@@ -270,12 +269,6 @@ public class WebSocketRequestMappingHandler extends AbstractMethodMessageHandler
 
 	@Override
 	protected CustomSimpMessageMappingInfo getMappingForMethod(Method method, Class<?> handlerType) {
-		
-		System.out.println("\nWEB SOCKET GET MAPPING FOR METHOD\n");
-		
-		System.out.println("CLASS: " + handlerType.getName() + "\n");
-		
-		System.out.println("METHOD: " + method.getName() + "\n");
 		
 		ApiMapping methodAnnotation = AnnotationUtils.findAnnotation(method, ApiMapping.class);
 		

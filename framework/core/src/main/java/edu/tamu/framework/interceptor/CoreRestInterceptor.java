@@ -158,7 +158,7 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 			String error = credentialMap.get("ERROR"); 
 	    	if(error != null) {	    		
 	    		logger.error("JWT error: " + error);	    		
-	    		throw new InvalidJwtException();	    		
+	    		throw new InvalidJwtException();
 	    	}
 	    	
 	    	if(jwtService.isExpired(credentialMap)) {

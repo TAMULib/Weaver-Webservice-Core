@@ -39,13 +39,7 @@ public class RestRequestCondition implements RequestCondition<RestRequestConditi
 	@Override
 	public RestRequestCondition getMatchingCondition(HttpServletRequest request) {
 		
-		System.out.println("\nREST GET MATCHING CONDITION\n");
-		
-		System.out.println("DESTINATION: " +request.getServletPath() + "\n");
-       
         String path = request.getServletPath();
-        
-        System.out.println("\n" + path + "\n");
         
         boolean match = true;
         for (String s : this.paths) {
@@ -55,7 +49,6 @@ public class RestRequestCondition implements RequestCondition<RestRequestConditi
         }
         
         if(match) {
-        	System.out.println("\nMATCH\n");
         	return this;
         }
         

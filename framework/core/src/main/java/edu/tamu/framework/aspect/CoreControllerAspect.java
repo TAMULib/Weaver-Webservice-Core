@@ -30,6 +30,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.RequestContextHolder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -121,6 +122,7 @@ public abstract class CoreControllerAspect {
     	HttpServletRequest request = null;
     	
         Message<?> message = null;
+        
     	StompHeaderAccessor accessor = null;
     	
     	Credentials shib = null;
@@ -130,7 +132,9 @@ public abstract class CoreControllerAspect {
     	Object[] arguments = joinPoint.getArgs();
     	
     	MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
-        Class<?> clazz = methodSignature.getDeclaringType();
+        
+    	Class<?> clazz = methodSignature.getDeclaringType();
+        
         Method method = clazz.getDeclaredMethod(methodSignature.getName(), methodSignature.getParameterTypes());
 		
         Protocol protocol;
@@ -141,15 +145,32 @@ public abstract class CoreControllerAspect {
     		
     		protocol = Protocol.HTTP;
     		
-    		String classAnnotation = clazz.getAnnotationsByType(ApiMapping.class)[0].value()[0];
     		
-    		String methodAnnotation = method.getAnnotation(ApiMapping.class).value()[0];
+    		String classAnnotation;
     		
+    		String methodAnnotation;
+    		
+    		if(clazz.getAnnotationsByType(RequestMapping.class).length > 0) {
+    			classAnnotation = clazz.getAnnotationsByType(RequestMapping.class)[0].value()[0];
+    		}
+    		else {
+    			classAnnotation = clazz.getAnnotationsByType(ApiMapping.class)[0].value()[0];
+    		}
+    		
+    		if(method.getAnnotation(RequestMapping.class) != null) {
+    			methodAnnotation = method.getAnnotation(RequestMapping.class).value()[0];
+    		}
+    		else {
+    			methodAnnotation = method.getAnnotation(ApiMapping.class).value()[0];
+    		}
+    		    		
     		request = httpRequestService.getAndRemoveRequestByDestinationAndUser(classAnnotation + methodAnnotation, securityContext.getAuthentication().getName());
     		
     		logger.debug("The request: " + request);
     		
-    		shib = (Credentials) request.getAttribute("shib");
+    		if(request.getAttribute("shib") != null) {
+    			shib = (Credentials) request.getAttribute("shib");
+    		}
     		
     		if(request.getAttribute("data") != null) {
     			data = (String) request.getAttribute("data");
