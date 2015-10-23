@@ -1,4 +1,4 @@
-package edu.tamu.framework.mapping;
+package edu.tamu.framework.mapping.condition;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -15,7 +15,7 @@ import org.springframework.web.servlet.mvc.condition.RequestCondition;
 public class RestRequestCondition implements RequestCondition<RestRequestCondition> {
 
 	private final Set<String> paths;
-
+	
     public RestRequestCondition(String... paths) {
         this(Arrays.asList(paths));
     }
@@ -37,8 +37,7 @@ public class RestRequestCondition implements RequestCondition<RestRequestConditi
 	}
 
 	@Override
-	public RestRequestCondition getMatchingCondition(HttpServletRequest request) {
-		
+	public RestRequestCondition getMatchingCondition(HttpServletRequest request) {		
         String path = request.getServletPath();
         
         boolean match = true;

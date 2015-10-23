@@ -19,11 +19,14 @@ public class HttpRequest {
 	private HttpServletResponse response;
 	
 	private String user;
+	
+	private String destination;
 		
-	public HttpRequest(HttpServletRequest request, HttpServletResponse response, String user) {
+	public HttpRequest(HttpServletRequest request, HttpServletResponse response, String user, String destination) {
 		this.request = request;
 		this.response = response;
 		this.user = user;
+		this.destination = destination;
 	}
 
 	public HttpServletRequest getRequest() {
@@ -49,9 +52,13 @@ public class HttpRequest {
 	public void setUser(String user) {
 		this.user = user;
 	}
-	
+
 	public String getDestination() {
-		return request.getRequestURI();
+		return destination;
+	}
+
+	public void setDestination(String destination) {
+		this.destination = destination;
 	}
 	
 }

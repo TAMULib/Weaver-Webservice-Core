@@ -1,8 +1,10 @@
-package edu.tamu.framework.mapping;
+package edu.tamu.framework.mapping.info;
 
 import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.MessageCondition;
 import org.springframework.messaging.simp.SimpMessageTypeMessageCondition;
+
+import edu.tamu.framework.mapping.condition.WebSocketRequestCondition;
 
 public class CustomSimpMessageMappingInfo implements MessageCondition<CustomSimpMessageMappingInfo> {
 
@@ -10,13 +12,10 @@ public class CustomSimpMessageMappingInfo implements MessageCondition<CustomSimp
 
 	private final WebSocketRequestCondition destinationConditions;
 
-
 	public CustomSimpMessageMappingInfo(SimpMessageTypeMessageCondition messageTypeMessageCondition, WebSocketRequestCondition destinationConditions) {
-
 		this.messageTypeMessageCondition = messageTypeMessageCondition;
 		this.destinationConditions = destinationConditions;
 	}
-
 
 	public SimpMessageTypeMessageCondition getMessageTypeMessageCondition() {
 		return this.messageTypeMessageCondition;
@@ -25,7 +24,6 @@ public class CustomSimpMessageMappingInfo implements MessageCondition<CustomSimp
 	public WebSocketRequestCondition getDestinationConditions() {
 		return this.destinationConditions;
 	}
-
 
 	@Override
 	public CustomSimpMessageMappingInfo combine(CustomSimpMessageMappingInfo other) {
@@ -59,7 +57,6 @@ public class CustomSimpMessageMappingInfo implements MessageCondition<CustomSimp
 		}
 		return 0;
 	}
-
 
 	@Override
 	public boolean equals(Object obj) {

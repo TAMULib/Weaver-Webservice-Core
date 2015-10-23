@@ -19,10 +19,12 @@ public class WebSocketRequest {
 	
 	private String destination;
 	
-	public WebSocketRequest(Message<?> message, String destination, String user) {
-		this.message = message;
-		this.destination = destination;
+	public WebSocketRequest() { }
+	
+	public WebSocketRequest(Message<?> message, String user, String destination) {
+		this.message = message;		
 		this.user = user;
+		this.destination = destination;
 	}
 
 	public Message<?> getMessage() {

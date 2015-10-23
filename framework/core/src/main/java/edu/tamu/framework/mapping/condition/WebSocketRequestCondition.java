@@ -1,4 +1,4 @@
-package edu.tamu.framework.mapping;
+package edu.tamu.framework.mapping.condition;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -84,8 +84,7 @@ public class WebSocketRequestCondition implements MessageCondition<WebSocketRequ
 	}
 
 	@Override
-	public WebSocketRequestCondition getMatchingCondition(Message<?> message) {
-		
+	public WebSocketRequestCondition getMatchingCondition(Message<?> message) {		
 		StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 		String destination = accessor.getDestination();
 		

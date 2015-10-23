@@ -17,7 +17,8 @@ import org.springframework.web.servlet.mvc.condition.RequestMethodsRequestCondit
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMapping;
 
-import edu.tamu.framework.aspect.annotation.interfaces.ApiMapping;
+import edu.tamu.framework.aspect.annotation.ApiMapping;
+import edu.tamu.framework.mapping.condition.RestRequestCondition;
 
 public class RestRequestMappingHandler extends RequestMappingInfoHandlerMapping implements EmbeddedValueResolverAware {
 
@@ -40,8 +41,7 @@ public class RestRequestMappingHandler extends RequestMappingInfoHandlerMapping 
 	}
 
 	@Override
-	protected RequestMappingInfo getMappingForMethod(Method method, Class<?> handlerType) {
-		
+	protected RequestMappingInfo getMappingForMethod(Method method, Class<?> handlerType) {		
 		RequestMappingInfo info = null;
 		
 		ApiMapping methodAnnotation = AnnotationUtils.findAnnotation(method, ApiMapping.class);

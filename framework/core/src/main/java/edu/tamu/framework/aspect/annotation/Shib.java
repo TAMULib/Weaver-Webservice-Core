@@ -20,8 +20,8 @@ import java.lang.annotation.Target;
  * @author 
  *
  */
-@Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)
+@Retention(RetentionPolicy.RUNTIME)
 public @interface Shib {
 
 }

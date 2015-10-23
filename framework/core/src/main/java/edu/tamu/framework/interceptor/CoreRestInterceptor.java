@@ -29,8 +29,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import edu.tamu.framework.aspect.annotation.ApiMapping;
 import edu.tamu.framework.model.Credentials;
 import edu.tamu.framework.model.HttpRequest;
 import edu.tamu.framework.service.HttpRequestService;
@@ -90,7 +92,7 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 	@Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {		
 		Map<String, String> credentialMap = new HashMap<String, String>();
-		
+				
 		String jwt = request.getHeader("jwt");
 		
 		Credentials shib = null;
@@ -190,7 +192,7 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 
 		securityContext.setAuthentication(auth);
 		
-		httpRequestService.addRequest(new HttpRequest(request, response, shib.getNetid()));
+		httpRequestService.addRequest(new HttpRequest(request, response, shib.getNetid(), ((HandlerMethod) handler).getBeanType().getAnnotation(ApiMapping.class).value()[0] + ((HandlerMethod) handler).getMethodAnnotation(ApiMapping.class).value()[0]));
 
         return true;
     }

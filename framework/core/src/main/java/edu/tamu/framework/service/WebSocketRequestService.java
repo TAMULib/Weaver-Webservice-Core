@@ -12,13 +12,12 @@ package edu.tamu.framework.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
 
 import edu.tamu.framework.model.WebSocketRequest;
 
 @Service
-public abstract class WebSocketRequestService {
+public class WebSocketRequestService {
 	
 	protected List<WebSocketRequest> requests = new ArrayList<WebSocketRequest>();
 
@@ -38,25 +37,19 @@ public abstract class WebSocketRequestService {
 		requests.remove(request);
 	}
 	
-	public synchronized Message<?> getAndRemoveMessageByDestinationAndUser(String destination, String user) {
+	public synchronized WebSocketRequest getAndRemoveMessageByDestinationAndUser(String destination, String user) {
 		
-		Message<?> message = null;		
 		for(int index = 0; index < requests.size(); index++) {
 			
 			WebSocketRequest request = requests.get(index);
 			
 			if(request.getUser().equals(user) && request.getDestination().contains(destination)) {
-				message = request.getMessage();
 				requests.remove(index);
-				break;
+				return request;
 			}
-						
-			if(message == null)
-				message = getMessageAndSetRequest(destination, user, index);
 		}
-		return message;
+		
+		return null;
 	}
 	
-	public abstract Message<?> getMessageAndSetRequest(String destination, String user, int index);
-
 }

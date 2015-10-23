@@ -34,6 +34,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Component;
 
+import edu.tamu.framework.mapping.WebSocketRequestMappingHandler;
+import edu.tamu.framework.mapping.info.CustomSimpMessageMappingInfo;
 import edu.tamu.framework.model.ApiResponse;
 import edu.tamu.framework.model.Credentials;
 import edu.tamu.framework.model.WebSocketRequest;
@@ -61,6 +63,9 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 	
 	@Autowired @Lazy
 	private SimpMessagingTemplate simpMessagingTemplate;
+	
+	@Autowired @Lazy
+	private WebSocketRequestMappingHandler webSocketRequestMappingHandler;
 	
 	private static Credentials anonymousShib;
 
@@ -90,7 +95,7 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 	@Override
 	public Message<?> preSend(Message<?> message, MessageChannel channel) {
 		
-		StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+		final StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 		StompCommand command = accessor.getCommand();
 		
 		if(accessor.getDestination() != null) {
@@ -106,10 +111,10 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 		}
 		
 		switch(command) {
-//			case ABORT: { } break;
-//			case ACK: { } break;
-//			case BEGIN: { } break;
-//			case COMMIT: { } break;
+			case ABORT: { } break;
+			case ACK: { } break;
+			case BEGIN: { } break;
+			case COMMIT: { } break;
 			case CONNECT: {
 				Credentials shib;
 			    
@@ -150,15 +155,35 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 				
 				securityContext.setAuthentication(auth);
 			} break;
-//			case CONNECTED: { } break;
+			case CONNECTED: { } break;
 			case DISCONNECT: { 
 				logger.debug("Disconnecting websocket connection for " + securityContext.getAuthentication().getName() + ".");
 			} break;
-//			case ERROR: { } break;
-//			case MESSAGE: { } break;
-//			case NACK: { } break;
-//			case RECEIPT: { } break;
+			case ERROR: { } break;
+			case MESSAGE: { } break;
+			case NACK: { } break;
+			case RECEIPT: { } break;
 			case SEND: {
+				
+				WebSocketRequest request = new WebSocketRequest();
+				
+				final Message<?> m = message;
+						
+				webSocketRequestMappingHandler.getHandlerMethods().entrySet().parallelStream().forEach(info-> {
+					CustomSimpMessageMappingInfo mappingInfo = info.getKey().getMatchingCondition(m);
+					if(mappingInfo != null) {						
+						mappingInfo.getDestinationConditions().getPatterns().parallelStream().forEach(d -> {							
+							if(d.equals(accessor.getDestination())) {
+								request.setDestination(d);
+							}
+							else {
+								if(request.getDestination() == null) request.setDestination(d);
+							}
+						});
+					}
+				});
+				
+				
 				String requestId = accessor.getNativeHeader("id").get(0);
 				
 				Credentials shib;
@@ -208,12 +233,18 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 				accessor.setSessionAttributes(shibMap);
 				
 				message = MessageBuilder.withPayload("VALID").setHeaders(accessor).build();
+				
+				
+				request.setMessage(message);
 							
-				webSocketRequestService.addRequest(new WebSocketRequest(message, accessor.getDestination(), securityContext.getAuthentication().getName()));	
+				request.setUser(securityContext.getAuthentication().getName());
+				
+				webSocketRequestService.addRequest(request);	
+				
 			} break;
-//			case STOMP: { } break;
-//			case SUBSCRIBE: { } break;
-//			case UNSUBSCRIBE: { } break;
+			case STOMP: { } break;
+			case SUBSCRIBE: { } break;
+			case UNSUBSCRIBE: { } break;
 			default: { } break;
 		}
 		

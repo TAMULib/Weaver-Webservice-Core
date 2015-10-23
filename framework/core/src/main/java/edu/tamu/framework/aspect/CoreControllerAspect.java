@@ -35,11 +35,13 @@ import org.springframework.web.context.request.RequestContextHolder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import edu.tamu.framework.aspect.annotation.ApiMapping;
 import edu.tamu.framework.aspect.annotation.Auth;
-import edu.tamu.framework.aspect.annotation.interfaces.ApiMapping;
 import edu.tamu.framework.enums.CoreRoles;
 import edu.tamu.framework.model.ApiResponse;
 import edu.tamu.framework.model.Credentials;
+import edu.tamu.framework.model.HttpRequest;
+import edu.tamu.framework.model.WebSocketRequest;
 import edu.tamu.framework.service.HttpRequestService;
 import edu.tamu.framework.service.WebSocketRequestService;
 
@@ -74,7 +76,7 @@ public abstract class CoreControllerAspect {
     public ApiResponse polpulateCredentialsAndAuthorize(ProceedingJoinPoint joinPoint, Auth auth) throws Throwable {
     	
     	PreProcessObject preProcessObject = preProcess(joinPoint);
-    	        
+    	   
         if(CoreRoles.valueOf(preProcessObject.shib.getRole()).ordinal() < CoreRoles.valueOf(auth.role()).ordinal()) {
         	logger.info(preProcessObject.shib.getFirstName() + " " + preProcessObject.shib.getLastName() + "(" + preProcessObject.shib.getUin() + ") attempted restricted access.");
             return new ApiResponse(preProcessObject.requestId, ERROR, "You are not authorized for this request.");
@@ -118,14 +120,9 @@ public abstract class CoreControllerAspect {
     }
     
     private PreProcessObject preProcess(ProceedingJoinPoint joinPoint) throws Throwable {
-    	    	    	
-    	HttpServletRequest request = null;
-    	
-        Message<?> message = null;
-        
-    	StompHeaderAccessor accessor = null;
     	
     	Credentials shib = null;
+    	String apiVariable = null;    	
     	String requestId = null;
     	String data = null;    	
     	
@@ -136,16 +133,20 @@ public abstract class CoreControllerAspect {
     	Class<?> clazz = methodSignature.getDeclaringType();
         
         Method method = clazz.getDeclaredMethod(methodSignature.getName(), methodSignature.getParameterTypes());
-		
+        
         Protocol protocol;
         
         String destination = "";
         
+        Message<?> message = null;
+        
+        HttpServletRequest servletRequest = null;
+        
+        
     	if (RequestContextHolder.getRequestAttributes() != null) {
     		
     		protocol = Protocol.HTTP;
-    		
-    		
+    		    		
     		String classAnnotation;
     		
     		String methodAnnotation;
@@ -163,35 +164,47 @@ public abstract class CoreControllerAspect {
     		else {
     			methodAnnotation = method.getAnnotation(ApiMapping.class).value()[0];
     		}
-    		    		
-    		request = httpRequestService.getAndRemoveRequestByDestinationAndUser(classAnnotation + methodAnnotation, securityContext.getAuthentication().getName());
     		
-    		logger.debug("The request: " + request);
+    		HttpRequest request = httpRequestService.getAndRemoveRequestByDestinationAndUser(classAnnotation + methodAnnotation, securityContext.getAuthentication().getName());
     		
-    		if(request.getAttribute("shib") != null) {
-    			shib = (Credentials) request.getAttribute("shib");
+    		servletRequest = request.getRequest();
+    		
+    		logger.debug("The request: " + servletRequest);
+    		
+    		if(request.getDestination().contains("{")) {
+    			apiVariable = getApiVariable(request.getDestination(), servletRequest.getServletPath());
     		}
     		
-    		if(request.getAttribute("data") != null) {
-    			data = (String) request.getAttribute("data");
+    		if(servletRequest.getAttribute("shib") != null) {
+    			shib = (Credentials) servletRequest.getAttribute("shib");
+    		}
+    		
+    		if(servletRequest.getAttribute("data") != null) {
+    			data = (String) servletRequest.getAttribute("data");
     		}
     		
     	} else {
     		
     		protocol = Protocol.WEBSOCKET;
     		
-    		message = webSocketRequestService.getAndRemoveMessageByDestinationAndUser(method.getAnnotation(ApiMapping.class).value()[0], securityContext.getAuthentication().getName());
+    		WebSocketRequest request = webSocketRequestService.getAndRemoveMessageByDestinationAndUser(method.getAnnotation(ApiMapping.class).value()[0], securityContext.getAuthentication().getName());
+    		
+    		message = request.getMessage();
     		
     		logger.debug("The message: " + message);
     		
-    		accessor = StompHeaderAccessor.wrap(message);
+    		StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
     		
     		destination = accessor.getDestination().replace("ws", "queue") + "-user" + accessor.getSessionId();
     		
     		requestId = accessor.getNativeHeader("id").get(0);
     		
     		shib = (Credentials) accessor.getSessionAttributes().get("shib");
-
+    		
+    		if(request.getDestination().contains("{")) {
+    			apiVariable = getApiVariable(request.getDestination(), accessor.getDestination());
+    		}
+    		
     		if(accessor.getNativeHeader("data") != null) {
     			data = accessor.getNativeHeader("data").get(0).toString();
     		}
@@ -215,8 +228,10 @@ public abstract class CoreControllerAspect {
   		}
   		
   		for(String arg : argMap.keySet()) {
-  	
   			switch(arg) {
+	  			case "ApiVariable": {
+	  				arguments[argMap.get(arg)] = apiVariable;
+	  			} break;
 	  			case "Shib": {
 	  				arguments[argMap.get(arg)] = shib;
 	  			} break;
@@ -224,13 +239,21 @@ public abstract class CoreControllerAspect {
 	  				arguments[argMap.get(arg)] = data;
 	  			} break;
 	  			case "InputStream": {
-	  				arguments[argMap.get(arg)] = request.getInputStream();
+	  				arguments[argMap.get(arg)] = servletRequest.getInputStream();
 	  			} break;
   			}
   	
   		}
   		
 		return new PreProcessObject(shib, requestId, arguments, protocol, destination);
+    }
+    
+    protected String getApiVariable(String mapping, String path) {    	
+    	int i = 0;
+    	int max = Math.min(mapping.length(), path.length());
+    	while(i < max && mapping.charAt(i) == path.charAt(i)) i++;    	
+    	if(i > path.length()) return null;    	
+    	return path.substring(i);
     }
     
     protected class PreProcessObject {

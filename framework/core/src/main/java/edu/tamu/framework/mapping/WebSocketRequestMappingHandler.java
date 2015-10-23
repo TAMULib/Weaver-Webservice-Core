@@ -51,7 +51,9 @@ import org.springframework.util.PathMatcher;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.validation.Validator;
 
-import edu.tamu.framework.aspect.annotation.interfaces.ApiMapping;
+import edu.tamu.framework.aspect.annotation.ApiMapping;
+import edu.tamu.framework.mapping.condition.WebSocketRequestCondition;
+import edu.tamu.framework.mapping.info.CustomSimpMessageMappingInfo;
 
 public class WebSocketRequestMappingHandler extends AbstractMethodMessageHandler<CustomSimpMessageMappingInfo> implements SmartLifecycle {
 

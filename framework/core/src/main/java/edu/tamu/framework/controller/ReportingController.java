@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import edu.tamu.framework.aspect.annotation.ApiMapping;
 import edu.tamu.framework.aspect.annotation.Data;
 import edu.tamu.framework.aspect.annotation.Shib;
-import edu.tamu.framework.aspect.annotation.interfaces.ApiMapping;
 import edu.tamu.framework.model.ApiResponse;
 import edu.tamu.framework.model.Credentials;
 import edu.tamu.framework.util.EmailUtility;
