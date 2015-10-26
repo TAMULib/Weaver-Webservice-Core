@@ -61,13 +61,13 @@ public class RestRequestMappingHandler extends RequestMappingInfoHandlerMapping 
 	
 	protected RequestMappingInfo createRequestMappingInfo(ApiMapping annotation) {
 		return new RequestMappingInfo(
-				new PatternsRequestCondition(resolveEmbeddedValuesInPatterns(annotation.value())),
-				new RequestMethodsRequestCondition(annotation.method()),
-				new ParamsRequestCondition(new String[]{}),
-				new HeadersRequestCondition(new String[] {}),
-				new ConsumesRequestCondition(new String[]{}, new String[]{}),
-				new ProducesRequestCondition(new String[]{MediaType.APPLICATION_JSON_VALUE}, new String[]{}, contentNegotiationManager),
-				createCondition(annotation));
+			new PatternsRequestCondition(resolveEmbeddedValuesInPatterns(annotation.value())),
+			new RequestMethodsRequestCondition(annotation.method()),
+			new ParamsRequestCondition(new String[]{}),
+			new HeadersRequestCondition(new String[] {}),
+			new ConsumesRequestCondition(new String[]{}, new String[]{}),
+			new ProducesRequestCondition(new String[]{MediaType.APPLICATION_JSON_VALUE}, new String[]{}, contentNegotiationManager),
+			createCondition(annotation));
 	}
 	
 	protected String[] resolveEmbeddedValuesInPatterns(String[] patterns) {

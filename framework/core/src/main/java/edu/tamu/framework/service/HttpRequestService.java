@@ -37,18 +37,14 @@ public class HttpRequestService {
 		requests.remove(request);
 	}
 	
-	public synchronized HttpRequest getAndRemoveRequestByDestinationAndUser(String destination, String user) {
-		
-		for(int index = 0; index < requests.size(); index++) {
-		
-			HttpRequest request = requests.get(index);
-			
+	public synchronized HttpRequest getAndRemoveRequestByDestinationAndUser(String destination, String user) {		
+		for(int index = 0; index < requests.size(); index++) {		
+			HttpRequest request = requests.get(index);			
 			if(request.getUser().equals(user) && request.getDestination().contains(destination)) {
 				requests.remove(index);
 				return request;
 			}
-		}
-		
+		}		
 		return null;
 	}
 	

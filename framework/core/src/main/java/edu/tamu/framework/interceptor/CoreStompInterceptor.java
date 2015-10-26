@@ -22,7 +22,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.annotation.support.SimpAnnotationMethodMessageHandler;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptorAdapter;
@@ -34,8 +36,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Component;
 
+import edu.tamu.framework.aspect.annotation.ApiMapping;
 import edu.tamu.framework.mapping.WebSocketRequestMappingHandler;
-import edu.tamu.framework.mapping.info.CustomSimpMessageMappingInfo;
 import edu.tamu.framework.model.ApiResponse;
 import edu.tamu.framework.model.Credentials;
 import edu.tamu.framework.model.WebSocketRequest;
@@ -66,6 +68,9 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 	
 	@Autowired @Lazy
 	private WebSocketRequestMappingHandler webSocketRequestMappingHandler;
+	
+	@Autowired @Lazy
+	private SimpAnnotationMethodMessageHandler simpAnnotationMethodMessageHandler;
 	
 	private static Credentials anonymousShib;
 
@@ -167,22 +172,35 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 				
 				WebSocketRequest request = new WebSocketRequest();
 				
-				final Message<?> m = message;
-						
-				webSocketRequestMappingHandler.getHandlerMethods().entrySet().parallelStream().forEach(info-> {
-					CustomSimpMessageMappingInfo mappingInfo = info.getKey().getMatchingCondition(m);
-					if(mappingInfo != null) {						
-						mappingInfo.getDestinationConditions().getPatterns().parallelStream().forEach(d -> {							
-							if(d.equals(accessor.getDestination())) {
-								request.setDestination(d);
-							}
-							else {
-								if(request.getDestination() == null) request.setDestination(d);
-							}
-						});
+				// get path from ApiMapping annotation
+				webSocketRequestMappingHandler.getHandlerMethods().entrySet().parallelStream().forEach(info -> {					
+					if(request.getDestination() == null) {
+						String path = "";						
+						if(info.getValue().getMethod().getDeclaringClass().getAnnotation(ApiMapping.class) != null) {
+							path += info.getValue().getMethod().getDeclaringClass().getAnnotation(ApiMapping.class).value()[0];
+						}						
+						path += info.getValue().getMethod().getAnnotation(ApiMapping.class).value()[0];						
+						if(accessor.getDestination().contains(path)) {
+							request.setDestination(path);
+						}
 					}
 				});
 				
+				// if no path yet, get from MessageMapping annotation
+				if(request.getDestination() == null) {					
+					simpAnnotationMethodMessageHandler.getHandlerMethods().entrySet().parallelStream().forEach(info -> {
+						if(request.getDestination() == null) {
+							String path = "";							
+							if(info.getValue().getMethod().getDeclaringClass().getAnnotation(MessageMapping.class) != null) {
+								path += info.getValue().getMethod().getDeclaringClass().getAnnotation(MessageMapping.class).value()[0];
+							}							
+							path += info.getValue().getMethod().getAnnotation(MessageMapping.class).value()[0];							
+							if(accessor.getDestination().contains(path)) {
+								request.setDestination(path);
+							}
+						}
+					});
+				}
 				
 				String requestId = accessor.getNativeHeader("id").get(0);
 				
@@ -234,12 +252,13 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 				
 				message = MessageBuilder.withPayload("VALID").setHeaders(accessor).build();
 				
-				
+				// set message with enhanced accessor on request
 				request.setMessage(message);
 							
+				// set username on request
 				request.setUser(securityContext.getAuthentication().getName());
 				
-				webSocketRequestService.addRequest(request);	
+				webSocketRequestService.addRequest(request);
 				
 			} break;
 			case STOMP: { } break;

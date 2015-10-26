@@ -26,6 +26,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
+import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.security.core.context.SecurityContext;
@@ -91,6 +92,7 @@ public abstract class CoreControllerAspect {
     		apiresponse = new ApiResponse(WARNING, "Endpoint returns void!");
     	}
         
+        // if using combined ApiMapping annotation send message as similar to SendToUser annotation
         if(preProcessObject.protocol == Protocol.WEBSOCKET) {
         	simpMessagingTemplate.convertAndSend(preProcessObject.destination, apiresponse);
         }
@@ -112,6 +114,7 @@ public abstract class CoreControllerAspect {
     		apiresponse = new ApiResponse(WARNING, "Endpoint returns void!");
     	}
     	
+    	 // if using combined ApiMapping annotation send message as similar to SendToUser annotation
     	if(preProcessObject.protocol == Protocol.WEBSOCKET) {
         	simpMessagingTemplate.convertAndSend(preProcessObject.destination, apiresponse);
         }
@@ -134,6 +137,7 @@ public abstract class CoreControllerAspect {
         
         Method method = clazz.getDeclaredMethod(methodSignature.getName(), methodSignature.getParameterTypes());
         
+        
         Protocol protocol;
         
         String destination = "";
@@ -147,25 +151,23 @@ public abstract class CoreControllerAspect {
     		
     		protocol = Protocol.HTTP;
     		    		
-    		String classAnnotation;
-    		
-    		String methodAnnotation;
+    		String path = "";
     		
     		if(clazz.getAnnotationsByType(RequestMapping.class).length > 0) {
-    			classAnnotation = clazz.getAnnotationsByType(RequestMapping.class)[0].value()[0];
+    			path += clazz.getAnnotationsByType(RequestMapping.class)[0].value()[0];
     		}
     		else {
-    			classAnnotation = clazz.getAnnotationsByType(ApiMapping.class)[0].value()[0];
+    			path += clazz.getAnnotationsByType(ApiMapping.class)[0].value()[0];
     		}
     		
     		if(method.getAnnotation(RequestMapping.class) != null) {
-    			methodAnnotation = method.getAnnotation(RequestMapping.class).value()[0];
+    			path += method.getAnnotation(RequestMapping.class).value()[0];
     		}
     		else {
-    			methodAnnotation = method.getAnnotation(ApiMapping.class).value()[0];
+    			path += method.getAnnotation(ApiMapping.class).value()[0];
     		}
     		
-    		HttpRequest request = httpRequestService.getAndRemoveRequestByDestinationAndUser(classAnnotation + methodAnnotation, securityContext.getAuthentication().getName());
+    		HttpRequest request = httpRequestService.getAndRemoveRequestByDestinationAndUser(path, securityContext.getAuthentication().getName());
     		
     		servletRequest = request.getRequest();
     		
@@ -185,9 +187,25 @@ public abstract class CoreControllerAspect {
     		
     	} else {
     		
-    		protocol = Protocol.WEBSOCKET;
+    		String path = "";
     		
-    		WebSocketRequest request = webSocketRequestService.getAndRemoveMessageByDestinationAndUser(method.getAnnotation(ApiMapping.class).value()[0], securityContext.getAuthentication().getName());
+    		if(clazz.getAnnotationsByType(MessageMapping.class).length > 0) {
+    			path += clazz.getAnnotationsByType(MessageMapping.class)[0].value()[0];
+    		}
+    		else {
+    			path += clazz.getAnnotationsByType(ApiMapping.class)[0].value()[0];
+    		}
+    		
+    		if(method.getAnnotation(MessageMapping.class) != null) {
+    			path += method.getAnnotation(MessageMapping.class).value()[0];
+    			protocol = Protocol.DEFAULT;
+    		}
+    		else {
+    			path += method.getAnnotation(ApiMapping.class).value()[0];
+    			protocol = Protocol.WEBSOCKET;
+    		}
+    		
+    		WebSocketRequest request = webSocketRequestService.getAndRemoveMessageByDestinationAndUser(path, securityContext.getAuthentication().getName());
     		
     		message = request.getMessage();
     		
@@ -294,7 +312,7 @@ public abstract class CoreControllerAspect {
     }
     
     private enum Protocol {
-    	WEBSOCKET, HTTP
+    	WEBSOCKET, HTTP, DEFAULT
     }
 	
 }

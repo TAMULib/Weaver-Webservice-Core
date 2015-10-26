@@ -7,11 +7,11 @@ public class StompConnectionService {
 
 	private static int totalActiveConnections = 0;
 	
-	public synchronized void incrementActiveConnection() {
+	public synchronized void incrementActiveConnections() {
 		totalActiveConnections++;
 	}
 	
-	public synchronized void decrementActiveConnection() {
+	public synchronized void decrementActiveConnections() {
 		totalActiveConnections--;
 	}
 	

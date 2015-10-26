@@ -18,7 +18,7 @@ public class StompConnectEvent implements ApplicationListener<SessionConnectEven
 	@Override
     public void onApplicationEvent(SessionConnectEvent event) {
         StompHeaderAccessor sha = StompHeaderAccessor.wrap(event.getMessage());
-        stompConnectionService.incrementActiveConnection();
+        stompConnectionService.incrementActiveConnections();
         logger.debug("Connect event [sessionId: " + sha.getSessionId() + "]");
         logger.debug("Total number of web socket connections: " + stompConnectionService.getActiveConnections());
     }
