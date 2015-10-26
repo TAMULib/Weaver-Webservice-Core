@@ -200,7 +200,15 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 							}
 						}
 					});
+					
+					System.out.println("\n\nWS MESSAGE INTERCEPTOR: " + request.getDestination() + "\n\n");
+					
 				}
+				else {
+					System.out.println("\n\nWS API INTERCEPTOR: " + request.getDestination() + "\n\n");
+				}
+				
+				
 				
 				String requestId = accessor.getNativeHeader("id").get(0);
 				

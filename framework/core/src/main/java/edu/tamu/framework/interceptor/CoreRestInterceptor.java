@@ -203,25 +203,30 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 			if(classAnnotation != null) {
 				path += classAnnotation.value()[0];
 			}
-			path += methodApiAnnotation.value()[0];			
-			httpRequestService.addRequest(new HttpRequest(request, response, shib.getNetid(), path));			
-			return true;
+			path += methodApiAnnotation.value()[0];
+			
+			System.out.println("\nREST API INTERCEPTOR: " + path + "\n");
+			
+			httpRequestService.addRequest(new HttpRequest(request, response, shib.getNetid(), path));
+		}
+		else {
+			// get path from RequestMapping annotation
+			RequestMapping methodRequestAnnotation = ((HandlerMethod) handler).getMethodAnnotation(RequestMapping.class);
+
+			if(methodRequestAnnotation != null) {
+				RequestMapping classRequestAnnotation = ((HandlerMethod) handler).getBeanType().getAnnotation(RequestMapping.class);
+				if(classRequestAnnotation != null) {
+					path += classRequestAnnotation.value()[0];
+				}
+				path += methodRequestAnnotation.value()[0];
+				
+				System.out.println("\nREST REQUEST INTERCEPTOR: " + path + "\n");
+				
+				httpRequestService.addRequest(new HttpRequest(request, response, shib.getNetid(), path));
+			}
 		}
 		
-		// get path from RequestMapping annotation
-		RequestMapping methodRequestAnnotation = ((HandlerMethod) handler).getMethodAnnotation(RequestMapping.class);
-		
-		if(methodRequestAnnotation != null) {			
-			RequestMapping classRequestAnnotation = ((HandlerMethod) handler).getBeanType().getAnnotation(RequestMapping.class);			
-			if(classRequestAnnotation != null) {
-				path += classRequestAnnotation.value()[0];
-			}			
-			path += methodRequestAnnotation.value()[0];
-			httpRequestService.addRequest(new HttpRequest(request, response, shib.getNetid(), path));			
-			return true;
-		}
-		
-        return false;
+        return true;
     }
 	
 	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
