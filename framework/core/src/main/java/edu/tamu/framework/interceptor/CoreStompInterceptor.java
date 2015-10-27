@@ -180,44 +180,56 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 				System.out.println("\nWS INTERCEPTOR: " + accessor.getDestination() + "\n");
 				
 				// get path from ApiMapping annotation
-				webSocketRequestMappingHandler.getHandlerMethods().entrySet().stream().forEach(info -> {
+				webSocketRequestMappingHandler.getHandlerMethods().entrySet().parallelStream().forEach(info -> {
 					if(request.getDestination() == null) {
 						WebSocketRequestCondition mappingCondition = info.getKey().getDestinationConditions();
-						mappingCondition.getPatterns().stream().forEach(pattern -> {
-							if (("/ws" + pattern).equals(accessor.getDestination())) {
-								request.setDestination(pattern);
+						mappingCondition.getPatterns().parallelStream().forEach(pattern -> {
+							
+							if(pattern.contains("{")) {
+								if(((AntPathMatcher) this.pathMatcher).match(("/ws" + pattern), accessor.getDestination())) {
+									request.setDestination(pattern);
+								}
+								else if(((AntPathMatcher) this.pathMatcher).match(("/private/queue" + pattern), accessor.getDestination())) {
+									request.setDestination(pattern);
+								}
 							}
-							else if (("/private/queue" + pattern).equals(accessor.getDestination())) {
-								request.setDestination(pattern);
-							}
-							else if(((AntPathMatcher) this.pathMatcher).match(("/ws" + pattern), accessor.getDestination())) {
-								request.setDestination(pattern);
-							}
-							else if(((AntPathMatcher) this.pathMatcher).match(("/private/queue" + pattern), accessor.getDestination())) {
-								request.setDestination(pattern);
-							}
-						});
-					}
-				});
-				
-				// if no path yet, get from MessageMapping annotation
-				if(request.getDestination() == null) {
-					simpAnnotationMethodMessageHandler.getHandlerMethods().entrySet().stream().forEach(info -> {
-						if(request.getDestination() == null) {
-							DestinationPatternsMessageCondition mappingCondition = info.getKey().getDestinationConditions();
-							mappingCondition.getPatterns().stream().forEach(pattern -> {
+							else {
 								if (("/ws" + pattern).equals(accessor.getDestination())) {
 									request.setDestination(pattern);
 								}
 								else if (("/private/queue" + pattern).equals(accessor.getDestination())) {
 									request.setDestination(pattern);
 								}
-								else if(((AntPathMatcher) this.pathMatcher).match(("/ws" + pattern), accessor.getDestination())) {
-									request.setDestination(pattern);
+							}
+							
+						});
+					}
+				});
+				
+				// if no path yet, get from MessageMapping annotation
+				if(request.getDestination() == null) {
+					simpAnnotationMethodMessageHandler.getHandlerMethods().entrySet().parallelStream().forEach(info -> {
+						if(request.getDestination() == null) {
+							DestinationPatternsMessageCondition mappingCondition = info.getKey().getDestinationConditions();
+							mappingCondition.getPatterns().parallelStream().forEach(pattern -> {
+								
+								if(pattern.contains("{")) {
+									if(((AntPathMatcher) this.pathMatcher).match(("/ws" + pattern), accessor.getDestination())) {
+										request.setDestination(pattern);
+									}
+									else if(((AntPathMatcher) this.pathMatcher).match(("/private/queue" + pattern), accessor.getDestination())) {
+										request.setDestination(pattern);
+									}
 								}
-								else if(((AntPathMatcher) this.pathMatcher).match(("/private/queue" + pattern), accessor.getDestination())) {
-									request.setDestination(pattern);
+								else {
+									if (("/ws" + pattern).equals(accessor.getDestination())) {
+										request.setDestination(pattern);
+									}
+									else if (("/private/queue" + pattern).equals(accessor.getDestination())) {
+										request.setDestination(pattern);
+									}
 								}
+								
 							});
 						}
 					});
