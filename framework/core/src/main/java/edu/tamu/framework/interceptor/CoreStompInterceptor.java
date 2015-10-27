@@ -177,8 +177,6 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 				
 				WebSocketRequest request = new WebSocketRequest();
 				
-				System.out.println("\nWS INTERCEPTOR: " + accessor.getDestination() + "\n");
-				
 				// get path from ApiMapping annotation
 				webSocketRequestMappingHandler.getHandlerMethods().entrySet().stream().forEach(info -> {
 					if(request.getDestination() == null) {
@@ -232,15 +230,8 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 								
 							});
 						}
-					});
-					
-					System.out.println("\nWS MESSAGE: " + request.getDestination() + "\n");
-					
+					});					
 				}
-				else {
-					System.out.println("\nWS API: " + request.getDestination() + "\n");
-				}
-				
 				
 				
 				String requestId = accessor.getNativeHeader("id").get(0);

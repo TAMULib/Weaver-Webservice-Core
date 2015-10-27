@@ -167,8 +167,6 @@ public abstract class CoreControllerAspect {
     			path += method.getAnnotation(ApiMapping.class).value()[0];
     		}
     		
-    		System.out.println("\nREST: " + path + "\n");
-    		
     		HttpRequest request = httpRequestService.getAndRemoveRequestByDestinationAndUser(path, securityContext.getAuthentication().getName());
     		
     		servletRequest = request.getRequest();
@@ -206,8 +204,6 @@ public abstract class CoreControllerAspect {
     			path += method.getAnnotation(ApiMapping.class).value()[0];
     			protocol = Protocol.WEBSOCKET;
     		}
-    		
-    		System.out.println("\nWS: " + path + "\n");
     		
     		WebSocketRequest request = webSocketRequestService.getAndRemoveMessageByDestinationAndUser(path, securityContext.getAuthentication().getName());
     		

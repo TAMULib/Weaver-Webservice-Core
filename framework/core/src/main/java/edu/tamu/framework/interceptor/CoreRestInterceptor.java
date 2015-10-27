@@ -205,8 +205,6 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 			}
 			path += methodApiAnnotation.value()[0];
 			
-			System.out.println("\nREST API INTERCEPTOR: " + path + "\n");
-			
 			httpRequestService.addRequest(new HttpRequest(request, response, shib.getNetid(), path));
 		}
 		else {
@@ -219,8 +217,6 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 					path += classRequestAnnotation.value()[0];
 				}
 				path += methodRequestAnnotation.value()[0];
-				
-				System.out.println("\nREST REQUEST INTERCEPTOR: " + path + "\n");
 				
 				httpRequestService.addRequest(new HttpRequest(request, response, shib.getNetid(), path));
 			}
