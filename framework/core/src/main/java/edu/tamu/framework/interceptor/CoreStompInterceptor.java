@@ -180,10 +180,10 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 				System.out.println("\nWS INTERCEPTOR: " + accessor.getDestination() + "\n");
 				
 				// get path from ApiMapping annotation
-				webSocketRequestMappingHandler.getHandlerMethods().entrySet().parallelStream().forEach(info -> {
+				webSocketRequestMappingHandler.getHandlerMethods().entrySet().stream().forEach(info -> {
 					if(request.getDestination() == null) {
 						WebSocketRequestCondition mappingCondition = info.getKey().getDestinationConditions();
-						mappingCondition.getPatterns().parallelStream().forEach(pattern -> {
+						mappingCondition.getPatterns().stream().forEach(pattern -> {
 							
 							if(pattern.contains("{")) {
 								if(((AntPathMatcher) this.pathMatcher).match(("/ws" + pattern), accessor.getDestination())) {
@@ -208,10 +208,10 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 				
 				// if no path yet, get from MessageMapping annotation
 				if(request.getDestination() == null) {
-					simpAnnotationMethodMessageHandler.getHandlerMethods().entrySet().parallelStream().forEach(info -> {
+					simpAnnotationMethodMessageHandler.getHandlerMethods().entrySet().stream().forEach(info -> {
 						if(request.getDestination() == null) {
 							DestinationPatternsMessageCondition mappingCondition = info.getKey().getDestinationConditions();
-							mappingCondition.getPatterns().parallelStream().forEach(pattern -> {
+							mappingCondition.getPatterns().stream().forEach(pattern -> {
 								
 								if(pattern.contains("{")) {
 									if(((AntPathMatcher) this.pathMatcher).match(("/ws" + pattern), accessor.getDestination())) {

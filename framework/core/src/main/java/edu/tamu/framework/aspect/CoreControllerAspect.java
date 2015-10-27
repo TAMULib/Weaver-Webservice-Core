@@ -209,8 +209,6 @@ public abstract class CoreControllerAspect {
     		
     		System.out.println("\nWS: " + path + "\n");
     		
-    		System.out.println("\nWS: " + method.getName() + "\n");
-    		
     		WebSocketRequest request = webSocketRequestService.getAndRemoveMessageByDestinationAndUser(path, securityContext.getAuthentication().getName());
     		
     		message = request.getMessage();
