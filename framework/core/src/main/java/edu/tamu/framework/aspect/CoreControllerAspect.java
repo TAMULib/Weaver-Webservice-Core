@@ -271,6 +271,8 @@ public abstract class CoreControllerAspect {
     }
     
     protected String getApiVariable(String mapping, String path) {
+    	if(path.contains("/ws")) mapping = "/ws" + mapping;
+    	if(path.contains("/private/queue")) mapping = "/private/queue" + mapping;    	
     	String variable = path.substring(mapping.indexOf("{"));    	
     	int stop = variable.indexOf("/");    	
     	if(stop > -1) {    	

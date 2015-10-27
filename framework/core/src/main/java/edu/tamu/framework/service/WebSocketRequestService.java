@@ -37,9 +37,9 @@ public class WebSocketRequestService {
 		requests.remove(request);
 	}
 	
-	public synchronized WebSocketRequest getAndRemoveMessageByDestinationAndUser(String destination, String user) {		
+	public synchronized WebSocketRequest getAndRemoveMessageByDestinationAndUser(String destination, String user) {
 		for(int index = 0; index < requests.size(); index++) {			
-			WebSocketRequest request = requests.get(index);			
+			WebSocketRequest request = requests.get(index);
 			if(request.getUser().equals(user) && request.getDestination().contains(destination)) {
 				requests.remove(index);
 				return request;

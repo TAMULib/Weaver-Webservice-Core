@@ -198,7 +198,7 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 		// get path from ApiMapping annotation
 		ApiMapping methodApiAnnotation = ((HandlerMethod) handler).getMethodAnnotation(ApiMapping.class);
 		
-		if(methodApiAnnotation != null) {			
+		if(methodApiAnnotation != null) {
 			ApiMapping classAnnotation = ((HandlerMethod) handler).getBeanType().getAnnotation(ApiMapping.class);			
 			if(classAnnotation != null) {
 				path += classAnnotation.value()[0];
