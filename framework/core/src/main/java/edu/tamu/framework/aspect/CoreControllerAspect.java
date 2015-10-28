@@ -14,8 +14,8 @@ import static edu.tamu.framework.enums.ApiResponseType.WARNING;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -125,7 +125,7 @@ public abstract class CoreControllerAspect {
     private PreProcessObject preProcess(ProceedingJoinPoint joinPoint) throws Throwable {
     	
     	Credentials shib = null;
-    	String apiVariable = null;    	
+    	List<String> apiVariables = null;    	
     	String requestId = null;
     	String data = null;    	
     	
@@ -151,6 +151,7 @@ public abstract class CoreControllerAspect {
     		
     		protocol = Protocol.HTTP;
     		    		
+    		// determine endpoint path either from ApiMapping or RequestMapping annotation
     		String path = "";
     		
     		if(clazz.getAnnotationsByType(RequestMapping.class).length > 0) {
@@ -174,7 +175,7 @@ public abstract class CoreControllerAspect {
     		logger.debug("The request: " + servletRequest);
     		
     		if(request.getDestination().contains("{")) {
-    			apiVariable = getApiVariable(request.getDestination(), servletRequest.getServletPath());
+    			apiVariables = getApiVariable(request.getDestination(), servletRequest.getServletPath());
     		}
     		
     		if(servletRequest.getAttribute("shib") != null) {
@@ -187,6 +188,7 @@ public abstract class CoreControllerAspect {
     		
     	} else {
     		
+    		// determine endpoint path either from ApiMapping or MessageMapping annotation
     		String path = "";
     		
     		if(clazz.getAnnotationsByType(MessageMapping.class).length > 0) {
@@ -220,61 +222,57 @@ public abstract class CoreControllerAspect {
     		shib = (Credentials) accessor.getSessionAttributes().get("shib");
     		
     		if(request.getDestination().contains("{")) {
-    			apiVariable = getApiVariable(request.getDestination(), accessor.getDestination());
+    			apiVariables = getApiVariable(request.getDestination(), accessor.getDestination());
     		}
     		
     		if(accessor.getNativeHeader("data") != null) {
     			data = accessor.getNativeHeader("data").get(0).toString();
     		}
-    	}  
+    	}
     	
-		Map<String, Integer> argMap = new HashMap<String, Integer>();
-  		
-  		int index = 0;
-  		for (Annotation[] annotations : method.getParameterAnnotations()) {
-  			
+    	int n = 0, index = 0;
+  		for (Annotation[] annotations : method.getParameterAnnotations()) {  			
+  			String annotationString = null;  			
   			for (Annotation annotation : annotations) {
-
-  				String annotationString = annotation.toString();
-  				
-  				annotationString = annotationString.substring(annotationString.lastIndexOf('.')+1).replace("()", "");
-		
-  				argMap.put(annotationString, index);
-            
-  			}
-  			index++;
-  		}
-  		
-  		for(String arg : argMap.keySet()) {
-  			switch(arg) {
-	  			case "ApiVariable": {
-	  				arguments[argMap.get(arg)] = apiVariable;
+  				annotationString = annotation.toString();
+  				annotationString = annotationString.substring(annotationString.lastIndexOf('.') + 1).replace("()", "");
+			}  			
+  			switch(annotationString) {
+	  			case "ApiVariable": {	  				
+	  				arguments[index] = apiVariables.get(n); n++;
 	  			} break;
 	  			case "Shib": {
-	  				arguments[argMap.get(arg)] = shib;
+	  				arguments[index] = shib;
 	  			} break;
 	  			case "Data": {
-	  				arguments[argMap.get(arg)] = data;
+	  				arguments[index] = data;
 	  			} break;
 	  			case "InputStream": {
-	  				arguments[argMap.get(arg)] = servletRequest.getInputStream();
+	  				arguments[index] = servletRequest.getInputStream();
 	  			} break;
-  			}
-  	
+			}
+  			index++;
   		}
-  		
+  		  		
 		return new PreProcessObject(shib, requestId, arguments, protocol, destination);
     }
     
-    protected String getApiVariable(String mapping, String path) {
+    protected List<String> getApiVariable(String mapping, String path) {
     	if(path.contains("/ws")) mapping = "/ws" + mapping;
-    	if(path.contains("/private/queue")) mapping = "/private/queue" + mapping;    	
-    	String variable = path.substring(mapping.indexOf("{"));    	
-    	int stop = variable.indexOf("/");    	
-    	if(stop > -1) {    	
-    		variable = variable.substring(0, stop);
+    	if(path.contains("/private/queue")) mapping = "/private/queue" + mapping;
+    	
+    	List<String> valuesList = new ArrayList<String>();
+    	
+    	String[] keys = mapping.split("/");
+    	String[] values = path.split("/");
+    	
+    	for(int i = 0; i < keys.length; i++) {
+    		if(keys[i].contains("{") && keys[i].contains("}")) {
+    			valuesList.add(values[i]);
+    		}
     	}
-    	return variable;
+    	
+    	return valuesList;
     }
     
     protected class PreProcessObject {
