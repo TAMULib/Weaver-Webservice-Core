@@ -236,21 +236,23 @@ public abstract class CoreControllerAspect {
   			for (Annotation annotation : annotations) {
   				annotationString = annotation.toString();
   				annotationString = annotationString.substring(annotationString.lastIndexOf('.') + 1).replace("()", "");
-			}  			
-  			switch(annotationString) {
-	  			case "ApiVariable": {	  				
-	  				arguments[index] = apiVariables.get(n); n++;
-	  			} break;
-	  			case "Shib": {
-	  				arguments[index] = shib;
-	  			} break;
-	  			case "Data": {
-	  				arguments[index] = data;
-	  			} break;
-	  			case "InputStream": {
-	  				arguments[index] = servletRequest.getInputStream();
-	  			} break;
 			}
+  			if(annotationString != null) {
+	  			switch(annotationString) {
+		  			case "ApiVariable": {	  				
+		  				arguments[index] = apiVariables.get(n); n++;
+		  			} break;
+		  			case "Shib": {
+		  				arguments[index] = shib;
+		  			} break;
+		  			case "Data": {
+		  				arguments[index] = data;
+		  			} break;
+		  			case "InputStream": {
+		  				arguments[index] = servletRequest.getInputStream();
+		  			} break;
+				}
+  			}
   			index++;
   		}
   		  		
