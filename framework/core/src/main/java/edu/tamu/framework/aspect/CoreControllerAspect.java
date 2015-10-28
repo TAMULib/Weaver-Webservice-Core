@@ -14,8 +14,8 @@ import static edu.tamu.framework.enums.ApiResponseType.WARNING;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -125,14 +125,16 @@ public abstract class CoreControllerAspect {
     private PreProcessObject preProcess(ProceedingJoinPoint joinPoint) throws Throwable {
     	
     	Credentials shib = null;
-    	List<String> apiVariables = null;    	
+    	Map<String, String> apiVariables = null;    	
     	String requestId = null;
-    	String data = null;    	
+    	String data = null;    
+    	
+    	MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
     	
     	Object[] arguments = joinPoint.getArgs();
     	
-    	MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
-        
+    	String[] argNames = methodSignature.getParameterNames();
+    	
     	Class<?> clazz = methodSignature.getDeclaringType();
         
         Method method = clazz.getDeclaredMethod(methodSignature.getName(), methodSignature.getParameterTypes());
@@ -230,17 +232,20 @@ public abstract class CoreControllerAspect {
     		}
     	}
     	
-    	int n = 0, index = 0;
-  		for (Annotation[] annotations : method.getParameterAnnotations()) {  			
-  			String annotationString = null;  			
-  			for (Annotation annotation : annotations) {
-  				annotationString = annotation.toString();
-  				annotationString = annotationString.substring(annotationString.lastIndexOf('.') + 1).replace("()", "");
-			}
-  			if(annotationString != null) {
+    	int index = 0;
+    	for (Annotation[] annotations : method.getParameterAnnotations()) {  
+    		
+    		String annotationString = null;
+    		
+    		for (Annotation annotation : annotations) {
+    			annotationString = annotation.toString();
+    			annotationString = annotationString.substring(annotationString.lastIndexOf('.') + 1, annotationString.indexOf("("));
+    		}
+    		
+  			if(annotationString != null) {  				
 	  			switch(annotationString) {
-		  			case "ApiVariable": {	  				
-		  				arguments[index] = apiVariables.get(n); n++;
+		  			case "ApiVariable": {
+		  				arguments[index] = apiVariables.get(argNames[index]);
 		  			} break;
 		  			case "Shib": {
 		  				arguments[index] = shib;
@@ -253,28 +258,28 @@ public abstract class CoreControllerAspect {
 		  			} break;
 				}
   			}
-  			index++;
-  		}
+  			index++;  			
+    	}
   		  		
 		return new PreProcessObject(shib, requestId, arguments, protocol, destination);
     }
     
-    protected List<String> getApiVariable(String mapping, String path) {
+    protected Map<String, String> getApiVariable(String mapping, String path) {
     	if(path.contains("/ws")) mapping = "/ws" + mapping;
     	if(path.contains("/private/queue")) mapping = "/private/queue" + mapping;
     	
-    	List<String> valuesList = new ArrayList<String>();
+    	 Map<String, String> valuesMap = new HashMap<String, String>();
     	
     	String[] keys = mapping.split("/");
     	String[] values = path.split("/");
     	
     	for(int i = 0; i < keys.length; i++) {
     		if(keys[i].contains("{") && keys[i].contains("}")) {
-    			valuesList.add(values[i]);
+    			valuesMap.put(keys[i].substring(1, keys[i].length() - 1), values[i]);
     		}
     	}
     	
-    	return valuesList;
+    	return valuesMap;
     }
     
     protected class PreProcessObject {
