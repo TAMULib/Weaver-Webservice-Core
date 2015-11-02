@@ -13,7 +13,6 @@ import java.util.List;
 
 import javax.xml.transform.Source;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -26,7 +25,6 @@ import org.springframework.http.converter.support.AllEncompassingFormHttpMessage
 import org.springframework.http.converter.xml.SourceHttpMessageConverter;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import com.fasterxml.jackson.core.JsonParser;
@@ -44,9 +42,7 @@ import edu.tamu.framework.service.StompConnectionService;
  *
  */
 @Configuration
-@EnableWebMvc
 @ComponentScan(basePackages = {"edu.tamu.framework.config", "edu.tamu.framework.interceptor", "edu.tamu.framework.controller"})
-@ConfigurationProperties(prefix="app.controller")
 public class CoreWebAppConfig extends WebMvcConfigurerAdapter {	
 	
 	/**

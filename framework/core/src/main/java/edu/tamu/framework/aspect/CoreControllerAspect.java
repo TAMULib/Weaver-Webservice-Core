@@ -73,7 +73,7 @@ public abstract class CoreControllerAspect {
 
 	private static final Logger logger = Logger.getLogger(CoreControllerAspect.class);
 	
-    @Around("execution(* edu.tamu.*.controller.*.*(..)) && !@annotation(edu.tamu.framework.aspect.annotation.SkipAop) && @annotation(auth)")
+    @Around("execution(* *.*.*.controller.*.*(..)) && !@annotation(edu.tamu.framework.aspect.annotation.SkipAop) && @annotation(auth)")
     public ApiResponse polpulateCredentialsAndAuthorize(ProceedingJoinPoint joinPoint, Auth auth) throws Throwable {
     	
     	PreProcessObject preProcessObject = preProcess(joinPoint);
@@ -100,7 +100,7 @@ public abstract class CoreControllerAspect {
         return apiresponse;
     }
     
-    @Around("execution(* edu.tamu.*.controller.*.*(..)) && !@annotation(edu.tamu.framework.aspect.annotation.SkipAop) && !@annotation(edu.tamu.framework.aspect.annotation.Auth)")
+    @Around("execution(* *.*.*.controller.*.*(..)) && !@annotation(edu.tamu.framework.aspect.annotation.SkipAop) && !@annotation(edu.tamu.framework.aspect.annotation.Auth)")
     public ApiResponse populateCredentials(ProceedingJoinPoint joinPoint) throws Throwable {
     	
     	PreProcessObject preProcessObject = preProcess(joinPoint);
@@ -123,7 +123,7 @@ public abstract class CoreControllerAspect {
     }
     
     private PreProcessObject preProcess(ProceedingJoinPoint joinPoint) throws Throwable {
-    	
+        
     	Credentials shib = null;
     	Map<String, String> apiVariables = null;    	
     	String requestId = null;
