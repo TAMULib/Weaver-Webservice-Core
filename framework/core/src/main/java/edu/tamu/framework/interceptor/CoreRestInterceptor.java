@@ -63,8 +63,6 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 	
 	private static Credentials anonymousShib;
 	
-	private List<String> currentUsers = new ArrayList<String>();
-	
 	private static final Logger logger = Logger.getLogger(CoreRestInterceptor.class);
 	
 	public CoreRestInterceptor() {
@@ -140,6 +138,7 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 			
 			if(!accepted) {
 				shib = anonymousShib;
+				shib.setNetid(shib.getNetid() + "-" + Math.round(Math.random()*100000));
 			}
 		}
 		else {
@@ -181,12 +180,6 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 		
 		grantedAuthorities.add(new SimpleGrantedAuthority(shib.getRole()));
 		
-		if(("ROLE_ANONYMOUS").equals(shib.getRole())) {
-			shib.setNetid(shib.getNetid() + "-" + currentUsers.size());			
-		}
-
-		currentUsers.add(shib.getNetid());
-
 		Authentication auth = new AnonymousAuthenticationToken(shib.getUin(), shib.getNetid(), grantedAuthorities);
 
 		auth.setAuthenticated(true);
@@ -226,9 +219,7 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
     }
 	
 	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-		logger.debug(securityContext.getAuthentication().getName() + " has finished their http request.");
-		currentUsers.remove(securityContext.getAuthentication().getName());
-		logger.debug("There are now " + currentUsers.size() + " users making http requests.");
+		
 	}
     
 	
