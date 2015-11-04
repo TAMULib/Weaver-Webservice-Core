@@ -138,7 +138,9 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 			
 			if(!accepted) {
 				shib = anonymousShib;
-				shib.setNetid(shib.getNetid() + "-" + Math.round(Math.random()*100000));
+				if(!shib.getNetid().contains("-")) {
+                    shib.setNetid(shib.getNetid() + "-" + Math.round(Math.random()*100000));
+                }
 			}
 		}
 		else {

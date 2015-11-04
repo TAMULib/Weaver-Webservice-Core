@@ -152,7 +152,9 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 			    }
 				else {
 					shib = anonymousShib;
-					shib.setNetid(shib.getNetid() + "-" + Math.round(Math.random()*100000));
+					if(!shib.getNetid().contains("-")) {
+					    shib.setNetid(shib.getNetid() + "-" + Math.round(Math.random()*100000));
+					}
 				}
 				
 				List<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
