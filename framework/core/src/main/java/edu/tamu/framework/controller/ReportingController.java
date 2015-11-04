@@ -30,7 +30,7 @@ public class ReportingController {
 	@Autowired
 	private ObjectMapper objectMapper;
 	
-	@ApiMapping(value = "/report/error", method = POST)
+	@ApiMapping(value = "/error", method = POST)
 	public ApiResponse reportError(@Shib Object shibObj, @Data String data) throws Exception {
 
 		Credentials shib = (Credentials) shibObj;

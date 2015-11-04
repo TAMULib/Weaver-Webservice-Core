@@ -76,22 +76,24 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 	
 	private final PathMatcher pathMatcher;
 	
-	private static Credentials anonymousShib;
-
 	private static final Logger logger = Logger.getLogger(CoreStompInterceptor.class);
 	
-	public CoreStompInterceptor() {
-		anonymousShib = new Credentials();
-		anonymousShib.setAffiliation("NA");
-		anonymousShib.setLastName("Anonymous");
-		anonymousShib.setFirstName("Role");
-		anonymousShib.setNetid("anonymous");
-		anonymousShib.setUin("000000000");
-		anonymousShib.setExp("1436982214754");
-		anonymousShib.setEmail("helpdesk@library.tamu.edu");
-		anonymousShib.setRole( "ROLE_ANONYMOUS");
+	public CoreStompInterceptor() {		
 		pathMatcher = (PathMatcher) new AntPathMatcher();
 	}
+	
+	public Credentials getAnonymousShib() {
+        Credentials anonymousShib = new Credentials();
+        anonymousShib.setAffiliation("NA");
+        anonymousShib.setLastName("Anonymous");
+        anonymousShib.setFirstName("Role");
+        anonymousShib.setNetid("anonymous-" + Math.round(Math.random()*100000));
+        anonymousShib.setUin("000000000");
+        anonymousShib.setExp("1436982214754");
+        anonymousShib.setEmail("helpdesk@library.tamu.edu");
+        anonymousShib.setRole( "ROLE_ANONYMOUS");
+        return anonymousShib;
+    }
 	
 	/**
 	 * Override method to perform preprocessing before sending message.
@@ -151,8 +153,7 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 												
 			    }
 				else {
-					shib = anonymousShib;
-					shib.setNetid(shib.getNetid() + "-" + Math.round(Math.random()*100000));
+					shib = getAnonymousShib();
 				}
 				
 				List<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
@@ -273,7 +274,7 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 
 				}
 				else {
-					shib = anonymousShib;
+					shib = getAnonymousShib();
 				}
 										
 				Map<String, Object> shibMap = new HashMap<String, Object>();

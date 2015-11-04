@@ -125,9 +125,14 @@ public abstract class CoreControllerAspect {
     private PreProcessObject preProcess(ProceedingJoinPoint joinPoint) throws Throwable {
         
     	Credentials shib = null;
-    	Map<String, String> apiVariables = null;    	
+    	
+    	Map<String, String> apiVariables = null;
+    	
     	String requestId = null;
-    	String data = null;    
+    	
+    	String data = null;
+    	
+    	Map<String, String[]> parameters = new HashMap<String, String[]>();
     	
     	MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
     	
@@ -173,6 +178,8 @@ public abstract class CoreControllerAspect {
     		HttpRequest request = httpRequestService.getAndRemoveRequestByDestinationAndUser(path, securityContext.getAuthentication().getName());
     		
     		servletRequest = request.getRequest();
+    		
+    		parameters = servletRequest.getParameterMap();
     		
     		logger.debug("The request: " + servletRequest);
     		
@@ -253,6 +260,9 @@ public abstract class CoreControllerAspect {
 		  			case "Data": {
 		  				arguments[index] = data;
 		  			} break;
+		  			case "Parameters": {
+                        arguments[index] = parameters;
+                    } break;
 		  			case "InputStream": {
 		  				arguments[index] = servletRequest.getInputStream();
 		  			} break;

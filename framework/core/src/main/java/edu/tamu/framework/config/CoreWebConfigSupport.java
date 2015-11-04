@@ -30,6 +30,7 @@ public abstract class CoreWebConfigSupport extends WebMvcConfigurationSupport {
 	@Bean
 	public RestRequestMappingHandler restRequestMappingHandler() {
 		RestRequestMappingHandler handlerMapping = new RestRequestMappingHandler(contentNegotiationManager);
+		handlerMapping.setOrder(1);
 		handlerMapping.setInterceptors(new Object[] { getRestInterceptor() });
 		return handlerMapping;
 	}
@@ -41,5 +42,4 @@ public abstract class CoreWebConfigSupport extends WebMvcConfigurationSupport {
 		WebSocketRequestMappingHandler handlerMapping = new WebSocketRequestMappingHandler(clientInboundChannel, clientOutboundChannel, brokerTemplate);
 		return handlerMapping;
 	}
-	
 }
