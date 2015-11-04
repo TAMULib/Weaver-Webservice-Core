@@ -1,6 +1,16 @@
+/* 
+ * HttpUtility.java 
+ * 
+ * Version: 
+ *     $Id$ 
+ * 
+ * Revisions: 
+ *     $Log$ 
+ */
 package edu.tamu.framework.util;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -10,9 +20,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class HttpUtility {
 
-	public String makeHttpRequest(String urlString, String method) throws Exception {
-		
-		//System.out.println(urlString);
+	public String makeHttpRequest(String urlString, String method) throws IOException {
 		
 		URL url = new URL(urlString);
 		
@@ -34,4 +42,5 @@ public class HttpUtility {
 		
 		return strBufRes.toString();
 	}
+	
 }

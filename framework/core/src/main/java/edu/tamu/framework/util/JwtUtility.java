@@ -1,5 +1,5 @@
 /* 
- * JWTservice.java 
+ * JwtUtility.java 
  * 
  * Version: 
  *     $Id$ 
@@ -12,7 +12,9 @@ package edu.tamu.framework.util;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,6 +25,7 @@ import javax.crypto.Mac;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.jwt.Jwt;
@@ -50,6 +53,7 @@ public class  JwtUtility {
 	@Autowired
 	public ObjectMapper objectMapper;
 	
+	private static final Logger logger = Logger.getLogger(JwtUtility.class);
 	
 	/**
 	 * Constructor.
@@ -127,7 +131,7 @@ public class  JwtUtility {
 		try {
 			token = JwtHelper.decodeAndVerify(new String(decValue), hmac);
 		} catch (Exception e) {
-			System.out.println("Invalid token! Not verified!");
+			logger.error("Invalid token! Not verified!");
 			tokenMap.put("ERROR", "INVALID_JWT");
 			return tokenMap;
 		}
@@ -135,7 +139,7 @@ public class  JwtUtility {
 		try {
 			tokenMap = objectMapper.readValue(token.getClaims(), Map.class);
 		} catch (Exception e) {
-			System.out.println("Invalid token! Unable to map!");
+			logger.error("Invalid token! Unable to map!");
 			tokenMap.put("ERROR", "INVALID_JWT");
 			return tokenMap;
 		}
@@ -147,16 +151,22 @@ public class  JwtUtility {
 	public boolean isExpired(Map<String, String> tokenMap) {
 		long currentTime = Calendar.getInstance().getTime().getTime()+90000;
 		
-		System.out.println(tokenMap.get("exp"));
-		
 		long expTime = Long.parseLong(tokenMap.get("exp"));
 		
+		if(logger.isDebugEnabled()) {
+			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy - hh:mm:ss");
+			logger.debug("Token expiration time: " + sdf.format(new Date(expTime)));
+		}		
+		
 		if(expTime < currentTime) {
-			System.out.println("Token expired!");
 			return true;
 		}
 		else {
-			System.out.println("Token expires in " + ((expTime - currentTime))/1000 + " seconds");
+			Long remainingTimeInSeconds =  (expTime - currentTime)/1000;
+			if(remainingTimeInSeconds > 60)
+				logger.debug("Token expires in " + remainingTimeInSeconds/60  + " minutes.");
+			else
+				logger.debug("Token expires in " + remainingTimeInSeconds + " seconds.");
 		}
 		
 		return false;

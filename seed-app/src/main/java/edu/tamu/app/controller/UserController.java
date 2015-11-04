@@ -23,15 +23,17 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import static edu.tamu.framework.enums.ApiResponseType.ERROR;
+import static edu.tamu.framework.enums.ApiResponseType.REFRESH;
+import static edu.tamu.framework.enums.ApiResponseType.SUCCESS;
+
 import edu.tamu.app.model.AppUser;
 import edu.tamu.app.model.repo.UserRepo;
 import edu.tamu.framework.aspect.annotation.Auth;
 import edu.tamu.framework.aspect.annotation.Data;
-import edu.tamu.framework.aspect.annotation.ReqId;
 import edu.tamu.framework.aspect.annotation.Shib;
 import edu.tamu.framework.model.ApiResponse;
 import edu.tamu.framework.model.Credentials;
-import edu.tamu.framework.model.RequestId;
 
 /** 
  * User Controller
@@ -58,7 +60,7 @@ public class UserController {
 	 * 
 	 * @param 		message			Message<?>
 	 * 
-	 * @return		ApiResImpl
+	 * @return		ApiResponse
 	 * 
 	 * @throws 		Exception
 	 * 
@@ -66,14 +68,14 @@ public class UserController {
 	@MessageMapping("/credentials")
 	@SendToUser
 	@Auth
-	public ApiResponse credentials(@Shib Object credentials, @ReqId String requestId) throws Exception {
+	public ApiResponse credentials(@Shib Object credentials) throws Exception {
 		
 		Credentials shib = (Credentials) credentials;
 		shib.setRole(userRepo.getUserByUin(Long.parseLong(shib.getUin())).getRole());
 		
 		if(shib != null && userRepo.getUserByUin(Long.parseLong(shib.getUin())) == null) 
-			return new ApiResponse("failure", "user not registered");		
-		return shib != null ? new ApiResponse("success", shib, new RequestId(requestId)) : new ApiResponse("refresh", "EXPIRED_JWT", new RequestId(requestId));
+			return new ApiResponse(ERROR, "user not registered");		
+		return shib != null ? new ApiResponse(SUCCESS, shib) : new ApiResponse(REFRESH, "EXPIRED_JWT");
 	}
 	
 	/**
@@ -89,12 +91,12 @@ public class UserController {
 	@MessageMapping("/all")
 	@SendToUser
 	@Auth(role="ROLE_MANAGER")
-	public ApiResponse allUsers(@ReqId String requestId) throws Exception {
+	public ApiResponse allUsers() throws Exception {
 			
 		Map<String,List<AppUser>> map = new HashMap<String,List<AppUser>>();
 		map.put("list", userRepo.findAll());	
 		
-		return new ApiResponse("success", map, new RequestId(requestId));
+		return new ApiResponse(SUCCESS, map);
 	}
 	
 	/**
@@ -110,7 +112,7 @@ public class UserController {
 	@MessageMapping("/update-role")
 	@SendToUser
 	@Auth(role="ROLE_MANAGER")
-	public ApiResponse updateRole(@Data String data, @ReqId String requestId) throws Exception {		
+	public ApiResponse updateRole(@Data String data) throws Exception {		
 		
 		Map<String,String> map = new HashMap<String,String>();		
 		try {
@@ -126,9 +128,9 @@ public class UserController {
 		userMap.put("list", userRepo.findAll());
 		userMap.put("changedUserUin", map.get("uin"));
 		
-		this.simpMessagingTemplate.convertAndSend("/channel/users", new ApiResponse("success", userMap, new RequestId(requestId)));
+		this.simpMessagingTemplate.convertAndSend("/channel/users", new ApiResponse(SUCCESS, userMap));
 		
-		return new ApiResponse("success", "ok", new RequestId(requestId));
+		return new ApiResponse(SUCCESS, "ok");
 	}
 
 }

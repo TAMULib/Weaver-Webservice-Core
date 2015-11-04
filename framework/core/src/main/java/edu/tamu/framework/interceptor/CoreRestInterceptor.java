@@ -18,6 +18,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -27,11 +28,12 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+import edu.tamu.framework.aspect.annotation.ApiMapping;
 import edu.tamu.framework.model.Credentials;
 import edu.tamu.framework.model.HttpRequest;
 import edu.tamu.framework.service.HttpRequestService;
@@ -45,19 +47,10 @@ import edu.tamu.framework.util.JwtUtility;
  *
  */
 @Component
-public class CoreRestInterceptor extends HandlerInterceptorAdapter {
+public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 
-	@Value("${app.security.jwt.secret_key}")
-	private String secret_key;
-	
-	@Value("${app.authority.admins}")
-	private String[] admins;
-	
 	@Value("${app.whitelist}")
 	private String[] whitelist;
-	
-	@Autowired
-	private ObjectMapper objectMapper;
 	
 	@Autowired
 	private JwtUtility jwtService;
@@ -68,7 +61,21 @@ public class CoreRestInterceptor extends HandlerInterceptorAdapter {
 	@Autowired
 	private SecurityContext securityContext;
 	
-	private List<String> currentUsers = new ArrayList<String>();
+	private static Credentials anonymousShib;
+	
+	private static final Logger logger = Logger.getLogger(CoreRestInterceptor.class);
+	
+	public CoreRestInterceptor() {
+		anonymousShib = new Credentials();
+		anonymousShib.setAffiliation("NA");
+		anonymousShib.setLastName("Anonymous");
+		anonymousShib.setFirstName("Role");
+		anonymousShib.setNetid("anonymous");
+		anonymousShib.setUin("000000000");
+		anonymousShib.setExp("1436982214754");
+		anonymousShib.setEmail("helpdesk@library.tamu.edu");
+		anonymousShib.setRole( "ROLE_ANONYMOUS");
+	}
 	
 	/**
 	 * Handle request to decode and verify. Return error or continue to controller.
@@ -82,11 +89,14 @@ public class CoreRestInterceptor extends HandlerInterceptorAdapter {
 	 * @exception	Exception
 	 */
 	@Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-				
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {		
 		Map<String, String> credentialMap = new HashMap<String, String>();
+				
+		String jwt = request.getHeader("jwt");
 		
-		if(request.getHeader("jwt") == null) {
+		Credentials shib = null;
+		
+		if(jwt == null) {
 			
 			String ip = request.getHeader("X-FORWARDED-FOR");
 			
@@ -94,13 +104,14 @@ public class CoreRestInterceptor extends HandlerInterceptorAdapter {
 				ip = request.getRemoteAddr();
 			}
 			
-			System.out.println("Referrer: " + ip);
+			logger.debug("Referrer: " + ip);			
 			
-			Enumeration<String> headers = request.getHeaderNames();
-			
-			while(headers.hasMoreElements()) {
-				String key = (String) headers.nextElement();
-				System.out.println(key + ": "+request.getHeader(key));
+			if(logger.isDebugEnabled()) {
+				Enumeration<String> headers = request.getHeaderNames();
+				while(headers.hasMoreElements()) {
+					String key = (String) headers.nextElement();
+					logger.debug(key + ": " + request.getHeader(key));
+				}
 			}
 			
 			if (ip == null) {
@@ -118,38 +129,48 @@ public class CoreRestInterceptor extends HandlerInterceptorAdapter {
 					credentialMap.put("uin", "123456789");
 					credentialMap.put("exp", "1436982214754");
 					credentialMap.put("email", "helpdesk@library.tamu.edu");
+					credentialMap.put("role", "ROLE_ADMIN");
 					accepted = true;
+					shib = new Credentials(credentialMap);
 					break;
 				}
 			}
 			
 			if(!accepted) {
-				throw new MissingJwtException();
+				shib = anonymousShib;
+				shib.setNetid(shib.getNetid() + "-" + Math.round(Math.random()*100000));
 			}
-			
 		}
 		else {
 			credentialMap = jwtService.validateJWT(request.getHeader("jwt"));
 			
+			if(logger.isDebugEnabled()) {
+				Enumeration<String> headers = request.getHeaderNames();
+				while(headers.hasMoreElements()) {
+					String key = (String) headers.nextElement();
+					logger.debug(key + ": "+request.getHeader(key));
+				}
+				
+				logger.debug("Credential Map");
+				for(String key : credentialMap.keySet()) {
+					logger.debug(key+" - "+credentialMap.get(key));
+				}
+			}
+			
 			String error = credentialMap.get("ERROR"); 
 	    	if(error != null) {	    		
-	    		System.out.println("JWT error: " + error);	    		
-	    		throw new InvalidJwtException();	    		
+	    		logger.error("JWT error: " + error);	    		
+	    		throw new InvalidJwtException();
 	    	}
 	    	
 	    	if(jwtService.isExpired(credentialMap)) {
-	    		System.out.println("Token expired!");
+	    		logger.info("The token for "+credentialMap.get("firstName")+" "+credentialMap.get("lastName")+" ("+credentialMap.get("uin")+") has expired. Attempting to get new token.");
 				throw new ExpiredJwtException();		
 			}
+	    	
+	    	shib = confirmCreateUser(new Credentials(credentialMap));
 		}		
-			
-		Credentials shib = new Credentials(credentialMap);
-		String shibUin = shib.getUin();
-		for(String uin : admins) {
-			if(uin.equals(shibUin)) {
-				shib.setRole("ROLE_ADMIN");
-			}
-		}
+		
 		
 		request.setAttribute("shib", shib);
 		
@@ -159,30 +180,45 @@ public class CoreRestInterceptor extends HandlerInterceptorAdapter {
 		
 		grantedAuthorities.add(new SimpleGrantedAuthority(shib.getRole()));
 		
-		if(("ROLE_ANONYMOUS").equals(shib.getRole())) {
-			shib.setNetid(shib.getNetid() + "-" + currentUsers.size());			
-		}
-
-		currentUsers.add(shib.getNetid());
-
 		Authentication auth = new AnonymousAuthenticationToken(shib.getUin(), shib.getNetid(), grantedAuthorities);
 
 		auth.setAuthenticated(true);
 
 		securityContext.setAuthentication(auth);
 		
-		httpRequestService.addRequest(new HttpRequest(request, request.getRequestURI(), shib.getNetid()));
+		String path = "";
+		
+		// get path from ApiMapping annotation
+		ApiMapping methodApiAnnotation = ((HandlerMethod) handler).getMethodAnnotation(ApiMapping.class);
+		
+		if(methodApiAnnotation != null) {
+			ApiMapping classAnnotation = ((HandlerMethod) handler).getBeanType().getAnnotation(ApiMapping.class);			
+			if(classAnnotation != null) {
+				path += classAnnotation.value()[0];
+			}
+			path += methodApiAnnotation.value()[0];
+			
+			httpRequestService.addRequest(new HttpRequest(request, response, shib.getNetid(), path));
+		}
+		else {
+			// get path from RequestMapping annotation
+			RequestMapping methodRequestAnnotation = ((HandlerMethod) handler).getMethodAnnotation(RequestMapping.class);
 
+			if(methodRequestAnnotation != null) {
+				RequestMapping classRequestAnnotation = ((HandlerMethod) handler).getBeanType().getAnnotation(RequestMapping.class);
+				if(classRequestAnnotation != null) {
+					path += classRequestAnnotation.value()[0];
+				}
+				path += methodRequestAnnotation.value()[0];
+				
+				httpRequestService.addRequest(new HttpRequest(request, response, shib.getNetid(), path));
+			}
+		}
+		
         return true;
     }
 	
 	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-		
-		currentUsers.remove(securityContext.getAuthentication().getName());
-		
-		System.out.println(currentUsers.size() + " users making http requests.");
-		
-		System.out.println(securityContext.getAuthentication().getName() + ", you're http request finished.");
 		
 	}
     
@@ -220,4 +256,5 @@ public class CoreRestInterceptor extends HandlerInterceptorAdapter {
 		private static final long serialVersionUID = 1L;
 	}
 	
+	public abstract Credentials confirmCreateUser(Credentials shib);
 }

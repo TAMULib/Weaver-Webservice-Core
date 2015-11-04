@@ -13,7 +13,6 @@ import java.util.List;
 
 import javax.xml.transform.Source;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -26,14 +25,15 @@ import org.springframework.http.converter.support.AllEncompassingFormHttpMessage
 import org.springframework.http.converter.xml.SourceHttpMessageConverter;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-import edu.tamu.framework.interceptor.CoreRestInterceptor;
+import edu.tamu.framework.events.StompConnectEvent;
+import edu.tamu.framework.events.StompDisconnectEvent;
+import edu.tamu.framework.service.StompConnectionService;
 
 /** 
  * Web MVC Configuration for application controller.
@@ -43,9 +43,8 @@ import edu.tamu.framework.interceptor.CoreRestInterceptor;
  */
 @Configuration
 @ComponentScan(basePackages = {"edu.tamu.framework.config", "edu.tamu.framework.interceptor", "edu.tamu.framework.controller"})
-@ConfigurationProperties(prefix="app.controller")
 public class CoreWebAppConfig extends WebMvcConfigurerAdapter {	
-
+	
 	/**
 	 * Configures message converters.
 	 *
@@ -102,27 +101,20 @@ public class CoreWebAppConfig extends WebMvcConfigurerAdapter {
 	public SecurityContext securityContext() {
 		return SecurityContextHolder.getContext();
 	}
-		    
-    /**
-	 * Rest interceptor bean.
-	 *
-	 * @return      RestInterceptor
-	 *
-	 */
+	
 	@Bean
-	public CoreRestInterceptor restInterceptor() {
-	    return new CoreRestInterceptor();
+	public StompConnectionService stopmConnectionService() {
+		return new StompConnectionService();
 	}
-
-	/**
-	 * Add interceptor to interceptor registry.
-	 *
-	 * @param       registry	   InterceptorRegistry
-	 *
-	 */
-	@Override
-	public void addInterceptors(InterceptorRegistry registry) {
-	    registry.addInterceptor(restInterceptor()).addPathPatterns("/rest/**");
+	
+	@Bean
+	public StompConnectEvent stompConnectEvent() {
+		return new StompConnectEvent();
+	}
+	
+	@Bean
+	public StompDisconnectEvent stompDisconnectEvent() {
+		return new StompDisconnectEvent();
 	}
 		
 }

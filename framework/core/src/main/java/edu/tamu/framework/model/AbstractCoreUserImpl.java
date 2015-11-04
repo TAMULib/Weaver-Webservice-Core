@@ -1,5 +1,5 @@
 /* 
- * UserImpl.java 
+ * AbstractCoreUserImpl.java 
  * 
  * Version: 
  *     $Id$ 
@@ -18,7 +18,7 @@ import edu.tamu.framework.model.CoreUser;
 
 @Entity
 @Table(name="core_users")
-public abstract class AbstractCoreUserImpl implements CoreUser{
+public abstract class AbstractCoreUserImpl implements CoreUser {
 	
 	@Id
 	@Column(name="uin", nullable=false)

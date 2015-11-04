@@ -21,8 +21,8 @@ import java.lang.annotation.Target;
  * @author 
  *
  */
-@Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Auth {
 	String role() default "ROLE_USER";

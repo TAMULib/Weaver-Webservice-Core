@@ -1,5 +1,5 @@
 /* 
- * User.java 
+ * CoreUser.java 
  * 
  * Version: 
  *     $Id$ 
