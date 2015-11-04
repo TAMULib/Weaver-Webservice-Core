@@ -48,8 +48,6 @@ public abstract class CoreWebSocketConfig extends AbstractWebSocketMessageBroker
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
 		registry.addEndpoint("/connect").setAllowedOrigins("*").withSockJS();
-		registry.addEndpoint("/user").setAllowedOrigins("*").withSockJS();
-		registry.addEndpoint("/admin").setAllowedOrigins("*").withSockJS();
 	}
 	
 }
