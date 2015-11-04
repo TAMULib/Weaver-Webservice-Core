@@ -28,9 +28,12 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import edu.tamu.framework.aspect.annotation.ApiMapping;
 import edu.tamu.framework.model.Credentials;
 import edu.tamu.framework.model.HttpRequest;
 import edu.tamu.framework.service.HttpRequestService;
@@ -60,8 +63,6 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 	
 	private static Credentials anonymousShib;
 	
-	private List<String> currentUsers = new ArrayList<String>();
-	
 	private static final Logger logger = Logger.getLogger(CoreRestInterceptor.class);
 	
 	public CoreRestInterceptor() {
@@ -90,7 +91,7 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 	@Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {		
 		Map<String, String> credentialMap = new HashMap<String, String>();
-		
+				
 		String jwt = request.getHeader("jwt");
 		
 		Credentials shib = null;
@@ -137,6 +138,7 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 			
 			if(!accepted) {
 				shib = anonymousShib;
+				shib.setNetid(shib.getNetid() + "-" + Math.round(Math.random()*100000));
 			}
 		}
 		else {
@@ -158,7 +160,7 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 			String error = credentialMap.get("ERROR"); 
 	    	if(error != null) {	    		
 	    		logger.error("JWT error: " + error);	    		
-	    		throw new InvalidJwtException();	    		
+	    		throw new InvalidJwtException();
 	    	}
 	    	
 	    	if(jwtService.isExpired(credentialMap)) {
@@ -178,27 +180,46 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 		
 		grantedAuthorities.add(new SimpleGrantedAuthority(shib.getRole()));
 		
-		if(("ROLE_ANONYMOUS").equals(shib.getRole())) {
-			shib.setNetid(shib.getNetid() + "-" + currentUsers.size());			
-		}
-
-		currentUsers.add(shib.getNetid());
-
 		Authentication auth = new AnonymousAuthenticationToken(shib.getUin(), shib.getNetid(), grantedAuthorities);
 
 		auth.setAuthenticated(true);
 
 		securityContext.setAuthentication(auth);
 		
-		httpRequestService.addRequest(new HttpRequest(request, request.getRequestURI(), shib.getNetid()));
+		String path = "";
+		
+		// get path from ApiMapping annotation
+		ApiMapping methodApiAnnotation = ((HandlerMethod) handler).getMethodAnnotation(ApiMapping.class);
+		
+		if(methodApiAnnotation != null) {
+			ApiMapping classAnnotation = ((HandlerMethod) handler).getBeanType().getAnnotation(ApiMapping.class);			
+			if(classAnnotation != null) {
+				path += classAnnotation.value()[0];
+			}
+			path += methodApiAnnotation.value()[0];
+			
+			httpRequestService.addRequest(new HttpRequest(request, response, shib.getNetid(), path));
+		}
+		else {
+			// get path from RequestMapping annotation
+			RequestMapping methodRequestAnnotation = ((HandlerMethod) handler).getMethodAnnotation(RequestMapping.class);
 
+			if(methodRequestAnnotation != null) {
+				RequestMapping classRequestAnnotation = ((HandlerMethod) handler).getBeanType().getAnnotation(RequestMapping.class);
+				if(classRequestAnnotation != null) {
+					path += classRequestAnnotation.value()[0];
+				}
+				path += methodRequestAnnotation.value()[0];
+				
+				httpRequestService.addRequest(new HttpRequest(request, response, shib.getNetid(), path));
+			}
+		}
+		
         return true;
     }
 	
 	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-		logger.debug(securityContext.getAuthentication().getName() + " has finished their http request.");
-		currentUsers.remove(securityContext.getAuthentication().getName());
-		logger.debug("There are now " + currentUsers.size() + " users making http requests.");
+		
 	}
     
 	

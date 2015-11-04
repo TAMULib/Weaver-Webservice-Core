@@ -22,7 +22,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.handler.DestinationPatternsMessageCondition;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.annotation.support.SimpAnnotationMethodMessageHandler;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptorAdapter;
@@ -33,7 +35,11 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
+import org.springframework.util.PathMatcher;
 
+import edu.tamu.framework.mapping.WebSocketRequestMappingHandler;
+import edu.tamu.framework.mapping.condition.WebSocketRequestCondition;
 import edu.tamu.framework.model.ApiResponse;
 import edu.tamu.framework.model.Credentials;
 import edu.tamu.framework.model.WebSocketRequest;
@@ -62,6 +68,14 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 	@Autowired @Lazy
 	private SimpMessagingTemplate simpMessagingTemplate;
 	
+	@Autowired @Lazy
+	private WebSocketRequestMappingHandler webSocketRequestMappingHandler;
+	
+	@Autowired @Lazy
+	private SimpAnnotationMethodMessageHandler simpAnnotationMethodMessageHandler;
+	
+	private final PathMatcher pathMatcher;
+	
 	private static Credentials anonymousShib;
 
 	private static final Logger logger = Logger.getLogger(CoreStompInterceptor.class);
@@ -76,6 +90,7 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 		anonymousShib.setExp("1436982214754");
 		anonymousShib.setEmail("helpdesk@library.tamu.edu");
 		anonymousShib.setRole( "ROLE_ANONYMOUS");
+		pathMatcher = (PathMatcher) new AntPathMatcher();
 	}
 	
 	/**
@@ -90,7 +105,7 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 	@Override
 	public Message<?> preSend(Message<?> message, MessageChannel channel) {
 		
-		StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+		final StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 		StompCommand command = accessor.getCommand();
 		
 		if(accessor.getDestination() != null) {
@@ -159,6 +174,66 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 			case NACK: { } break;
 			case RECEIPT: { } break;
 			case SEND: {
+				
+				WebSocketRequest request = new WebSocketRequest();
+				
+				// get path from ApiMapping annotation
+				webSocketRequestMappingHandler.getHandlerMethods().entrySet().stream().forEach(info -> {
+					if(request.getDestination() == null) {
+						WebSocketRequestCondition mappingCondition = info.getKey().getDestinationConditions();
+						mappingCondition.getPatterns().stream().forEach(pattern -> {
+							
+							if(pattern.contains("{")) {
+								if(((AntPathMatcher) this.pathMatcher).match(("/ws" + pattern), accessor.getDestination())) {
+									request.setDestination(pattern);
+								}
+								else if(((AntPathMatcher) this.pathMatcher).match(("/private/queue" + pattern), accessor.getDestination())) {
+									request.setDestination(pattern);
+								}
+							}
+							else {
+								if (("/ws" + pattern).equals(accessor.getDestination())) {
+									request.setDestination(pattern);
+								}
+								else if (("/private/queue" + pattern).equals(accessor.getDestination())) {
+									request.setDestination(pattern);
+								}
+							}
+							
+						});
+					}
+				});
+				
+				// if no path yet, get from MessageMapping annotation
+				if(request.getDestination() == null) {
+					simpAnnotationMethodMessageHandler.getHandlerMethods().entrySet().stream().forEach(info -> {
+						if(request.getDestination() == null) {
+							DestinationPatternsMessageCondition mappingCondition = info.getKey().getDestinationConditions();
+							mappingCondition.getPatterns().stream().forEach(pattern -> {
+								
+								if(pattern.contains("{")) {
+									if(((AntPathMatcher) this.pathMatcher).match(("/ws" + pattern), accessor.getDestination())) {
+										request.setDestination(pattern);
+									}
+									else if(((AntPathMatcher) this.pathMatcher).match(("/private/queue" + pattern), accessor.getDestination())) {
+										request.setDestination(pattern);
+									}
+								}
+								else {
+									if (("/ws" + pattern).equals(accessor.getDestination())) {
+										request.setDestination(pattern);
+									}
+									else if (("/private/queue" + pattern).equals(accessor.getDestination())) {
+										request.setDestination(pattern);
+									}
+								}
+								
+							});
+						}
+					});					
+				}
+				
+				
 				String requestId = accessor.getNativeHeader("id").get(0);
 				
 				Credentials shib;
@@ -208,8 +283,16 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 				accessor.setSessionAttributes(shibMap);
 				
 				message = MessageBuilder.withPayload("VALID").setHeaders(accessor).build();
+				
+				
+				// set message with enhanced accessor on request
+				request.setMessage(message);
 							
-				webSocketRequestService.addRequest(new WebSocketRequest(message, accessor.getDestination(), securityContext.getAuthentication().getName()));	
+				// set username on request
+				request.setUser(securityContext.getAuthentication().getName());
+				
+				webSocketRequestService.addRequest(request);
+				
 			} break;
 			case STOMP: { } break;
 			case SUBSCRIBE: { } break;

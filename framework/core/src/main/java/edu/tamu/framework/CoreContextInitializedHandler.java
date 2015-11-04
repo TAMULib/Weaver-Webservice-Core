@@ -15,7 +15,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import org.apache.log4j.Logger;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -33,7 +32,7 @@ import edu.tamu.framework.model.repo.SymlinkRepo;
 public abstract class CoreContextInitializedHandler implements ApplicationListener<ContextRefreshedEvent> {
 
 	@Autowired
-	public SymlinkRepo symlinkRepo;
+	private SymlinkRepo symlinkRepo;
 	
 	private static final Logger logger = Logger.getLogger(CoreContextInitializedHandler.class);
 	

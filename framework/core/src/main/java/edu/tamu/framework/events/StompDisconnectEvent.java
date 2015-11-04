@@ -18,7 +18,7 @@ public class StompDisconnectEvent implements ApplicationListener<SessionDisconne
 	@Override
     public void onApplicationEvent(SessionDisconnectEvent event) {
         StompHeaderAccessor sha = StompHeaderAccessor.wrap(event.getMessage());
-        stompConnectionService.decrementActiveConnection();
+        stompConnectionService.decrementActiveConnections();
         logger.debug("Disconnect event [sessionId: " + sha.getSessionId() + "]");
         logger.debug("Total number of web socket connections: " + stompConnectionService.getActiveConnections());
     }

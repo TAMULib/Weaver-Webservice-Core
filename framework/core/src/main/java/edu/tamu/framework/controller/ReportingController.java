@@ -8,14 +8,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.simp.annotation.SendToUser;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import edu.tamu.framework.aspect.annotation.ApiMapping;
 import edu.tamu.framework.aspect.annotation.Data;
 import edu.tamu.framework.aspect.annotation.Shib;
 import edu.tamu.framework.model.ApiResponse;
@@ -23,8 +21,7 @@ import edu.tamu.framework.model.Credentials;
 import edu.tamu.framework.util.EmailUtility;
 
 @RestController
-@RequestMapping("/rest")
-@MessageMapping("/report")
+@ApiMapping("/report")
 public class ReportingController {
 	
 	@Autowired
@@ -33,9 +30,7 @@ public class ReportingController {
 	@Autowired
 	private ObjectMapper objectMapper;
 	
-	@MessageMapping("/error")
-	@RequestMapping(value = "/report/error", method = POST)
-	@SendToUser
+	@ApiMapping(value = "/report/error", method = POST)
 	public ApiResponse reportError(@Shib Object shibObj, @Data String data) throws Exception {
 
 		Credentials shib = (Credentials) shibObj;

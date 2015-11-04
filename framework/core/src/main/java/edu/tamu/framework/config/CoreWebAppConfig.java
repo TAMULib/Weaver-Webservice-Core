@@ -13,7 +13,6 @@ import java.util.List;
 
 import javax.xml.transform.Source;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -44,9 +43,8 @@ import edu.tamu.framework.service.StompConnectionService;
  */
 @Configuration
 @ComponentScan(basePackages = {"edu.tamu.framework.config", "edu.tamu.framework.interceptor", "edu.tamu.framework.controller"})
-@ConfigurationProperties(prefix="app.controller")
 public class CoreWebAppConfig extends WebMvcConfigurerAdapter {	
-
+	
 	/**
 	 * Configures message converters.
 	 *
