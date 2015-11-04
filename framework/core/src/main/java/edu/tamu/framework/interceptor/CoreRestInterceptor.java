@@ -61,21 +61,22 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 	@Autowired
 	private SecurityContext securityContext;
 	
-	private static Credentials anonymousShib;
-	
 	private static final Logger logger = Logger.getLogger(CoreRestInterceptor.class);
 	
-	public CoreRestInterceptor() {
-		anonymousShib = new Credentials();
-		anonymousShib.setAffiliation("NA");
-		anonymousShib.setLastName("Anonymous");
-		anonymousShib.setFirstName("Role");
-		anonymousShib.setNetid("anonymous");
-		anonymousShib.setUin("000000000");
-		anonymousShib.setExp("1436982214754");
-		anonymousShib.setEmail("helpdesk@library.tamu.edu");
-		anonymousShib.setRole( "ROLE_ANONYMOUS");
-	}
+	public CoreRestInterceptor() { }
+	
+	public Credentials getAnonymousShib() {
+        Credentials anonymousShib = new Credentials();
+        anonymousShib.setAffiliation("NA");
+        anonymousShib.setLastName("Anonymous");
+        anonymousShib.setFirstName("Role");
+        anonymousShib.setNetid("anonymous-" + Math.round(Math.random()*100000));
+        anonymousShib.setUin("000000000");
+        anonymousShib.setExp("1436982214754");
+        anonymousShib.setEmail("helpdesk@library.tamu.edu");
+        anonymousShib.setRole( "ROLE_ANONYMOUS");
+        return anonymousShib;
+    }
 	
 	/**
 	 * Handle request to decode and verify. Return error or continue to controller.
@@ -137,10 +138,7 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 			}
 			
 			if(!accepted) {
-				shib = anonymousShib;
-				if(!shib.getNetid().contains("-")) {
-                    shib.setNetid(shib.getNetid() + "-" + Math.round(Math.random()*100000));
-                }
+				shib = getAnonymousShib(); 
 			}
 		}
 		else {
