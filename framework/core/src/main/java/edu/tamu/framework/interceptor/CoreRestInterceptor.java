@@ -180,6 +180,10 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 		
 		grantedAuthorities.add(new SimpleGrantedAuthority(shib.getRole()));
 		
+		if(shib.getNetid() == null) {
+            shib.setNetid(shib.getEmail());
+        }
+		
 		Authentication auth = new AnonymousAuthenticationToken(shib.getUin(), shib.getNetid(), grantedAuthorities);
 
 		auth.setAuthenticated(true);

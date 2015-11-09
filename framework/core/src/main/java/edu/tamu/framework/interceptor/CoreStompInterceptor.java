@@ -160,6 +160,10 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 				
 				grantedAuthorities.add(new SimpleGrantedAuthority(shib.getRole()));
 				
+				if(shib.getNetid() == null) {
+				    shib.setNetid(shib.getEmail());
+				}
+				
 				Authentication auth = new AnonymousAuthenticationToken(shib.getUin(), shib.getNetid(), grantedAuthorities);
 				
 				auth.setAuthenticated(true);
