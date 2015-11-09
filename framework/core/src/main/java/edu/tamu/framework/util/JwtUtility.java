@@ -108,8 +108,6 @@ public class  JwtUtility {
 			return tokenMap;
 		}
 		
-		System.out.println("Decrypting jwe!");
-		
 		Key key = new SecretKeySpec(secret_key.getBytes(), "AES");
         Cipher c = null;
         byte[] decordedValue = decodeBase64(jwe);
