@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.web.servlet.mvc.condition.RequestCondition;
 
+//simplified
+//TODO: duplicate RequestMappingInfo
 public class RestRequestCondition implements RequestCondition<RestRequestCondition> {
 
 	private final Set<String> paths;
@@ -38,7 +40,8 @@ public class RestRequestCondition implements RequestCondition<RestRequestConditi
 
 	@Override
 	public RestRequestCondition getMatchingCondition(HttpServletRequest request) {		
-        String path = request.getServletPath();
+	    String uri = request.getRequestURI();
+	    String path = uri.contains("?") ? uri.split("?")[0] : uri;
         
         boolean match = true;
         for (String s : this.paths) {
