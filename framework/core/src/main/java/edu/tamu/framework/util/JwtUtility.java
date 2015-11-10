@@ -47,7 +47,7 @@ import static org.apache.commons.codec.binary.Base64.encodeBase64URLSafeString;;
 @Service
 public class  JwtUtility {
 	
-	@Value("${app.security.jwt.secret_key}") 
+	@Value("${auth.security.jwt.secret-key}") 
 	private String secret_key;
 	
 	@Autowired
