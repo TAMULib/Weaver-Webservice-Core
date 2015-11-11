@@ -110,7 +110,9 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 		final StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 		StompCommand command = accessor.getCommand();
 		
-		if(accessor.getDestination() != null) {
+		String destination = accessor.getDestination();
+		
+		if(destination != null) {
 			logger.debug("Accessor Destination: " + accessor.getDestination());
 		}
 		
@@ -182,6 +184,8 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 				
 				WebSocketRequest request = new WebSocketRequest();
 				
+				List<String> matches = new ArrayList<String>();
+				
 				// get path from ApiMapping annotation
 				webSocketRequestMappingHandler.getHandlerMethods().entrySet().stream().forEach(info -> {
 					if(request.getDestination() == null) {
@@ -189,18 +193,18 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 						mappingCondition.getPatterns().stream().forEach(pattern -> {
 							
 							if(pattern.contains("{")) {
-								if(((AntPathMatcher) this.pathMatcher).match(("/ws" + pattern), accessor.getDestination())) {
-									request.setDestination(pattern);
+								if(((AntPathMatcher) this.pathMatcher).match(("/ws" + pattern), destination)) {
+								    matches.add(pattern);
 								}
-								else if(((AntPathMatcher) this.pathMatcher).match(("/private/queue" + pattern), accessor.getDestination())) {
-									request.setDestination(pattern);
+								else if(((AntPathMatcher) this.pathMatcher).match(("/private/queue" + pattern), destination)) {
+								    matches.add(pattern);
 								}
 							}
 							else {
-								if (("/ws" + pattern).equals(accessor.getDestination())) {
+								if (("/ws" + pattern).equals(destination)) {
 									request.setDestination(pattern);
 								}
-								else if (("/private/queue" + pattern).equals(accessor.getDestination())) {
+								else if (("/private/queue" + pattern).equals(destination)) {
 									request.setDestination(pattern);
 								}
 							}
@@ -217,18 +221,18 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 							mappingCondition.getPatterns().stream().forEach(pattern -> {
 								
 								if(pattern.contains("{")) {
-									if(((AntPathMatcher) this.pathMatcher).match(("/ws" + pattern), accessor.getDestination())) {
-										request.setDestination(pattern);
+									if(((AntPathMatcher) this.pathMatcher).match(("/ws" + pattern), destination)) {
+									    matches.add(pattern);
 									}
-									else if(((AntPathMatcher) this.pathMatcher).match(("/private/queue" + pattern), accessor.getDestination())) {
-										request.setDestination(pattern);
+									else if(((AntPathMatcher) this.pathMatcher).match(("/private/queue" + pattern), destination)) {
+									    matches.add(pattern);
 									}
 								}
 								else {
-									if (("/ws" + pattern).equals(accessor.getDestination())) {
+									if (("/ws" + pattern).equals(destination)) {
 										request.setDestination(pattern);
 									}
-									else if (("/private/queue" + pattern).equals(accessor.getDestination())) {
+									else if (("/private/queue" + pattern).equals(destination)) {
 										request.setDestination(pattern);
 									}
 								}
@@ -236,6 +240,28 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 							});
 						}
 					});					
+				}
+				
+				// if multiple patterns match, determine the closest match
+				if(request.getDestination() == null) {
+				    String[] destinationPaths = destination.split("/");
+				    String match = null;
+				    int m = 0;
+				    for(String pattern : matches) {
+				        String[] patternPaths = pattern.split("/");				        
+				        if(patternPaths.length == destinationPaths.length) {
+				            int n = 0;
+				            for(int i = 0; i < patternPaths.length; i++) {
+				                if(patternPaths[i].equals(destinationPaths[i])) {
+				                    n++;
+				                }
+				            }
+				            if(n > m) {
+				                m = n;
+				                request.setDestination(pattern);
+				            }
+				        }				        
+				    }
 				}
 				
 				
@@ -249,7 +275,7 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 				
 					credentialMap = jwtService.validateJWT(jwt);
 					
-					logger.info(credentialMap.get("firstName") + " " + credentialMap.get("lastName") + " (" + credentialMap.get("uin") + ") requesting " + accessor.getDestination());
+					logger.info(credentialMap.get("firstName") + " " + credentialMap.get("lastName") + " (" + credentialMap.get("uin") + ") requesting " + destination);
 					
 					if(logger.isDebugEnabled()) {
 						logger.debug("Credential Map");
@@ -262,13 +288,13 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 			    	if(errorMessage != null) {
 			    		logger.error("Security Context Name: " + securityContext.getAuthentication().getName());	    		
 			    		logger.error("JWT error: " + errorMessage);
-			    		simpMessagingTemplate.convertAndSend(accessor.getDestination().replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse(requestId, ERROR, errorMessage));
+			    		simpMessagingTemplate.convertAndSend(destination.replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse(requestId, ERROR, errorMessage));
 			    		return null;
 			    	}
 			    	
 			    	if(jwtService.isExpired(credentialMap)) {
 						logger.info("The token for "+credentialMap.get("firstName")+" "+credentialMap.get("lastName")+" ("+credentialMap.get("uin")+") has expired. Attempting to get new token.");
-						simpMessagingTemplate.convertAndSend(accessor.getDestination().replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse(requestId, REFRESH));
+						simpMessagingTemplate.convertAndSend(destination.replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse(requestId, REFRESH));
 						return null;		
 					}
 								
