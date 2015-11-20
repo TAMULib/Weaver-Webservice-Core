@@ -10,42 +10,51 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.springframework.util.AntPathMatcher;
+import org.springframework.util.PathMatcher;
 import org.springframework.web.servlet.mvc.condition.RequestCondition;
 
 //simplified
 //TODO: duplicate RequestMappingInfo
 public class RestRequestCondition implements RequestCondition<RestRequestCondition> {
 
-	private final Set<String> paths;
+	private final Set<String> patterns;
 	
+	private final PathMatcher pathMatcher;
+    
     public RestRequestCondition(String... paths) {
-        this(Arrays.asList(paths));
-    }
-
-    public RestRequestCondition(Collection<String> path) {
-        this.paths = Collections.unmodifiableSet(new HashSet<String>(path));
-    }
-
+		this(Arrays.asList(paths), null);
+	}
+	
+	public RestRequestCondition(String[] paths, PathMatcher pathMatcher) {
+		this(Arrays.asList(paths), pathMatcher);
+	}
+	
+	public RestRequestCondition(Collection<String> paths, PathMatcher pathMatcher) {		
+		this.patterns = Collections.unmodifiableSet(new HashSet<String>(paths));
+		this.pathMatcher = (pathMatcher != null ? pathMatcher : (PathMatcher) new AntPathMatcher());
+	}
+	
 	@Override
 	public RestRequestCondition combine(RestRequestCondition other) {
-		Set<String> allRoles = new LinkedHashSet<String>(this.paths);
-		allRoles.addAll(other.paths);
-		return new RestRequestCondition(allRoles);
+		Set<String> allRoles = new LinkedHashSet<String>(this.patterns);
+		allRoles.addAll(other.patterns);
+		return new RestRequestCondition(allRoles, this.pathMatcher);
 	}
 
 	@Override
 	public int compareTo(RestRequestCondition other, HttpServletRequest request) {
-		 return CollectionUtils.removeAll(other.paths, this.paths).size();
+		 return CollectionUtils.removeAll(other.patterns, this.patterns).size();
 	}
 
 	@Override
 	public RestRequestCondition getMatchingCondition(HttpServletRequest request) {		
 	    String uri = request.getRequestURI();
-	    String path = uri.contains("?") ? uri.split("?")[0] : uri;
-        
-        boolean match = true;
-        for (String s : this.paths) {
-            if(!path.toLowerCase().contains(s.toLowerCase())) {
+	    String destination = uri.contains("?") ? uri.split("?")[0] : uri;
+	    
+	    boolean match = true;
+        for (String pattern : this.patterns) {
+            if(!destination.toLowerCase().contains(pattern.toLowerCase())) {
             	match = false;
             }
         }
@@ -53,8 +62,19 @@ public class RestRequestCondition implements RequestCondition<RestRequestConditi
         if(match) {
         	return this;
         }
-        
-        return null;
+		
+		// to match if type with class annotation include a path variable
+		String fullPathPattern = "";
+		    
+	    for (String pattern : patterns) {
+	    	fullPathPattern = pattern + fullPathPattern; 
+	    }
+	    
+	    if(((AntPathMatcher) this.pathMatcher).match(fullPathPattern, destination)) {
+			return this;
+		}
+	    
+		return null;
 	}
 
 }

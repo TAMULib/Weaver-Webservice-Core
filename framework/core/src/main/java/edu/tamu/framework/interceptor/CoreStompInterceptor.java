@@ -254,7 +254,6 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
                 // if multiple patterns match, determine the closest match
                 if(request.getDestination() == null) {
                     String[] destinationPaths = d.split("/");
-                    String match = null;
                     int m = 0;
                     for(String pattern : matches) {
                         String[] patternPaths = pattern.split("/");                     

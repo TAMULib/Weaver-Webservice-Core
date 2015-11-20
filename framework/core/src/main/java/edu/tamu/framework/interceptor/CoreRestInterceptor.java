@@ -105,7 +105,7 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 				ip = request.getRemoteAddr();
 			}
 			
-			logger.debug("Referrer: " + ip);			
+			logger.debug("Referrer: " + ip);
 			
 			if(logger.isDebugEnabled()) {
 				Enumeration<String> headers = request.getHeaderNames();
