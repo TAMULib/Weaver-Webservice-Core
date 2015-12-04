@@ -18,7 +18,12 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 /** 
  * Web Socket Configuration.
  * 
- * @author
+ * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
+ * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>
+ * @author <a href="mailto:huff@library.tamu.edu">Jeremy Huff</a>
+ * @author <a href="mailto:rmathew@library.tamu.edu">Rincy Mathew</a>
+ * @author <a href="mailto:jsavell@library.tamu.edu">Jason Savell</a>
+ * @author <a href="mailto:wwelling@library.tamu.edu">William Welling</a>
  *
  */
 @Configuration
@@ -26,8 +31,7 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 public abstract class CoreWebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 	
 	/**
-	 * Configure message broker. Enables simple broker queue and channel. 
-	 * Sets prefix ws and user destination prefix privat.
+	 * Configure message broker prefixes. Enables simple broker queue and channel. 
 	 * 
 	 * @param       registry    	MessageBrokerRegistry
 	 * 

@@ -20,6 +20,16 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMappi
 import edu.tamu.framework.aspect.annotation.ApiMapping;
 import edu.tamu.framework.mapping.condition.RestRequestCondition;
 
+/**
+ * 
+ * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
+ * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>
+ * @author <a href="mailto:huff@library.tamu.edu">Jeremy Huff</a>
+ * @author <a href="mailto:rmathew@library.tamu.edu">Rincy Mathew</a>
+ * @author <a href="mailto:jsavell@library.tamu.edu">Jason Savell</a>
+ * @author <a href="mailto:wwelling@library.tamu.edu">William Welling</a>
+ *
+ */
 public class RestRequestMappingHandler extends RequestMappingInfoHandlerMapping implements EmbeddedValueResolverAware {
 
 	private final ContentNegotiationManager contentNegotiationManager;

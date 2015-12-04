@@ -43,7 +43,12 @@ import edu.tamu.framework.util.JwtUtility;
  * REST interceptor. Intercepts AJAX request to decode and 
  * verify token before allowing controller to process request.
  * 
- * @author 
+ * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
+ * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>
+ * @author <a href="mailto:huff@library.tamu.edu">Jeremy Huff</a>
+ * @author <a href="mailto:rmathew@library.tamu.edu">Rincy Mathew</a>
+ * @author <a href="mailto:jsavell@library.tamu.edu">Jason Savell</a>
+ * @author <a href="mailto:wwelling@library.tamu.edu">William Welling</a>
  *
  */
 @Component
@@ -73,7 +78,7 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
         anonymousShib.setNetid("anonymous-" + Math.round(Math.random()*100000));
         anonymousShib.setUin("000000000");
         anonymousShib.setExp("1436982214754");
-        anonymousShib.setEmail("helpdesk@library.tamu.edu");
+        anonymousShib.setEmail("helpdesk@mailinator.com");
         anonymousShib.setRole( "ROLE_ANONYMOUS");
         return anonymousShib;
     }
@@ -129,7 +134,7 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 					credentialMap.put("affiliation", "Server");
 					credentialMap.put("uin", "123456789");
 					credentialMap.put("exp", "1436982214754");
-					credentialMap.put("email", "helpdesk@library.tamu.edu");
+					credentialMap.put("email", "helpdesk@mailinator.com");
 					credentialMap.put("role", "ROLE_ADMIN");
 					accepted = true;
 					shib = new Credentials(credentialMap);
