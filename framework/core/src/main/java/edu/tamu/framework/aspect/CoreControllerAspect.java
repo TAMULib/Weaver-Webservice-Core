@@ -58,7 +58,7 @@ import edu.tamu.framework.service.WebSocketRequestService;
 public abstract class CoreControllerAspect {
 	
 	// TODO: put in application.properties of each app
-	private final static int NUMBER_OF_RETRY_ATTEMPTS = 3;
+	private final static int NUMBER_OF_RETRY_ATTEMPTS = 2;
 	
 	@Autowired
 	public ObjectMapper objectMapper;
