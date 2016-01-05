@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class StompConnectionService {
-
+	
 	private static int totalActiveConnections = 0;
 	
 	public synchronized void incrementActiveConnections() {
