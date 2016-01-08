@@ -38,6 +38,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.tamu.framework.aspect.annotation.ApiMapping;
 import edu.tamu.framework.aspect.annotation.Auth;
+import edu.tamu.framework.enums.ApiResponseType;
 import edu.tamu.framework.enums.CoreRoles;
 import edu.tamu.framework.model.ApiResponse;
 import edu.tamu.framework.model.Credentials;
@@ -60,6 +61,9 @@ import edu.tamu.framework.service.WebSocketRequestService;
 @Aspect
 public abstract class CoreControllerAspect {
 	
+	// TODO: put in application.properties of each app
+	private final static int NUMBER_OF_RETRY_ATTEMPTS = 2;
+	
 	@Autowired
 	public ObjectMapper objectMapper;
 	
@@ -77,6 +81,7 @@ public abstract class CoreControllerAspect {
 
 	private static final Logger logger = Logger.getLogger(CoreControllerAspect.class);
 	
+	
     @Around("execution(* *.*.*.controller.*.*(..)) && !@annotation(edu.tamu.framework.aspect.annotation.SkipAop) && @annotation(auth)")
     public ApiResponse polpulateCredentialsAndAuthorize(ProceedingJoinPoint joinPoint, Auth auth) throws Throwable {
     	
@@ -86,15 +91,28 @@ public abstract class CoreControllerAspect {
         	logger.info(preProcessObject.shib.getFirstName() + " " + preProcessObject.shib.getLastName() + "(" + preProcessObject.shib.getUin() + ") attempted restricted access.");
             return new ApiResponse(preProcessObject.requestId, ERROR, "You are not authorized for this request.");
         }
-                
+        
+        
         ApiResponse apiresponse = (ApiResponse) joinPoint.proceed(preProcessObject.arguments);
         
+        
         if(apiresponse != null) {
+        	
+        	// retry endpoint if error response type
+        	int attempt = 0;
+        	while(attempt < NUMBER_OF_RETRY_ATTEMPTS && apiresponse.getMeta().getType() == ApiResponseType.ERROR) {
+        		attempt++;
+        		logger.debug("Retry attempt " + attempt);
+        		apiresponse = (ApiResponse) joinPoint.proceed(preProcessObject.arguments);        		
+        	}
+        	
     		apiresponse.getMeta().setId(preProcessObject.requestId);
     	}
     	else {
     		apiresponse = new ApiResponse(WARNING, "Endpoint returns void!");
     	}
+        
+        
         
         // if using combined ApiMapping annotation send message as similar to SendToUser annotation
         if(preProcessObject.protocol == Protocol.WEBSOCKET) {
@@ -109,14 +127,26 @@ public abstract class CoreControllerAspect {
     	
     	PreProcessObject preProcessObject = preProcess(joinPoint);
     	    	
+    	
     	ApiResponse apiresponse = (ApiResponse) joinPoint.proceed(preProcessObject.arguments);
     	
+    	
     	if(apiresponse != null) {
+    		
+    		// retry endpoint if error response type
+        	int attempt = 0;
+        	while(attempt < NUMBER_OF_RETRY_ATTEMPTS && apiresponse.getMeta().getType() == ApiResponseType.ERROR) {
+        		attempt++;
+        		logger.debug("Retry attempt " + attempt);
+        		apiresponse = (ApiResponse) joinPoint.proceed(preProcessObject.arguments);     
+        	}
+    		
     		apiresponse.getMeta().setId(preProcessObject.requestId);
     	}
     	else {
     		apiresponse = new ApiResponse(WARNING, "Endpoint returns void!");
     	}
+    	
     	
     	 // if using combined ApiMapping annotation send message as similar to SendToUser annotation
     	if(preProcessObject.protocol == Protocol.WEBSOCKET) {

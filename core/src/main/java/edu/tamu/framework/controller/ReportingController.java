@@ -56,15 +56,17 @@ public class ReportingController {
 		
 		String content = "Error Report\n\n";
 		
+		Date now = new Date();
+		
 		content += "channel: " +  errorReport.get("channel") + "\n";
-		content += "time: " +  new Date(Long.parseLong(errorReport.get("time"))*1000) + "\n";
+		content += "time: " + now + "\n";
 		content += "type: " +  errorReport.get("type") + "\n";
 		content += "message: " +  errorReport.get("message") + "\n";
 		content += "user: " +  errorReport.get("user") + "\n";
 		
 		emailUtility.sendEmail("Error Report", content);
 		
-		return new ApiResponse(SUCCESS);
+		return new ApiResponse(SUCCESS, now.toString());
 	}
 	
 }
