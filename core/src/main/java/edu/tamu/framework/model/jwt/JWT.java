@@ -28,7 +28,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import edu.tamu.app.util.jwt.JWTservice;
+import edu.tamu.framework.util.JwtUtility;
 
 /** 
  * JSON Web Token.
@@ -36,7 +36,7 @@ import edu.tamu.app.util.jwt.JWTservice;
  * @author
  *
  */
-public class JWTtoken {
+public class JWT {
 	
 	private JWTheader header;
 	private JWTclaim claim;
@@ -55,7 +55,7 @@ public class JWTtoken {
 	 * @exception   UnsupportedEncodingException
 	 * 
 	 */
-	public JWTtoken(Map<String, String> content, String secret, Long expiration) throws JsonProcessingException, InvalidKeyException, NoSuchAlgorithmException, IllegalStateException, UnsupportedEncodingException {
+	public JWT(Map<String, String> content, String secret, Long expiration) throws JsonProcessingException, InvalidKeyException, NoSuchAlgorithmException, IllegalStateException, UnsupportedEncodingException {
 		
 		JWTheader newHeader = new JWTheader(new HashMap<String, String>());
 		
@@ -81,7 +81,7 @@ public class JWTtoken {
 	 * @exception   UnsupportedEncodingException
 	 * 
 	 */
-	public JWTtoken(String secret, Long expiration) throws JsonProcessingException, InvalidKeyException, NoSuchAlgorithmException, IllegalStateException, UnsupportedEncodingException {			
+	public JWT(String secret, Long expiration) throws JsonProcessingException, InvalidKeyException, NoSuchAlgorithmException, IllegalStateException, UnsupportedEncodingException {			
 		this.header = new JWTheader(new HashMap<String, String>());;
 		this.claim = new JWTclaim(new HashMap<String, String>());
 		this.secret = secret;
@@ -116,12 +116,12 @@ public class JWTtoken {
 	 */
 	public String getTokenAsString() throws JsonProcessingException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
 		
-		JWTservice jwtService = new JWTservice();
+		JwtUtility jwtUtility = new JwtUtility();
 		
-		String encodedHeader = jwtService.encodeJSON(header.getHeaderAsJSON());
-		String encodedClaim = jwtService.encodeJSON(claim.getClaimAsJSON());
+		String encodedHeader = jwtUtility.encodeJSON(header.getHeaderAsJSON());
+		String encodedClaim = jwtUtility.encodeJSON(claim.getClaimAsJSON());
 		
-		String jwt = encodedHeader+"."+encodedClaim+"."+jwtService.hashSignature(encodedHeader+"."+encodedClaim, secret);
+		String jwt = encodedHeader+"."+encodedClaim+"."+jwtUtility.hashSignature(encodedHeader+"."+encodedClaim, secret);
 		
 		Key key = new SecretKeySpec(secret.getBytes(), "AES");
 		Cipher c = Cipher.getInstance("AES");
