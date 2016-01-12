@@ -59,7 +59,7 @@ public class  JwtUtility {
 	@Value("${auth.security.jwt.secret-key}") 
 	private String secret_key;
 	
-	@Value("${app.security.jwt-expiration}")
+	@Value("${auth.security.jwt-expiration}")
 	private Long expiration;
 	
 	@Autowired
