@@ -1,4 +1,4 @@
-package edu.tamu.app.exception;
+package edu.tamu.framework.exception;
 
 /**
  * 

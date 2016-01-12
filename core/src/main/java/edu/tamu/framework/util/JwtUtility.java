@@ -40,7 +40,7 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import edu.tamu.app.exception.JWTException;
+import edu.tamu.framework.exception.JWTException;
 import edu.tamu.framework.model.jwt.JWT;;
 
 /** 
