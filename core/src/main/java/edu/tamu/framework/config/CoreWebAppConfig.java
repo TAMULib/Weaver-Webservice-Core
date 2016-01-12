@@ -10,12 +10,15 @@
 package edu.tamu.framework.config;
 
 import java.util.List;
+import java.util.Properties;
 
 import javax.xml.transform.Source;
 
+import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.ResourceHttpMessageConverter;
@@ -30,6 +33,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+
+import ro.isdc.wro.config.jmx.ConfigConstants;
+import ro.isdc.wro.http.ConfigurableWroFilter;
+import ro.isdc.wro.model.resource.processor.factory.ConfigurableProcessorsFactory;
+import wro4jBoot.Wro4jCustomXmlModelManagerFactory;
 
 import edu.tamu.framework.events.StompConnectEvent;
 import edu.tamu.framework.events.StompDisconnectEvent;
@@ -120,5 +128,43 @@ public class CoreWebAppConfig extends WebMvcConfigurerAdapter {
 	public StompDisconnectEvent stompDisconnectEvent() {
 		return new StompDisconnectEvent();
 	}
+	
+	/**
+	 * WRO Configuration
+	 */
+
+    @Bean
+    FilterRegistrationBean webResourceOptimizer(Environment env) {
+    	FilterRegistrationBean fr = new FilterRegistrationBean();
+    	ConfigurableWroFilter filter = new ConfigurableWroFilter();
+		Properties props = buildWroProperties(env);
+		filter.setProperties(props);
+		filter.setWroManagerFactory(new Wro4jCustomXmlModelManagerFactory(props));
+    	filter.setProperties(props);
+    	fr.setFilter(filter);
+    	fr.addUrlPatterns("/wro/*");
+    	return fr;
+    }
+
+    private static final String[] OTHER_WRO_PROP = new String[] { ConfigurableProcessorsFactory.PARAM_PRE_PROCESSORS,
+    		ConfigurableProcessorsFactory.PARAM_POST_PROCESSORS };
+
+    private Properties buildWroProperties(Environment env) {
+    	Properties prop = new Properties();
+    	for (ConfigConstants c : ConfigConstants.values()) {
+    		addProperty(env, prop, c.name());
+    	}
+    	for (String name : OTHER_WRO_PROP) {
+    		addProperty(env, prop, name);
+    	}
+    	return prop;
+    }
+
+    private void addProperty(Environment env, Properties to, String name) {
+    	String value = env.getProperty("wro." + name);
+    	if (value != null) {
+    		to.put(name, value);
+    	}
+    }
 		
 }
