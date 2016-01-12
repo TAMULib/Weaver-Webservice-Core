@@ -1,3 +1,12 @@
+/* 
+ * StompConnectEvent.java 
+ * 
+ * Version: 
+ *     $Id$ 
+ * 
+ * Revisions: 
+ *     $Log$ 
+ */
 package edu.tamu.framework.events;
 
 import org.apache.log4j.Logger;
@@ -28,6 +37,9 @@ public class StompConnectEvent implements ApplicationListener<SessionConnectEven
 	@Autowired
 	private WebSocketMessageBrokerStats webSocketMessageBrokerStats;
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
     public void onApplicationEvent(SessionConnectEvent event) {
         StompHeaderAccessor sha = StompHeaderAccessor.wrap(event.getMessage());

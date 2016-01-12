@@ -12,12 +12,12 @@ package edu.tamu.framework.model.repo;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Repository;
 
 import edu.tamu.framework.model.Symlink;
 
 /**
+ * Symlink repo.
  * 
  * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
  * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>
@@ -27,11 +27,10 @@ import edu.tamu.framework.model.Symlink;
  *
  */
 @Repository
-@ConfigurationProperties("app")
 public class SymlinkRepo {
 
 	private Map<String, Symlink> symlinks;
-	
+
 	public SymlinkRepo() {
 		symlinks = new HashMap<String, Symlink>();
 	}
@@ -45,10 +44,10 @@ public class SymlinkRepo {
 
 	/**
 	 * @param symlinks
-	 * 			the symlinks to set
+	 *            the symlinks to set
 	 */
 	public void setSymlinks(Map<String, Symlink> symlinks) {
 		this.symlinks = symlinks;
 	}
-	
+
 }

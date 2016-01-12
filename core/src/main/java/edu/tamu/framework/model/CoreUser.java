@@ -10,8 +10,7 @@
 package edu.tamu.framework.model;
 
 /**
- * User interface. lol
- * 
+ * Core user interface. lol
  * 
  * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
  * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>
@@ -25,35 +24,35 @@ public interface CoreUser {
 	/**
 	 * Sets UIN.
 	 * 
-	 * @param 		uin				Long
+	 * @param uin
+	 *            Long
 	 * 
 	 */
 	public void setUin(Long uin);
-	
+
 	/**
 	 * Gets UIN.
 	 * 
-	 * @return		Long
+	 * @return Long
 	 * 
 	 */
 	public Long getUin();
-	
+
 	/**
 	 * Sets role.
 	 * 
-	 * @param 		role			String
+	 * @param role
+	 *            String
 	 * 
 	 */
 	public void setRole(String role);
-	
+
 	/**
 	 * Gets role.
 	 * 
-	 * @return		String
+	 * @return String
 	 * 
 	 */
 	public String getRole();
 
-
 }
-

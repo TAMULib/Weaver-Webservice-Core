@@ -7,6 +7,7 @@ import org.springframework.messaging.simp.SimpMessageTypeMessageCondition;
 import edu.tamu.framework.mapping.condition.WebSocketRequestCondition;
 
 /**
+ * Custom simp message mapping info. Mostly duplication of Spring's SimpMessageMappingInfo.
  * 
  * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
  * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>
@@ -34,6 +35,9 @@ public class CustomSimpMessageMappingInfo implements MessageCondition<CustomSimp
 		return this.destinationConditions;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public CustomSimpMessageMappingInfo combine(CustomSimpMessageMappingInfo other) {
 		SimpMessageTypeMessageCondition typeCond = this.getMessageTypeMessageCondition().combine(other.getMessageTypeMessageCondition());
@@ -41,6 +45,9 @@ public class CustomSimpMessageMappingInfo implements MessageCondition<CustomSimp
 		return new CustomSimpMessageMappingInfo(typeCond, destCond);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public CustomSimpMessageMappingInfo getMatchingCondition(Message<?> message) {
 		SimpMessageTypeMessageCondition typeCond = this.messageTypeMessageCondition.getMatchingCondition(message);
@@ -54,6 +61,9 @@ public class CustomSimpMessageMappingInfo implements MessageCondition<CustomSimp
 		return new CustomSimpMessageMappingInfo(typeCond, destCond);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public int compareTo(CustomSimpMessageMappingInfo other, Message<?> message) {
 		int result = this.messageTypeMessageCondition.compareTo(other.messageTypeMessageCondition, message);
@@ -67,6 +77,9 @@ public class CustomSimpMessageMappingInfo implements MessageCondition<CustomSimp
 		return 0;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
@@ -80,11 +93,17 @@ public class CustomSimpMessageMappingInfo implements MessageCondition<CustomSimp
 		return false;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public int hashCode() {
 		return (this.destinationConditions.hashCode() * 31 + this.messageTypeMessageCondition.hashCode());
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder("{");

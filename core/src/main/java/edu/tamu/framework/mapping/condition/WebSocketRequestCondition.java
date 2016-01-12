@@ -1,3 +1,12 @@
+/* 
+ * WebSocketRequestMappingHandler.java 
+ * 
+ * Version: 
+ *     $Id$ 
+ * 
+ * Revisions: 
+ *     $Log$ 
+ */
 package edu.tamu.framework.mapping.condition;
 
 import java.util.ArrayList;
@@ -18,6 +27,7 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 
 /**
+ * Websocket request condition.
  * 
  * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
  * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>
@@ -31,20 +41,23 @@ public class WebSocketRequestCondition implements MessageCondition<WebSocketRequ
 	private final Set<String> patterns;
 
 	private final PathMatcher pathMatcher;
-	
+
 	public WebSocketRequestCondition(String... patterns) {
 		this(Arrays.asList(patterns), null);
 	}
-	
+
 	public WebSocketRequestCondition(String[] patterns, PathMatcher pathMatcher) {
 		this(Arrays.asList(patterns), pathMatcher);
 	}
-	
-	public WebSocketRequestCondition(Collection<String> patterns, PathMatcher pathMatcher) {		
+
+	public WebSocketRequestCondition(Collection<String> patterns, PathMatcher pathMatcher) {
 		this.patterns = Collections.unmodifiableSet(new HashSet<String>(patterns));
 		this.pathMatcher = (pathMatcher != null ? pathMatcher : (PathMatcher) new AntPathMatcher());
 	}
-		
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public WebSocketRequestCondition combine(WebSocketRequestCondition other) {
 		Set<String> result = new LinkedHashSet<String>();
@@ -54,19 +67,19 @@ public class WebSocketRequestCondition implements MessageCondition<WebSocketRequ
 					result.add(((AntPathMatcher) this.pathMatcher).combine(pattern1, pattern2));
 				}
 			}
-		}
-		else if (!this.patterns.isEmpty()) {
+		} else if (!this.patterns.isEmpty()) {
 			result.addAll(this.patterns);
-		}
-		else if (!other.patterns.isEmpty()) {
+		} else if (!other.patterns.isEmpty()) {
 			result.addAll(other.patterns);
-		}
-		else {
+		} else {
 			result.add("");
 		}
 		return new WebSocketRequestCondition(result, this.pathMatcher);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public int compareTo(WebSocketRequestCondition other, Message<?> message) {
 		StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
@@ -83,59 +96,57 @@ public class WebSocketRequestCondition implements MessageCondition<WebSocketRequ
 		}
 		if (iterator.hasNext()) {
 			return -1;
-		}
-		else if (iteratorOther.hasNext()) {
+		} else if (iteratorOther.hasNext()) {
 			return 1;
-		}
-		else {
+		} else {
 			return 0;
 		}
 	}
 
 	@Override
-	public WebSocketRequestCondition getMatchingCondition(Message<?> message) {		
+	public WebSocketRequestCondition getMatchingCondition(Message<?> message) {
 		StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 		String destination = accessor.getDestination();
-		
+
 		if (destination == null) {
 			return null;
 		}
-		
+
 		if (this.patterns.isEmpty()) {
 			return this;
 		}
-		
+
 		List<String> matches = new ArrayList<String>();
 		for (String pattern : patterns) {
-			
+
 			if (("/ws" + pattern).equals(destination)) {
 				matches.add("/ws" + pattern);
 			}
-			
+
 			if (("/private/queue" + pattern).equals(destination)) {
 				matches.add("/private/queue" + pattern);
 			}
-			
-			if(((AntPathMatcher) this.pathMatcher).match(("/ws" + pattern), destination)) {
+
+			if (((AntPathMatcher) this.pathMatcher).match(("/ws" + pattern), destination)) {
 				matches.add("/ws" + pattern);
 			}
-			
-			if(((AntPathMatcher) this.pathMatcher).match(("/private/queue" + pattern), destination)) {
-				matches.add("/private/queue" + pattern);				
+
+			if (((AntPathMatcher) this.pathMatcher).match(("/private/queue" + pattern), destination)) {
+				matches.add("/private/queue" + pattern);
 			}
 		}
 
 		if (matches.isEmpty()) {
 			return null;
 		}
-		
+
 		Collections.sort(matches, ((AntPathMatcher) this.pathMatcher).getPatternComparator(destination));
-		
+
 		return new WebSocketRequestCondition(matches, this.pathMatcher);
 	}
 
 	public Set<String> getPatterns() {
 		return patterns;
 	}
-	
+
 }

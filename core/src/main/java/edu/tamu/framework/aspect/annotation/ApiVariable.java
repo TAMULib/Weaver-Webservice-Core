@@ -1,3 +1,12 @@
+/* 
+ * ApiVariable.java 
+ * 
+ * Version: 
+ *     $Id$ 
+ * 
+ * Revisions: 
+ *     $Log$ 
+ */
 package edu.tamu.framework.aspect.annotation;
 
 import java.lang.annotation.Documented;
@@ -7,6 +16,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Annotation for combined PathVariable and DestinationVariable.
  * 
  * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
  * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>
@@ -15,7 +25,7 @@ import java.lang.annotation.Target;
  * @author <a href="mailto:wwelling@library.tamu.edu">William Welling</a>
  *
  */
-@Target({ElementType.PARAMETER})
+@Target({ ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface ApiVariable {

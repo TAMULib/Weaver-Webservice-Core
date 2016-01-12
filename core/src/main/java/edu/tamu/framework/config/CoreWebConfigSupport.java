@@ -1,3 +1,12 @@
+/* 
+ * CoreWebConfigSupport.java 
+ * 
+ * Version: 
+ *     $Id$ 
+ * 
+ * Revisions: 
+ *     $Log$ 
+ */
 package edu.tamu.framework.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +22,7 @@ import edu.tamu.framework.mapping.RestRequestMappingHandler;
 import edu.tamu.framework.mapping.WebSocketRequestMappingHandler;
 
 /**
+ * Core Web MVC configuration support.
  * 
  * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
  * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>
@@ -23,19 +33,24 @@ import edu.tamu.framework.mapping.WebSocketRequestMappingHandler;
  */
 @Configuration
 public abstract class CoreWebConfigSupport extends WebMvcConfigurationSupport {
-	
+
 	@Autowired
 	private SubscribableChannel clientInboundChannel;
-	
+
 	@Autowired
 	private MessageChannel clientOutboundChannel;
-	
+
 	@Autowired
 	private SimpMessageSendingOperations brokerTemplate;
-	
+
 	@Autowired
 	private ContentNegotiationManager contentNegotiationManager;
-	
+
+	/**
+	 * Rest request mapping handler bean.
+	 * 
+	 * @return RestRequestMappingHandler
+	 */
 	@Bean
 	public RestRequestMappingHandler restRequestMappingHandler() {
 		RestRequestMappingHandler handlerMapping = new RestRequestMappingHandler(contentNegotiationManager);
@@ -43,12 +58,18 @@ public abstract class CoreWebConfigSupport extends WebMvcConfigurationSupport {
 		handlerMapping.setInterceptors(new Object[] { getRestInterceptor() });
 		return handlerMapping;
 	}
-	
+
 	public abstract Object getRestInterceptor();
-		
+
+	/**
+	 * Websocket request mapping handler bean
+	 * 
+	 * @return WebSocketRequestMappingHandler
+	 */
 	@Bean
 	public WebSocketRequestMappingHandler webSocketRequestMappingHandler() {
 		WebSocketRequestMappingHandler handlerMapping = new WebSocketRequestMappingHandler(clientInboundChannel, clientOutboundChannel, brokerTemplate);
 		return handlerMapping;
 	}
+	
 }

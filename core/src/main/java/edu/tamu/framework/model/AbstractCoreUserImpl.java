@@ -17,6 +17,7 @@ import javax.persistence.Table;
 import edu.tamu.framework.model.CoreUser;
 
 /**
+ * Abstract core user implementation.
  * 
  * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
  * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>
@@ -26,27 +27,27 @@ import edu.tamu.framework.model.CoreUser;
  *
  */
 @Entity
-@Table(name="core_users")
+@Table(name = "core_users")
 public abstract class AbstractCoreUserImpl implements CoreUser {
-	
+
 	@Id
-	@Column(name="uin", nullable=false)
+	@Column(name = "uin", nullable = false)
 	private Long uin;
-	
-	@Column(name="role")
+
+	@Column(name = "role")
 	private String role;
-	
-	public AbstractCoreUserImpl() {}
-	
+
+	public AbstractCoreUserImpl() { }
+
 	public AbstractCoreUserImpl(Long uin) {
 		this.uin = uin;
 	}
-	
+
 	@Override
 	public void setUin(Long uin) {
 		this.uin = uin;
 	}
-	
+
 	@Override
 	public Long getUin() {
 		return uin;

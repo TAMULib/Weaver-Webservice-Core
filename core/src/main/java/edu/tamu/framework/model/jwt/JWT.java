@@ -30,18 +30,22 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import edu.tamu.framework.util.JwtUtility;
 
-/** 
+/**
  * JSON Web Token.
  * 
- * @author
+ * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
+ * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>
+ * @author <a href="mailto:huff@library.tamu.edu">Jeremy Huff</a>
+ * @author <a href="mailto:jsavell@library.tamu.edu">Jason Savell</a>
+ * @author <a href="mailto:wwelling@library.tamu.edu">William Welling</a>
  *
  */
 public class JWT {
-	
+
 	private JWTheader header;
 	private JWTclaim claim;
 	private String secret;
-		
+
 	/**
 	 * Constructor.
 	 *
@@ -69,7 +73,7 @@ public class JWT {
 
 		makeClaim("exp", Objects.toString(Calendar.getInstance().getTime().getTime() + expiration, null));
 	}
-	
+
 	/**
 	 * Constructor.
 	 *
@@ -90,7 +94,7 @@ public class JWT {
 
 		makeClaim("exp", Objects.toString(Calendar.getInstance().getTime().getTime() + expiration, null));
 	}
-	
+
 	/**
 	 * Add claim to token.
 	 *
@@ -103,7 +107,7 @@ public class JWT {
 	public void makeClaim(String key, String value) {
 		this.claim.putClaim(key, value);
 	}
-	
+
 	/**
 	 * Retrieve token as a String.
 	 *
@@ -136,6 +140,5 @@ public class JWT {
 
 		return jwe;
 	}
-	
-	
+
 }

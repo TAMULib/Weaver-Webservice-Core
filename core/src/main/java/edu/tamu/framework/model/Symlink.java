@@ -10,6 +10,7 @@
 package edu.tamu.framework.model;
 
 /**
+ * Symlink.
  * 
  * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
  * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>
@@ -22,9 +23,9 @@ public class Symlink {
 
 	public String path;
 	public String target;
-	
+
 	public Symlink() { }
-	
+
 	public Symlink(String path, String target) {
 		this.path = path;
 		this.target = target;
@@ -38,7 +39,8 @@ public class Symlink {
 	}
 
 	/**
-	 * @param path the path to set
+	 * @param path
+	 *            the path to set
 	 */
 	public void setPath(String path) {
 		this.path = path;
@@ -52,7 +54,8 @@ public class Symlink {
 	}
 
 	/**
-	 * @param target the target to set
+	 * @param target
+	 *            the target to set
 	 */
 	public void setTarget(String target) {
 		this.target = target;
