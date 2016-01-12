@@ -39,11 +39,15 @@ public class WebSocketRequestService {
 	}
 	
 	public synchronized void addRequest(WebSocketRequest request) {
-		requests.add(request);
+		if(request.getDestination() != null && request.getUser() != null) {
+			requests.add(request);
+		}
 	}
 	
 	public synchronized void removeRequest(WebSocketRequest request) {
-		requests.remove(request);
+		if(request.getDestination() != null && request.getUser() != null) {
+			requests.remove(request);
+		}
 	}
 	
 	public synchronized WebSocketRequest getAndRemoveMessageByDestinationAndUser(String destination, String user) {

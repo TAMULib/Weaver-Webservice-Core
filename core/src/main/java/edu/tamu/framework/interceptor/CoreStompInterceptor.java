@@ -34,7 +34,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
-import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 
@@ -53,7 +52,6 @@ import edu.tamu.framework.util.JwtUtility;
  * @author 
  *
  */
-@Component
 public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
     
     @Autowired
@@ -321,7 +319,6 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
                 accessor.setSessionAttributes(shibMap);
                 
                 message = MessageBuilder.withPayload("VALID").setHeaders(accessor).build();
-                
                 
                 // set message with enhanced accessor on request
                 request.setMessage(message);
