@@ -9,6 +9,10 @@
  */
 package edu.tamu.framework.util;
 
+import static org.apache.commons.codec.binary.Base64.decodeBase64;
+import static org.apache.commons.codec.binary.Base64.encodeBase64URLSafeString;
+
+import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
@@ -33,10 +37,11 @@ import org.springframework.security.jwt.JwtHelper;
 import org.springframework.security.jwt.crypto.sign.MacSigner;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static org.apache.commons.codec.binary.Base64.decodeBase64;
-import static org.apache.commons.codec.binary.Base64.encodeBase64URLSafeString;;
+import edu.tamu.app.exception.JWTException;
+import edu.tamu.framework.model.jwt.JWT;;
 
 /** 
  * JSON Web Token service.
@@ -54,10 +59,13 @@ public class  JwtUtility {
 	@Value("${auth.security.jwt.secret-key}") 
 	private String secret_key;
 	
+	@Value("${auth.security.jwt-expiration}")
+	private Long expiration;
+	
 	@Autowired
 	public ObjectMapper objectMapper;
 	
-	private static final Logger logger = Logger.getLogger(JwtUtility.class);
+	private final Logger log = Logger.getLogger(this.getClass());
 	
 	/**
 	 * Constructor.
@@ -65,6 +73,62 @@ public class  JwtUtility {
 	 */
 	public JwtUtility() {
 		
+	}
+	
+	/**
+	 * Instantiate new token.
+	 * 
+	 * @return
+	 */
+	public JWT craftToken() {
+		try {
+			return new JWT(secret_key, expiration);
+		} catch (InvalidKeyException e) {
+			log.debug(e.getStackTrace().toString());
+			throw new JWTException("InvalidKeyException", e.getMessage());
+		} catch (JsonProcessingException e) {
+			log.debug(e.getStackTrace().toString());
+			throw new JWTException("JsonProcessingException", e.getMessage());
+		} catch (NoSuchAlgorithmException e) {
+			log.debug(e.getStackTrace().toString());
+			throw new JWTException("NoSuchAlgorithmException", e.getMessage());
+		} catch (IllegalStateException e) {
+			log.debug(e.getStackTrace().toString());
+			throw new JWTException("IllegalStateException", e.getMessage());
+		} catch (UnsupportedEncodingException e) {
+			log.debug(e.getStackTrace().toString());
+			throw new JWTException("UnsupportedEncodingException", e.getMessage());
+		}
+	}
+	
+	/**
+	 * Get token as a string.
+	 * 
+	 * @param token
+	 * @return
+	 */
+	public String tokenAsString(JWT token) {
+		try {
+			return token.getTokenAsString();
+		} catch (InvalidKeyException e) {
+			log.debug(e.getStackTrace().toString());
+			throw new JWTException("InvalidKeyException", e.getMessage());
+		} catch (JsonProcessingException e) {
+			log.debug(e.getStackTrace().toString());
+			throw new JWTException("JsonProcessingException", e.getMessage());
+		} catch (NoSuchAlgorithmException e) {
+			log.debug(e.getStackTrace().toString());
+			throw new JWTException("NoSuchAlgorithmException", e.getMessage());
+		} catch (NoSuchPaddingException e) {
+			log.debug(e.getStackTrace().toString());
+			throw new JWTException("NoSuchPaddingException", e.getMessage());
+		} catch (IllegalBlockSizeException e) {
+			log.debug(e.getStackTrace().toString());
+			throw new JWTException("IllegalBlockSizeException", e.getMessage());
+		} catch (BadPaddingException e) {
+			log.debug(e.getStackTrace().toString());
+			throw new JWTException("BadPaddingException", e.getMessage());
+		}
 	}
 	
 	/**
@@ -133,7 +197,7 @@ public class  JwtUtility {
 		try {
 			token = JwtHelper.decodeAndVerify(new String(decValue), hmac);
 		} catch (Exception e) {
-			logger.error("Invalid token! Not verified!");
+			log.error("Invalid token! Not verified!");
 			tokenMap.put("ERROR", "INVALID_JWT");
 			return tokenMap;
 		}
@@ -141,7 +205,7 @@ public class  JwtUtility {
 		try {
 			tokenMap = objectMapper.readValue(token.getClaims(), Map.class);
 		} catch (Exception e) {
-			logger.error("Invalid token! Unable to map!");
+			log.error("Invalid token! Unable to map!");
 			tokenMap.put("ERROR", "INVALID_JWT");
 			return tokenMap;
 		}
@@ -155,9 +219,9 @@ public class  JwtUtility {
 		
 		long expTime = Long.parseLong(tokenMap.get("exp"));
 		
-		if(logger.isDebugEnabled()) {
+		if(log.isDebugEnabled()) {
 			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy - hh:mm:ss");
-			logger.debug("Token expiration time: " + sdf.format(new Date(expTime)));
+			log.debug("Token expiration time: " + sdf.format(new Date(expTime)));
 		}		
 		
 		if(expTime < currentTime) {
@@ -166,9 +230,9 @@ public class  JwtUtility {
 		else {
 			Long remainingTimeInSeconds =  (expTime - currentTime)/1000;
 			if(remainingTimeInSeconds > 60)
-				logger.debug("Token expires in " + remainingTimeInSeconds/60  + " minutes.");
+				log.debug("Token expires in " + remainingTimeInSeconds/60  + " minutes.");
 			else
-				logger.debug("Token expires in " + remainingTimeInSeconds + " seconds.");
+				log.debug("Token expires in " + remainingTimeInSeconds + " seconds.");
 		}
 		
 		return false;

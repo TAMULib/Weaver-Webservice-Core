@@ -13,7 +13,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.annotation.web.servlet.configuration.EnableWebMvcSecurity;
 
 /** 
  * Web security configuration.
@@ -27,7 +26,6 @@ import org.springframework.security.config.annotation.web.servlet.configuration.
  */
 @Configuration
 @EnableWebSecurity
-@EnableWebMvcSecurity
 public class CoreSecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	/**

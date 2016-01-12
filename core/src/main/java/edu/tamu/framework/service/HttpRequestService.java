@@ -39,11 +39,15 @@ public class HttpRequestService {
 	}
 	
 	public synchronized void addRequest(HttpRequest request) {
-		requests.add(request);
+		if(request.getDestination() != null && request.getUser() != null) {
+			requests.add(request);
+		}
 	}
 	
 	public synchronized void removeRequest(HttpRequest request) {
-		requests.remove(request);
+		if(request.getDestination() != null && request.getUser() != null) {
+			requests.remove(request);
+		}
 	}
 	
 	public synchronized HttpRequest getAndRemoveRequestByDestinationAndUser(String destination, String user) {		
