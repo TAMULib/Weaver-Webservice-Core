@@ -28,12 +28,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import edu.tamu.framework.aspect.annotation.ApiMapping;
 import edu.tamu.framework.model.Credentials;
 import edu.tamu.framework.model.HttpRequest;
 import edu.tamu.framework.service.HttpRequestService;
@@ -199,35 +196,8 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 		auth.setAuthenticated(true);
 
 		securityContext.setAuthentication(auth);
-		
-		String path = "";
-		
-		// get path from ApiMapping annotation
-		ApiMapping methodApiAnnotation = ((HandlerMethod) handler).getMethodAnnotation(ApiMapping.class);
-		
-		if(methodApiAnnotation != null) {
-			ApiMapping classAnnotation = ((HandlerMethod) handler).getBeanType().getAnnotation(ApiMapping.class);			
-			if(classAnnotation != null) {
-				path += classAnnotation.value()[0];
-			}
-			path += methodApiAnnotation.value()[0];
-			
-			httpRequestService.addRequest(new HttpRequest(request, response, shib.getNetid(), path));
-		}
-		else {
-			// get path from RequestMapping annotation
-			RequestMapping methodRequestAnnotation = ((HandlerMethod) handler).getMethodAnnotation(RequestMapping.class);
-
-			if(methodRequestAnnotation != null) {
-				RequestMapping classRequestAnnotation = ((HandlerMethod) handler).getBeanType().getAnnotation(RequestMapping.class);
-				if(classRequestAnnotation != null) {
-					path += classRequestAnnotation.value()[0];
-				}
-				path += methodRequestAnnotation.value()[0];
 				
-				httpRequestService.addRequest(new HttpRequest(request, response, shib.getNetid(), path));
-			}
-		}
+		httpRequestService.addRequest(new HttpRequest(request, response, shib.getNetid(), request.getServletPath()));
 		
         return true;
     }
