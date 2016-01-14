@@ -21,7 +21,7 @@ package edu.tamu.framework.model;
  *
  */
 public interface CoreUser {
-
+	
 	/**
 	 * Sets UIN.
 	 * 

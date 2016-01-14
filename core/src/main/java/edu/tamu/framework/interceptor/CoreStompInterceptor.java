@@ -150,6 +150,12 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
                     shib = new Credentials(credentialMap);
                     
                     shib = confirmCreateUser(shib);
+                    
+                    if(shib == null) {
+                    	errorMessage = "Could not confirm user!";
+                    	logger.error(errorMessage);
+                        return MessageBuilder.withPayload(errorMessage).setHeaders(accessor).build();
+                    }
                                                 
                 }
                 else {

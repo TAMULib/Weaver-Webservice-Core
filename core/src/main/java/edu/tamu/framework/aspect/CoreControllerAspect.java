@@ -257,7 +257,7 @@ public abstract class CoreControllerAspect {
     		logger.debug("The message: " + message);
     		
     		StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
-    		
+    		    		
     		destination = accessor.getDestination().replace("ws", "queue") + "-user" + accessor.getSessionId();
     		
     		requestId = accessor.getNativeHeader("id").get(0);
@@ -299,6 +299,15 @@ public abstract class CoreControllerAspect {
                     } break;
 		  			case "InputStream": {
 		  				arguments[index] = servletRequest.getInputStream();
+		  			} break;
+		  			case "Schema": {
+		  				arguments[index] = servletRequest.getScheme();
+		  			} break;
+		  			case "Host": {
+		  				arguments[index] = servletRequest.getServerName();
+		  			} break;
+		  			case "Port": {
+		  				arguments[index] = String.valueOf(servletRequest.getServerPort());
 		  			} break;
 				}
   			}

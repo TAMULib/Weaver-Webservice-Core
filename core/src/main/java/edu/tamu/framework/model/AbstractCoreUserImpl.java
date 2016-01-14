@@ -11,10 +11,10 @@ package edu.tamu.framework.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
-import edu.tamu.framework.model.CoreUser;
 
 /**
  * 
@@ -30,7 +30,10 @@ import edu.tamu.framework.model.CoreUser;
 public abstract class AbstractCoreUserImpl implements CoreUser {
 	
 	@Id
-	@Column(name="uin", nullable=false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+	
+	@Column(name="uin", nullable = true)
 	private Long uin;
 	
 	@Column(name="role")
@@ -42,6 +45,13 @@ public abstract class AbstractCoreUserImpl implements CoreUser {
 		this.uin = uin;
 	}
 	
+	/**
+	 * @return the id
+	 */
+	public Long getId() {
+		return id;
+	}
+
 	@Override
 	public void setUin(Long uin) {
 		this.uin = uin;

@@ -161,9 +161,9 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 				}
 			}
 			
-			String error = credentialMap.get("ERROR"); 
-	    	if(error != null) {	    		
-	    		logger.error("JWT error: " + error);	    		
+			String errorMessage = credentialMap.get("ERROR"); 
+	    	if(errorMessage != null) {	    		
+	    		logger.error("JWT error: " + errorMessage);	    		
 	    		throw new InvalidJwtException();
 	    	}
 	    	
@@ -173,6 +173,12 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 			}
 	    	
 	    	shib = confirmCreateUser(new Credentials(credentialMap));
+	    	
+	    	 if(shib == null) {
+	    		 errorMessage = "Could not confirm user!";
+	    		 logger.error(errorMessage);
+	    		 throw new ConfirmUserException();
+             }
 		}		
 		
 		
@@ -261,6 +267,17 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 	 */
 	@ResponseStatus(value=HttpStatus.FORBIDDEN, reason="INVALID_JWT") 
 	public class InvalidJwtException extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+	}
+	
+	/**
+	 * Could not confirm user exception class.
+	 * 
+	 * @author 
+	 *
+	 */
+	@ResponseStatus(value=HttpStatus.FORBIDDEN, reason="INVALID_USER") 
+	public class ConfirmUserException extends RuntimeException {
 		private static final long serialVersionUID = 1L;
 	}
 	
