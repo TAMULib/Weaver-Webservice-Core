@@ -300,15 +300,6 @@ public abstract class CoreControllerAspect {
 		  			case "InputStream": {
 		  				arguments[index] = servletRequest.getInputStream();
 		  			} break;
-		  			case "Schema": {
-		  				arguments[index] = servletRequest.getScheme();
-		  			} break;
-		  			case "Host": {
-		  				arguments[index] = servletRequest.getServerName();
-		  			} break;
-		  			case "Port": {
-		  				arguments[index] = String.valueOf(servletRequest.getServerPort());
-		  			} break;
 				}
   			}
   			index++;  			
