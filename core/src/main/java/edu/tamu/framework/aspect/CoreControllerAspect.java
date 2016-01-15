@@ -257,7 +257,7 @@ public abstract class CoreControllerAspect {
     		logger.debug("The message: " + message);
     		
     		StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
-    		
+    		    		
     		destination = accessor.getDestination().replace("ws", "queue") + "-user" + accessor.getSessionId();
     		
     		requestId = accessor.getNativeHeader("id").get(0);

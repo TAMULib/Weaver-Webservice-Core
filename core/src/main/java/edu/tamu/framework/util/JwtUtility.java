@@ -43,7 +43,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.tamu.framework.exception.JWTException;
 import edu.tamu.framework.model.jwt.JWT;;
 
-/** 
+/**
  * JSON Web Token service.
  * 
  * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
@@ -54,27 +54,27 @@ import edu.tamu.framework.model.jwt.JWT;;
  *
  */
 @Service
-public class  JwtUtility {
-	
-	@Value("${auth.security.jwt.secret-key}") 
+public class JwtUtility {
+
+	@Value("${auth.security.jwt.secret-key}")
 	private String secret_key;
-	
+
 	@Value("${auth.security.jwt-expiration}")
 	private Long expiration;
-	
+
 	@Autowired
 	public ObjectMapper objectMapper;
-	
+
 	private final Logger log = Logger.getLogger(this.getClass());
-	
+
 	/**
 	 * Constructor.
 	 *
 	 */
 	public JwtUtility() {
-		
+
 	}
-	
+
 	/**
 	 * Instantiate new token.
 	 * 
@@ -100,7 +100,7 @@ public class  JwtUtility {
 			throw new JWTException("UnsupportedEncodingException", e.getMessage());
 		}
 	}
-	
+
 	/**
 	 * Get token as a string.
 	 * 
@@ -130,58 +130,83 @@ public class  JwtUtility {
 			throw new JWTException("BadPaddingException", e.getMessage());
 		}
 	}
-	
+
+	/**
+	 * Make token from map populated by the user through basic login.
+	 * 
+	 * @param payload
+	 *            Map<String, String>
+	 * @return JWT
+	 * @throws InvalidKeyException
+	 * @throws JsonProcessingException
+	 * @throws NoSuchAlgorithmException
+	 * @throws IllegalStateException
+	 * @throws UnsupportedEncodingException
+	 */
+	public JWT makeToken(Map<String, String> payload) throws InvalidKeyException, JsonProcessingException, NoSuchAlgorithmException, IllegalStateException, UnsupportedEncodingException {
+		JWT token = craftToken();
+		token.makeClaim("lastName", payload.get("lastName"));
+		token.makeClaim("firstName", payload.get("firstName"));
+		token.makeClaim("netid", payload.get("netid"));
+		token.makeClaim("uin", payload.get("uin"));
+		token.makeClaim("email", payload.get("email"));
+		return token;
+	}
+
 	/**
 	 * Encodes JSON.
 	 *
-	 * @param       json			String
+	 * @param json
+	 *            String
 	 *
-	 * @return		String
+	 * @return String
 	 *
 	 */
 	public String encodeJSON(String json) {
-		return encodeBase64URLSafeString(json.getBytes());  
+		return encodeBase64URLSafeString(json.getBytes());
 	}
-	
+
 	/**
 	 * Hashes signature with secret and returns it encoded.
 	 *
-	 * @param       sig				String
-	 * @param       secret			String
+	 * @param sig
+	 *            String
+	 * @param secret
+	 *            String
 	 *
-	 * @return      String
+	 * @return String
 	 *
-	 * @exception   NoSuchAlgorithmException
-	 * @exception   InvalidKeyException
+	 * @exception NoSuchAlgorithmException
+	 * @exception InvalidKeyException
 	 * 
 	 */
 	public String hashSignature(String sig, String secret) throws NoSuchAlgorithmException, InvalidKeyException {
-		
+
 		Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
 		SecretKeySpec secret_key = new SecretKeySpec(secret.getBytes(), "HmacSHA256");
 		sha256_HMAC.init(secret_key);
-		
+
 		byte[] signature = sha256_HMAC.doFinal(sig.getBytes());
-		
-		return encodeBase64URLSafeString(signature); 
+
+		return encodeBase64URLSafeString(signature);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public Map<String, String> validateJWT(String jwe) {
-		
+
 		Map<String, String> tokenMap = new HashMap<String, String>();
-		
-		if(jwe == null) {
+
+		if (jwe == null) {
 			tokenMap.put("ERROR", "MISSING_JWT");
 			return tokenMap;
 		}
-		
-		Key key = new SecretKeySpec(secret_key.getBytes(), "AES");
-        Cipher c = null;
-        byte[] decordedValue = decodeBase64(jwe);
-        byte[] decValue = null;
 
-        try {
+		Key key = new SecretKeySpec(secret_key.getBytes(), "AES");
+		Cipher c = null;
+		byte[] decordedValue = decodeBase64(jwe);
+		byte[] decValue = null;
+
+		try {
 			c = Cipher.getInstance("AES");
 			c.init(Cipher.DECRYPT_MODE, key);
 			decValue = c.doFinal(decordedValue);
@@ -190,10 +215,10 @@ public class  JwtUtility {
 			tokenMap.put("ERROR", "UNDECRYPTED_JWT");
 			return tokenMap;
 		}
-        	    
+
 		MacSigner hmac = new MacSigner(secret_key);
 		Jwt token = null;
-		
+
 		try {
 			token = JwtHelper.decodeAndVerify(new String(decValue), hmac);
 		} catch (Exception e) {
@@ -201,7 +226,7 @@ public class  JwtUtility {
 			tokenMap.put("ERROR", "INVALID_JWT");
 			return tokenMap;
 		}
-				    	
+
 		try {
 			tokenMap = objectMapper.readValue(token.getClaims(), Map.class);
 		} catch (Exception e) {
@@ -209,32 +234,31 @@ public class  JwtUtility {
 			tokenMap.put("ERROR", "INVALID_JWT");
 			return tokenMap;
 		}
-		
+
 		return tokenMap;
-		
+
 	}
-	
+
 	public boolean isExpired(Map<String, String> tokenMap) {
-		long currentTime = Calendar.getInstance().getTime().getTime()+90000;
-		
+		long currentTime = Calendar.getInstance().getTime().getTime() + 90000;
+
 		long expTime = Long.parseLong(tokenMap.get("exp"));
-		
-		if(log.isDebugEnabled()) {
+
+		if (log.isDebugEnabled()) {
 			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy - hh:mm:ss");
 			log.debug("Token expiration time: " + sdf.format(new Date(expTime)));
-		}		
-		
-		if(expTime < currentTime) {
-			return true;
 		}
-		else {
-			Long remainingTimeInSeconds =  (expTime - currentTime)/1000;
-			if(remainingTimeInSeconds > 60)
-				log.debug("Token expires in " + remainingTimeInSeconds/60  + " minutes.");
+
+		if (expTime < currentTime) {
+			return true;
+		} else {
+			Long remainingTimeInSeconds = (expTime - currentTime) / 1000;
+			if (remainingTimeInSeconds > 60)
+				log.debug("Token expires in " + remainingTimeInSeconds / 60 + " minutes.");
 			else
 				log.debug("Token expires in " + remainingTimeInSeconds + " seconds.");
 		}
-		
+
 		return false;
 	}
 
