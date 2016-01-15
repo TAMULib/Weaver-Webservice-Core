@@ -33,7 +33,7 @@ public abstract class AbstractCoreUserImpl implements CoreUser {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@Column(name="uin", nullable = true)
+	@Column(name = "uin", nullable = true, unique = true)
 	private Long uin;
 	
 	@Column(name="role")
