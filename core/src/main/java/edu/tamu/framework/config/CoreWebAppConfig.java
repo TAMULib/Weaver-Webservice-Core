@@ -14,6 +14,7 @@ import java.util.Properties;
 
 import javax.xml.transform.Source;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -37,11 +38,11 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import ro.isdc.wro.config.jmx.ConfigConstants;
 import ro.isdc.wro.http.ConfigurableWroFilter;
 import ro.isdc.wro.model.resource.processor.factory.ConfigurableProcessorsFactory;
-import wro4jBoot.Wro4jCustomXmlModelManagerFactory;
-
+import edu.tamu.framework.service.ThemeManagerService;
 import edu.tamu.framework.events.StompConnectEvent;
 import edu.tamu.framework.events.StompDisconnectEvent;
 import edu.tamu.framework.service.StompConnectionService;
+import edu.tamu.framework.wro4j.config.CustomConfigurableWroManagerFactory;
 
 /** 
  * Web MVC Configuration for application controller.
@@ -129,17 +130,21 @@ public class CoreWebAppConfig extends WebMvcConfigurerAdapter {
 		return new StompDisconnectEvent();
 	}
 	
+	
 	/**
 	 * WRO Configuration
 	 */
 
+	@Autowired
+	ThemeManagerService themeManagerService;
+	
     @Bean
     FilterRegistrationBean webResourceOptimizer(Environment env) {
     	FilterRegistrationBean fr = new FilterRegistrationBean();
     	ConfigurableWroFilter filter = new ConfigurableWroFilter();
 		Properties props = buildWroProperties(env);
 		filter.setProperties(props);
-		filter.setWroManagerFactory(new Wro4jCustomXmlModelManagerFactory(props));
+		filter.setWroManagerFactory(new CustomConfigurableWroManagerFactory(props,themeManagerService));
     	filter.setProperties(props);
     	fr.setFilter(filter);
     	fr.addUrlPatterns("/wro/*");
