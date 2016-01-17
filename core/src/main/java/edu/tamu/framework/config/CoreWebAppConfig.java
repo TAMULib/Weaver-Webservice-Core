@@ -39,10 +39,10 @@ import ro.isdc.wro.config.jmx.ConfigConstants;
 import ro.isdc.wro.http.ConfigurableWroFilter;
 import ro.isdc.wro.model.resource.processor.factory.ConfigurableProcessorsFactory;
 import edu.tamu.framework.service.ThemeManagerService;
+import edu.tamu.framework.wro4j.manager.factory.CustomConfigurableWroManagerFactory;
 import edu.tamu.framework.events.StompConnectEvent;
 import edu.tamu.framework.events.StompDisconnectEvent;
 import edu.tamu.framework.service.StompConnectionService;
-import edu.tamu.framework.wro4j.config.CustomConfigurableWroManagerFactory;
 
 /** 
  * Web MVC Configuration for application controller.

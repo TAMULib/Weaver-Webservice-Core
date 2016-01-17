@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import edu.tamu.framework.model.CoreTheme;
-import edu.tamu.framework.model.ThemeProperty;
 import edu.tamu.framework.model.ThemePropertyName;
 import edu.tamu.framework.model.repo.CoreThemeRepo;
 import edu.tamu.framework.model.repo.ThemePropertyNameRepo;
