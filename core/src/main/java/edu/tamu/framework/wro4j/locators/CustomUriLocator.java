@@ -23,11 +23,9 @@ public class CustomUriLocator implements UriLocator {
 
 	@Override
 	public InputStream locate(String serviceName) throws IOException {
-		// TODO Auto-generated method stub
-		System.out.println(themeManagerService.testBean());
-		
-//		InputStream stream = new ByteArrayInputStream(test.getBytes(StandardCharsets.UTF_8));
-		InputStream stream = new ByteArrayInputStream(themeManagerService.getFormattedProperties().getBytes(StandardCharsets.UTF_8));
+		String resourceText = "/* The custom locator fetched the following SASS vars from the ThemeManagerService: */\n\n"; 
+		resourceText += themeManagerService.getFormattedProperties();
+		InputStream stream = new ByteArrayInputStream(resourceText.getBytes(StandardCharsets.UTF_8));
 
 		return stream;
 	}

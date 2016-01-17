@@ -53,11 +53,14 @@ public class ThemeManagerService {
 	}
 	
 	public String testBean() {
+		/*
 		StringBuilder formattedProperties = new StringBuilder();
 		for (ThemeProperty p : this.getCurrentTheme().getProperties()) {
 			formattedProperties.append("$"+p.getPropertyName().getName()+": "+p.getValue()+";\n");
 		}
 		return "\n\n\nThe values: "+formattedProperties.toString();
+		*/
+		return "\n\n\nThe Theme: "+this.getCurrentTheme().getName()+"\n\n\n";
 	}
 	
 	public CoreTheme getCurrentTheme() {
@@ -65,11 +68,26 @@ public class ThemeManagerService {
 	}
 	
 	public String getFormattedProperties() {
+		String formattedProps = "";
+		formattedProps += "/*The theme manager provided these variables to the SCSS:\n\n ";
+		formattedProps += "* $primary: #500000;\n";
+		formattedProps += "* $secondary: #3c0000;\n";
+		formattedProps += "* $linkColor: #337ab7;\n";
+		formattedProps += "* $baseFontSize: 14px;\n";
+
+		formattedProps += "*/\n\n";
+
+		formattedProps += "$primary: #500000;";
+		formattedProps += "$secondary: #3c0000;";
+		formattedProps += "$linkColor: #337ab7;";
+		formattedProps += "$baseFontSize: 14px;";
+		/*
 		StringBuilder formattedProperties = new StringBuilder();
 		for (ThemeProperty p : this.getCurrentTheme().getProperties()) {
 			formattedProperties.append("$"+p.getPropertyName().getName()+": "+p.getValue()+";\n");
 		}
-		return formattedProperties.toString();
+		*/
+		return formattedProps;
 	}
 /*
 	public void setCurrentTheme(CoreTheme theme) {
