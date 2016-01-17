@@ -3,6 +3,9 @@ package edu.tamu.framework.wro4j.config;
 import java.util.Map;
 import java.util.Properties;
 
+import edu.tamu.framework.service.ThemeManagerService;
+import edu.tamu.framework.wro4j.locators.CustomUriLocator;
+import edu.tamu.framework.wro4j.processors.RepoPostProcessor;
 import ro.isdc.wro.model.resource.locator.ClasspathUriLocator;
 import ro.isdc.wro.model.resource.locator.ServletContextUriLocator;
 import ro.isdc.wro.model.resource.locator.UrlUriLocator;
@@ -10,9 +13,6 @@ import ro.isdc.wro.model.resource.locator.factory.SimpleUriLocatorFactory;
 import ro.isdc.wro.model.resource.locator.factory.UriLocatorFactory;
 import ro.isdc.wro.model.resource.processor.ResourcePostProcessor;
 import wro4jBoot.Wro4jCustomXmlModelManagerFactory;
-import edu.tamu.framework.wro4j.locators.CustomUriLocator;
-import edu.tamu.framework.service.ThemeManagerService;
-import edu.tamu.framework.wro4j.processors.RepoPostProcessor;
 
 public class CustomConfigurableWroManagerFactory extends Wro4jCustomXmlModelManagerFactory {
 	private ThemeManagerService themeManagerService;
@@ -31,4 +31,5 @@ public class CustomConfigurableWroManagerFactory extends Wro4jCustomXmlModelMana
 		return new SimpleUriLocatorFactory().addLocator(new ServletContextUriLocator()).addLocator(new ClasspathUriLocator()).addLocator(
 				new UrlUriLocator()).addLocator(new CustomUriLocator(themeManagerService));
 	 }
-	}
+
+}
