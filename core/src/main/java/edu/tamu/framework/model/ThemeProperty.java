@@ -16,6 +16,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
@@ -39,13 +40,13 @@ public class ThemeProperty {
 	
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, scope = CoreTheme.class, property = "name") 
-	@JsonIdentityReference(alwaysAsId = true)
+	@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, scope = CoreTheme.class, property = "id") 
+	@JsonIdentityReference(alwaysAsId = false)
 	private CoreTheme theme;	
 
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, scope = ThemePropertyName.class, property = "name") 
-	@JsonIdentityReference(alwaysAsId = true)
+	@OneToOne(fetch = FetchType.EAGER)
+	@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, scope = ThemePropertyName.class, property = "id") 
+	@JsonIdentityReference(alwaysAsId = false)
 	private ThemePropertyName themePropertyName;
 	
 	public ThemeProperty() {}

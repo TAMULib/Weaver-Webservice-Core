@@ -12,7 +12,7 @@ public class ThemePropertyNameRepoImpl {
 
 	public ThemePropertyName create(String name) {
 		ThemePropertyName propertyName = themePropertyNameRepo.getThemePropertyNameByName(name);
-		if(name == null) {
+		if(propertyName == null) {
 			return themePropertyNameRepo.save(new ThemePropertyName(name));
 		}
 		return propertyName;

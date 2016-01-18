@@ -21,6 +21,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 /** 
  * Core Theme entity.
  * 
@@ -39,7 +46,10 @@ public class CoreTheme {
 	@Column
 	private Boolean active = false;
 	
-	@OneToMany(mappedBy="theme", cascade = {CascadeType.PERSIST, CascadeType.DETACH, CascadeType.REMOVE, CascadeType.REFRESH}, fetch = FetchType.EAGER, orphanRemoval = true)	
+	@OneToMany(mappedBy="theme", fetch=FetchType.EAGER, cascade={CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
+	@Fetch(FetchMode.SELECT)
+	@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, scope=ThemeProperty.class, property="id")
+	@JsonIdentityReference(alwaysAsId=false)
 	private Set<ThemeProperty> properties = new HashSet<ThemeProperty>();
 	
 	public CoreTheme() {}
