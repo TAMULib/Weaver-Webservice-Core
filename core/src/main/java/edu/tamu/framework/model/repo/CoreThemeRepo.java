@@ -13,6 +13,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import edu.tamu.framework.model.CoreTheme;
+import edu.tamu.framework.model.ThemeProperty;
 
 /**
  * Application User repository.
@@ -26,5 +27,9 @@ public interface CoreThemeRepo extends JpaRepository<CoreTheme, Long>, CoreTheme
 	public CoreTheme getByName(String name);
 	
 	public CoreTheme findByActiveTrue();
+
+	public void updateActiveTheme(CoreTheme theme);
+	
+	public void addThemeProperty(CoreTheme theme,ThemeProperty themeProperty);
 
 }

@@ -3,6 +3,7 @@ package edu.tamu.framework.model.repo.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import edu.tamu.framework.model.CoreTheme;
+import edu.tamu.framework.model.ThemeProperty;
 import edu.tamu.framework.model.repo.CoreThemeRepo;
 import edu.tamu.framework.model.repo.CoreThemeRepoCustom;
 
@@ -30,4 +31,8 @@ public class CoreThemeRepoImpl implements CoreThemeRepoCustom {
 		coreThemeRepo.save(theme);
 	}
 
+	public void addThemeProperty(CoreTheme theme,ThemeProperty themeProperty) {
+		theme.addProperty(themeProperty);
+		themeProperty.setTheme(theme);;
+	}
 }

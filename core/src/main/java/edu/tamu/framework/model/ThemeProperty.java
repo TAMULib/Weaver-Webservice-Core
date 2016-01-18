@@ -51,7 +51,8 @@ public class ThemeProperty {
 	
 	public ThemeProperty() {}
 	
-	public ThemeProperty(ThemePropertyName propertyName, String value) {
+	public ThemeProperty(ThemePropertyName themePropertyName, String value) {
+		this.themePropertyName = themePropertyName;
 		this.value = value;
 	}
 	
@@ -79,4 +80,11 @@ public class ThemeProperty {
 		return this.themePropertyName;
 	}
 
+	public void setTheme(CoreTheme theme) {
+		this.theme = theme;
+	}
+	
+	public CoreTheme getTheme() {
+		return this.theme;
+	}
 }

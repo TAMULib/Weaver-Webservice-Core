@@ -83,7 +83,7 @@ public class CoreTheme {
 	}
 
 	public Boolean getActive() {
-		return active;
+		return this.active;
 	}
 
 	public void setActive(Boolean isActive) {
@@ -91,7 +91,7 @@ public class CoreTheme {
 	}
 	
 	public Set<ThemeProperty> getProperties() {
-		return properties;
+		return this.properties;
 	}
 
 	public void setProperties(Set<ThemeProperty> properties) {
@@ -99,15 +99,15 @@ public class CoreTheme {
 	}
 	
 	public void addProperty(ThemeProperty property) {
-		properties.add(property);
+		this.properties.add(property);
 	}
 	
 	public void removeProperty(ThemeProperty property) {
-		properties.remove(property);
+		this.properties.remove(property);
 	}
 	
 	public void clearProperties() {
-		properties = new HashSet<ThemeProperty>();
+		this.properties = new HashSet<ThemeProperty>();
 	}
 
 }

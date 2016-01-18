@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import edu.tamu.framework.model.ThemeProperty;
 import edu.tamu.framework.model.ThemePropertyName;
+import edu.tamu.framework.model.repo.CoreThemeRepo;
 import edu.tamu.framework.model.repo.ThemePropertyRepo;
 import edu.tamu.framework.model.repo.ThemePropertyRepoCustom;
 
