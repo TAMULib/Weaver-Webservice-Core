@@ -63,10 +63,18 @@ public class ThemeManagerService {
 		return currentTheme;
 	}
 	
+	public void updateThemeProperty(Long themeId,Long propertyId,String value) {
+		coreThemeRepo.updateThemeProperty(themeId,propertyId,value);
+		//if the updated property is part of the active theme, get it fresh from the repo
+		if (this.getCurrentTheme().getId() == themeId) {
+			this.refreshCurrentTheme();
+		}
+	}
+	
 	/*
 	 * Gets a fresh version of the active theme from the repo
 	 */
-	public void refreshCurrentTheme() throws IOException {
+	public void refreshCurrentTheme() {
 		System.out.println("\n\n\nThe properties were:\n\n");
 		currentTheme.getProperties().forEach(tp -> {
 			System.out.println(tp.getPropertyName().getName()+": "+tp.getValue());
@@ -78,7 +86,12 @@ public class ThemeManagerService {
 			System.out.println(tp.getPropertyName().getName()+": "+tp.getValue());
 		});
 		String urlString = "http://localhost:9000/wro/wroAPI/reloadCache";
-		httpUtility.makeHttpRequest(urlString, "GET");
+		try {
+			httpUtility.makeHttpRequest(urlString, "GET");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public String getFormattedProperties() {
