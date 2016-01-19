@@ -38,7 +38,9 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 import ro.isdc.wro.config.jmx.ConfigConstants;
 import ro.isdc.wro.http.ConfigurableWroFilter;
+import ro.isdc.wro.http.handler.factory.SimpleRequestHandlerFactory;
 import ro.isdc.wro.model.resource.processor.factory.ConfigurableProcessorsFactory;
+import wro4j.http.handler.CustomRequestHandler;
 import edu.tamu.framework.service.ThemeManagerService;
 import edu.tamu.framework.wro4j.manager.factory.CustomConfigurableWroManagerFactory;
 import edu.tamu.framework.events.StompConnectEvent;
@@ -149,12 +151,13 @@ public class CoreWebAppConfig extends WebMvcConfigurerAdapter {
 		Properties props = buildWroProperties(env);
 		filter.setProperties(props);
 		filter.setWroManagerFactory(new CustomConfigurableWroManagerFactory(props,themeManagerService,defaultResources));
+		filter.setRequestHandlerFactory(new SimpleRequestHandlerFactory().addHandler(new CustomRequestHandler()));
     	filter.setProperties(props);
     	fr.setFilter(filter);
     	fr.addUrlPatterns("/wro/*");
     	return fr;
     }
-
+    
     private static final String[] OTHER_WRO_PROP = new String[] { ConfigurableProcessorsFactory.PARAM_PRE_PROCESSORS,
     		ConfigurableProcessorsFactory.PARAM_POST_PROCESSORS };
 
