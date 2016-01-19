@@ -17,8 +17,8 @@ import org.springframework.stereotype.Service;
 import edu.tamu.framework.model.HttpRequest;
 
 /**
- * Http request service. Stores, retrieves, and removes current requests.
- * Used to marshel http requests between interceptor and aspect.
+ * Http request service. Stores, retrieves, and removes current requests. Used
+ * to marshel http requests between interceptor and aspect.
  * 
  * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
  * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>

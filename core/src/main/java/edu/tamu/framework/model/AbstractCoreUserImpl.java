@@ -37,7 +37,8 @@ public abstract class AbstractCoreUserImpl implements CoreUser {
 	@Column(name = "role")
 	private String role;
 
-	public AbstractCoreUserImpl() { }
+	public AbstractCoreUserImpl() {
+	}
 
 	public AbstractCoreUserImpl(Long uin) {
 		this.uin = uin;
@@ -62,4 +63,5 @@ public abstract class AbstractCoreUserImpl implements CoreUser {
 	public String getRole() {
 		return role;
 	}
+	
 }

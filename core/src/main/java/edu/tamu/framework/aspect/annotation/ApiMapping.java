@@ -33,7 +33,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @ResponseBody
 @Documented
 public @interface ApiMapping {
+	
 	String[] value() default {};
 
 	RequestMethod[] method() default { RequestMethod.GET };
+	
 }

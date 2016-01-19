@@ -65,8 +65,9 @@ import edu.tamu.framework.mapping.condition.WebSocketRequestCondition;
 import edu.tamu.framework.mapping.info.CustomSimpMessageMappingInfo;
 
 /**
- * Websocket request mapping handler. Duplication of mostly spring MessageMapping handler. 
- * Used to mapping combined RequestMapping and MessageMapping annotations into ApiMapping.
+ * Websocket request mapping handler. Duplication of mostly spring
+ * MessageMapping handler. Used to mapping combined RequestMapping and
+ * MessageMapping annotations into ApiMapping.
  * 
  * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
  * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>

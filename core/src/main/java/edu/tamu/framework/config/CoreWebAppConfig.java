@@ -125,7 +125,7 @@ public class CoreWebAppConfig extends WebMvcConfigurerAdapter {
 
 	/**
 	 * Stomp disconnect event bean.
-	 *  
+	 * 
 	 * @return StompDisconnectEvent
 	 */
 	@Bean

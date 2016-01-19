@@ -32,8 +32,8 @@ import edu.tamu.framework.mapping.condition.RestRequestCondition;
 //TODO: Duplicate Spring's Request Mapping handler. 
 
 /**
- * Rest request mapping handler. Simplified.
- * Used to mapping combined RequestMapping and MessageMapping annotations into ApiMapping.
+ * Rest request mapping handler. Simplified. Used to mapping combined
+ * RequestMapping and MessageMapping annotations into ApiMapping.
  * 
  * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
  * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>
@@ -91,12 +91,15 @@ public class RestRequestMappingHandler extends RequestMappingInfoHandlerMapping 
 	}
 
 	protected RequestMappingInfo createRequestMappingInfo(ApiMapping annotation) {
-		return new RequestMappingInfo(new PatternsRequestCondition(resolveEmbeddedValuesInPatterns(annotation.value())), 
-									  new RequestMethodsRequestCondition(annotation.method()), 
-									  new ParamsRequestCondition(new String[] {}), 
-									  new HeadersRequestCondition(new String[] {}), 
-									  new ConsumesRequestCondition(new String[] {}, new String[] {}), 
-									  new ProducesRequestCondition(new String[] { MediaType.APPLICATION_JSON_VALUE }, new String[] {}, contentNegotiationManager), createCondition(annotation));
+		return new RequestMappingInfo(
+				new PatternsRequestCondition(resolveEmbeddedValuesInPatterns(annotation.value())), 
+				new RequestMethodsRequestCondition(annotation.method()), 
+				new ParamsRequestCondition(new String[] {}), 
+				new HeadersRequestCondition(new String[] {}), 
+				new ConsumesRequestCondition(new String[] {}, new String[] {}), 
+				new ProducesRequestCondition(new String[] { MediaType.APPLICATION_JSON_VALUE }, 
+				new String[] {}, contentNegotiationManager), createCondition(annotation)
+		);
 	}
 
 	protected String[] resolveEmbeddedValuesInPatterns(String[] patterns) {

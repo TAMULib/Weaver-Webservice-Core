@@ -12,8 +12,9 @@ package edu.tamu.framework.model;
 import org.springframework.messaging.Message;
 
 /**
- * Websocket request. Created and stored in memory when a new request goes through the interceptor.
- * Is retrieved and removed when the aspect point cuts an endpoint.
+ * Websocket request. Created and stored in memory when a new request goes
+ * through the interceptor. Is retrieved and removed when the aspect point cuts
+ * an endpoint.
  * 
  * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
  * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>

@@ -71,5 +71,5 @@ public abstract class CoreWebConfigSupport extends WebMvcConfigurationSupport {
 		WebSocketRequestMappingHandler handlerMapping = new WebSocketRequestMappingHandler(clientInboundChannel, clientOutboundChannel, brokerTemplate);
 		return handlerMapping;
 	}
-	
+
 }

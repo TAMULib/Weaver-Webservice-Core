@@ -79,7 +79,7 @@ public class CoreCorsFilter implements Filter {
 	 *
 	 */
 	public void init(FilterConfig filterConfig) {
-		
+
 	}
 
 	/**
@@ -87,7 +87,7 @@ public class CoreCorsFilter implements Filter {
 	 *
 	 */
 	public void destroy() {
-		
+
 	}
 
 }

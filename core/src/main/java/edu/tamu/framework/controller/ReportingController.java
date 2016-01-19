@@ -54,7 +54,7 @@ public class ReportingController {
 	 * @param shibObj
 	 *            Object
 	 * @param data
-	 * 				String
+	 *            String
 	 * @return ApiResponse
 	 * @throws Exception
 	 */
@@ -66,7 +66,8 @@ public class ReportingController {
 		Map<String, String> errorReport = new HashMap<String, String>();
 
 		try {
-			errorReport = objectMapper.readValue(data, new TypeReference<HashMap<String, String>>() {});
+			errorReport = objectMapper.readValue(data, new TypeReference<HashMap<String, String>>() {
+			});
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

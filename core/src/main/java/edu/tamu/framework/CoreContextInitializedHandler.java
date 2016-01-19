@@ -23,7 +23,9 @@ import org.springframework.stereotype.Component;
 import edu.tamu.framework.model.repo.SymlinkRepo;
 
 /**
- * Core Context Initialize Handler
+ * Core Context Initialize Handler. Handles initialization for when the app
+ * starts or the context is refreshed. Creates symlinks that are populated in
+ * the SymlinkRepo. Provides two abstract methods to be implemented.
  * 
  * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
  * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>
@@ -44,8 +46,7 @@ public abstract class CoreContextInitializedHandler implements ApplicationListen
 	 * Method for event context refreshes.
 	 * 
 	 * @param event
-	 *            ContextRefreshedEvent
-	 * 
+	 *            The event being triggered.
 	 */
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 		before(event);
@@ -54,10 +55,11 @@ public abstract class CoreContextInitializedHandler implements ApplicationListen
 	}
 
 	/**
-	 * Create symlinks
+	 * Create symlinks.
 	 * 
 	 * @param event
-	 *            ContextRefreshedEvent
+	 *            The event that is being triggered. Used to get application
+	 *            context.
 	 */
 	private void createSymlinks(ContextRefreshedEvent event) {
 		if (symlinkRepo.getSymlinks() != null) {

@@ -18,7 +18,7 @@ public class JWTException extends RuntimeException {
 
 	private String errCode;
 	private String errMsg;
-	
+
 	public JWTException(String errCode, String errMsg) {
 		this.errCode = errCode;
 		this.errMsg = errMsg;
@@ -37,7 +37,7 @@ public class JWTException extends RuntimeException {
 	 * Set error code.
 	 * 
 	 * @param errCode
-	 * 				String
+	 *            String
 	 */
 	public void setErrCode(String errCode) {
 		this.errCode = errCode;
@@ -56,10 +56,10 @@ public class JWTException extends RuntimeException {
 	 * Set error message.
 	 * 
 	 * @param errMsg
-	 * 				String
+	 *            String
 	 */
 	public void setErrMsg(String errMsg) {
 		this.errMsg = errMsg;
 	}
-	
+
 }

@@ -7,7 +7,8 @@ import org.springframework.messaging.simp.SimpMessageTypeMessageCondition;
 import edu.tamu.framework.mapping.condition.WebSocketRequestCondition;
 
 /**
- * Custom simp message mapping info. Mostly duplication of Spring's SimpMessageMappingInfo.
+ * Custom simp message mapping info. Mostly duplication of Spring's
+ * SimpMessageMappingInfo.
  * 
  * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
  * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>
@@ -87,8 +88,7 @@ public class CustomSimpMessageMappingInfo implements MessageCondition<CustomSimp
 		}
 		if (obj != null && obj instanceof CustomSimpMessageMappingInfo) {
 			CustomSimpMessageMappingInfo other = (CustomSimpMessageMappingInfo) obj;
-			return (this.destinationConditions.equals(other.destinationConditions) &&
-					this.messageTypeMessageCondition.equals(other.messageTypeMessageCondition));
+			return (this.destinationConditions.equals(other.destinationConditions) && this.messageTypeMessageCondition.equals(other.messageTypeMessageCondition));
 		}
 		return false;
 	}
