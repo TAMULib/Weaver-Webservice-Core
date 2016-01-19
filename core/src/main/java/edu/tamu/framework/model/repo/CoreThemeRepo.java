@@ -26,10 +26,14 @@ public interface CoreThemeRepo extends JpaRepository<CoreTheme, Long>, CoreTheme
 	
 	public CoreTheme getByName(String name);
 	
+	public CoreTheme getById(Long id);
+	
 	public CoreTheme findByActiveTrue();
 
 	public void updateActiveTheme(CoreTheme theme);
 	
 	public void addThemeProperty(CoreTheme theme,ThemeProperty themeProperty);
+
+	public void updateThemeProperty(Long themeId,Long themePropertyId,String value);
 
 }

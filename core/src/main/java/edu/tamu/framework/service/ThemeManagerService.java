@@ -1,5 +1,6 @@
 package edu.tamu.framework.service;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,6 +15,7 @@ import edu.tamu.framework.model.ThemePropertyName;
 import edu.tamu.framework.model.repo.CoreThemeRepo;
 import edu.tamu.framework.model.repo.ThemePropertyNameRepo;
 import edu.tamu.framework.model.repo.ThemePropertyRepo;
+import edu.tamu.framework.util.HttpUtility;
 
 @Component
 public class ThemeManagerService {
@@ -25,6 +27,9 @@ public class ThemeManagerService {
 
 	@Autowired
 	private ThemePropertyRepo themePropertyRepo;
+	
+	@Autowired
+	private HttpUtility httpUtility;
 
 	private CoreTheme currentTheme;
 	
@@ -38,7 +43,7 @@ public class ThemeManagerService {
 			if (themePropertyNameRepo.count() < 1) {
 				Map<ThemePropertyName,String> newProperties = new HashMap<ThemePropertyName,String>();
 				newProperties.put(themePropertyNameRepo.create("primary"), "#500000");
-				newProperties.put(themePropertyNameRepo.create("secondary"), "#dfdfdf");
+				newProperties.put(themePropertyNameRepo.create("secondary"), "#3c0000");
 				newProperties.put(themePropertyNameRepo.create("baseFontSize"), "14pt");
 				newProperties.put(themePropertyNameRepo.create("linkColor"), "#337ab7");
 
@@ -56,6 +61,24 @@ public class ThemeManagerService {
 	
 	public CoreTheme getCurrentTheme() {
 		return currentTheme;
+	}
+	
+	/*
+	 * Gets a fresh version of the active theme from the repo
+	 */
+	public void refreshCurrentTheme() throws IOException {
+		System.out.println("\n\n\nThe properties were:\n\n");
+		currentTheme.getProperties().forEach(tp -> {
+			System.out.println(tp.getPropertyName().getName()+": "+tp.getValue());
+		});
+		currentTheme = coreThemeRepo.getById(currentTheme.getId());
+		
+		System.out.println("\n\n\nThe properties are now:\n\n");
+		currentTheme.getProperties().forEach(tp -> {
+			System.out.println(tp.getPropertyName().getName()+": "+tp.getValue());
+		});
+		String urlString = "http://localhost:9000/wro/wroAPI/reloadCache";
+		httpUtility.makeHttpRequest(urlString, "GET");
 	}
 	
 	public String getFormattedProperties() {

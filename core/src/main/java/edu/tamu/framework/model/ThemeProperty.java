@@ -41,7 +41,7 @@ public class ThemeProperty {
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, scope = CoreTheme.class, property = "id") 
-	@JsonIdentityReference(alwaysAsId = false)
+	@JsonIdentityReference(alwaysAsId = true)
 	private CoreTheme theme;	
 
 	@OneToOne(fetch = FetchType.EAGER)
