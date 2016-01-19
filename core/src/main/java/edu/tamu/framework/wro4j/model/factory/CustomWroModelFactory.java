@@ -7,11 +7,20 @@ import ro.isdc.wro.model.resource.Resource;
 import ro.isdc.wro.model.resource.ResourceType;
 
 public class CustomWroModelFactory implements WroModelFactory {
-	  public WroModel create() {
+	private String[] defaultResources;
+	
+	public CustomWroModelFactory(String[] defaultResources) {
+		this.defaultResources = defaultResources;
+	}
+	
+	public WroModel create() {
 		  //TODO tap ThemeManagerService for dynamic resources
-		  return new WroModel().addGroup(new Group("app").addResource(
-				  		Resource.create("http://savell.evans.tamu.edu/tamu-ui-seed/bower_components/core/app/resources/styles/sass/main.scss", ResourceType.CSS)).addResource(
-				  		Resource.create("http://savell.evans.tamu.edu/tamu-ui-seed/resources/styles/sass/app.scss", ResourceType.CSS)));
+		  Group cssGroup = new Group("app");
+		  for(String cssResource : defaultResources) {
+			  cssGroup.addResource(
+				  		Resource.create(cssResource, ResourceType.CSS));
+		  }
+		  return new WroModel().addGroup(cssGroup);
 	  }
 
 	@Override

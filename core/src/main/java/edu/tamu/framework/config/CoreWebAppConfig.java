@@ -15,6 +15,7 @@ import java.util.Properties;
 import javax.xml.transform.Source;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -138,13 +139,16 @@ public class CoreWebAppConfig extends WebMvcConfigurerAdapter {
 	@Autowired
 	ThemeManagerService themeManagerService;
 	
+	@Value("${theme.default.css}")
+	String[] defaultResources;
+	
     @Bean
     FilterRegistrationBean webResourceOptimizer(Environment env) {
     	FilterRegistrationBean fr = new FilterRegistrationBean();
     	ConfigurableWroFilter filter = new ConfigurableWroFilter();
 		Properties props = buildWroProperties(env);
 		filter.setProperties(props);
-		filter.setWroManagerFactory(new CustomConfigurableWroManagerFactory(props,themeManagerService));
+		filter.setWroManagerFactory(new CustomConfigurableWroManagerFactory(props,themeManagerService,defaultResources));
     	filter.setProperties(props);
     	fr.setFilter(filter);
     	fr.addUrlPatterns("/wro/*");
