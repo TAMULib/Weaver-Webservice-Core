@@ -69,8 +69,7 @@ public class CoreWebMvcConfig extends WebMvcAutoConfiguration.WebMvcAutoConfigur
 				.addResourceLocations("classpath:/static/")
 				.setCachePeriod(cachePeriod)
 				.resourceChain(useResourceCache)
-				.addResolver(new VersionResourceResolver()
-				.addContentVersionStrategy("/**"))
+				.addResolver(new VersionResourceResolver().addContentVersionStrategy("/**"))
 				.addTransformer(new AppCacheManifestTransformer());
 	}
 
