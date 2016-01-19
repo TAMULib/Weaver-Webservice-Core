@@ -1,5 +1,5 @@
 /* 
- * ControllerAspect.java 
+ * CoreControllerAspect.java 
  * 
  * Version: 
  *     $Id$ 
@@ -208,8 +208,7 @@ public abstract class CoreControllerAspect {
 
 			protocol = Protocol.HTTP;
 
-			// determine endpoint path either from ApiMapping or RequestMapping
-			// annotation
+			// determine endpoint path either from ApiMapping or RequestMapping annotation
 			String path = "";
 
 			if (clazz.getAnnotationsByType(RequestMapping.class).length > 0) {
@@ -246,8 +245,7 @@ public abstract class CoreControllerAspect {
 
 		} else {
 
-			// determine endpoint path either from ApiMapping or MessageMapping
-			// annotation
+			// determine endpoint path either from ApiMapping or MessageMapping annotation
 			String path = "";
 
 			if (clazz.getAnnotationsByType(MessageMapping.class).length > 0) {
@@ -299,26 +297,21 @@ public abstract class CoreControllerAspect {
 
 			if (annotationString != null) {
 				switch (annotationString) {
-				case "ApiVariable": {
-					arguments[index] = apiVariables.get(argNames[index]);
-				}
-					break;
-				case "Shib": {
-					arguments[index] = shib;
-				}
-					break;
-				case "Data": {
-					arguments[index] = data;
-				}
-					break;
-				case "Parameters": {
-					arguments[index] = parameters;
-				}
-					break;
-				case "InputStream": {
-					arguments[index] = servletRequest.getInputStream();
-				}
-					break;
+					case "ApiVariable": {
+						arguments[index] = apiVariables.get(argNames[index]);
+					} break;
+					case "Shib": {
+						arguments[index] = shib;
+					} break;
+					case "Data": {
+						arguments[index] = data;
+					} break;
+					case "Parameters": {
+						arguments[index] = parameters;
+					} break;
+					case "InputStream": {
+						arguments[index] = servletRequest.getInputStream();
+					} break;
 				}
 			}
 			index++;
@@ -337,10 +330,8 @@ public abstract class CoreControllerAspect {
 	 * @return Map<String, String>
 	 */
 	protected Map<String, String> getApiVariable(String mapping, String path) {
-		if (path.contains("/ws"))
-			mapping = "/ws" + mapping;
-		if (path.contains("/private/queue"))
-			mapping = "/private/queue" + mapping;
+		if (path.contains("/ws")) mapping = "/ws" + mapping;
+		if (path.contains("/private/queue")) mapping = "/private/queue" + mapping;
 
 		Map<String, String> valuesMap = new HashMap<String, String>();
 

@@ -101,7 +101,15 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Override method to perform preprocessing before sending message.
+	 * 
+	 * @param message
+	 *            Message<?>
+	 * @param channel
+	 *            MessageChannel
+	 * 
+	 * @return Message<?>
+	 * 
 	 */
 	@Override
 	public Message<?> preSend(Message<?> message, MessageChannel channel) {
@@ -124,72 +132,124 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 		}
 
 		switch (command) {
-			case ABORT: { } break;
-			case ACK: { } break;
-			case BEGIN: { } break;
-			case COMMIT: { } break;
-			case CONNECT: {
-				Credentials shib;
-	
-				if (jwt != null && !"undefined".equals(jwt)) {
-	
-					Map<String, String> credentialMap = jwtService.validateJWT(jwt);
-	
-					if (logger.isDebugEnabled()) {
-						logger.debug("Credential Map");
-						for (String key : credentialMap.keySet()) {
-							logger.debug(key + " - " + credentialMap.get(key));
+		case ABORT: {
+		}
+			break;
+		case ACK: {
+		}
+			break;
+		case BEGIN: {
+		}
+			break;
+		case COMMIT: {
+		}
+			break;
+		case CONNECT: {
+			Credentials shib;
+
+			if (jwt != null && !"undefined".equals(jwt)) {
+
+				Map<String, String> credentialMap = jwtService.validateJWT(jwt);
+
+				if (logger.isDebugEnabled()) {
+					logger.debug("Credential Map");
+					for (String key : credentialMap.keySet()) {
+						logger.debug(key + " - " + credentialMap.get(key));
+					}
+				}
+
+				String errorMessage = credentialMap.get("ERROR");
+				if (errorMessage != null) {
+					logger.error("JWT error: " + errorMessage);
+					return MessageBuilder.withPayload(errorMessage).setHeaders(accessor).build();
+				}
+
+				shib = new Credentials(credentialMap);
+
+				shib = confirmCreateUser(shib);
+
+				if (shib == null) {
+					errorMessage = "Could not confirm user!";
+					logger.error(errorMessage);
+					return MessageBuilder.withPayload(errorMessage).setHeaders(accessor).build();
+				}
+
+			} else {
+				shib = getAnonymousShib();
+			}
+
+			List<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
+
+			grantedAuthorities.add(new SimpleGrantedAuthority(shib.getRole()));
+
+			if (shib.getNetid() == null) {
+				shib.setNetid(shib.getEmail());
+			}
+
+			Authentication auth = new AnonymousAuthenticationToken(shib.getUin(), shib.getNetid(), grantedAuthorities);
+
+			auth.setAuthenticated(true);
+
+			securityContext.setAuthentication(auth);
+
+		}
+			break;
+		case CONNECTED: {
+		}
+			break;
+		case DISCONNECT: {
+			logger.debug("Disconnecting websocket connection for " + securityContext.getAuthentication().getName() + ".");
+		}
+			break;
+		case ERROR: {
+		}
+			break;
+		case MESSAGE: {
+		}
+			break;
+		case NACK: {
+		}
+			break;
+		case RECEIPT: {
+		}
+			break;
+		case SEND: {
+
+			WebSocketRequest request = new WebSocketRequest();
+
+			List<String> matches = new ArrayList<String>();
+
+			// get path from ApiMapping annotation
+			webSocketRequestMappingHandler.getHandlerMethods().entrySet().stream().forEach(info -> {
+				if (request.getDestination() == null) {
+					WebSocketRequestCondition mappingCondition = info.getKey().getDestinationConditions();
+					mappingCondition.getPatterns().stream().forEach(pattern -> {
+
+						if (pattern.contains("{")) {
+							if (((AntPathMatcher) this.pathMatcher).match(("/ws" + pattern), destination)) {
+								matches.add(pattern);
+							} else if (((AntPathMatcher) this.pathMatcher).match(("/private/queue" + pattern), destination)) {
+								matches.add(pattern);
+							}
+						} else {
+							if (("/ws" + pattern).equals(destination)) {
+								request.setDestination(pattern);
+							} else if (("/private/queue" + pattern).equals(destination)) {
+								request.setDestination(pattern);
+							}
 						}
-					}
-	
-					String errorMessage = credentialMap.get("ERROR");
-					if (errorMessage != null) {
-						logger.error("JWT error: " + errorMessage);
-						return MessageBuilder.withPayload(errorMessage).setHeaders(accessor).build();
-					}
-	
-					shib = new Credentials(credentialMap);
-	
-					shib = confirmCreateUser(shib);
-	
-				} else {
-					shib = getAnonymousShib();
+
+					});
 				}
-	
-				List<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
-	
-				grantedAuthorities.add(new SimpleGrantedAuthority(shib.getRole()));
-	
-				if (shib.getNetid() == null) {
-					shib.setNetid(shib.getEmail());
-				}
-	
-				Authentication auth = new AnonymousAuthenticationToken(shib.getUin(), shib.getNetid(), grantedAuthorities);
-	
-				auth.setAuthenticated(true);
-	
-				securityContext.setAuthentication(auth);
-			} break;
-			case CONNECTED: { } break;
-			case DISCONNECT: {
-				logger.debug("Disconnecting websocket connection for " + securityContext.getAuthentication().getName() + ".");
-			} break;
-			case ERROR: { } break;
-			case MESSAGE: { } break;
-			case NACK: { } break;
-			case RECEIPT: { } break;
-			case SEND: {
-	
-				WebSocketRequest request = new WebSocketRequest();
-	
-				List<String> matches = new ArrayList<String>();
-	
-				// get path from ApiMapping annotation
-				webSocketRequestMappingHandler.getHandlerMethods().entrySet().stream().forEach(info -> {
+			});
+
+			// if no path yet, get from MessageMapping annotation
+			if (request.getDestination() == null) {
+				simpAnnotationMethodMessageHandler.getHandlerMethods().entrySet().stream().forEach(info -> {
 					if (request.getDestination() == null) {
-						WebSocketRequestCondition mappingCondition = info.getKey().getDestinationConditions();
+						DestinationPatternsMessageCondition mappingCondition = info.getKey().getDestinationConditions();
 						mappingCondition.getPatterns().stream().forEach(pattern -> {
-	
+
 							if (pattern.contains("{")) {
 								if (((AntPathMatcher) this.pathMatcher).match(("/ws" + pattern), destination)) {
 									matches.add(pattern);
@@ -203,128 +263,112 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 									request.setDestination(pattern);
 								}
 							}
-	
+
 						});
 					}
 				});
-	
-				// if no path yet, get from MessageMapping annotation
-				if (request.getDestination() == null) {
-					simpAnnotationMethodMessageHandler.getHandlerMethods().entrySet().stream().forEach(info -> {
-						if (request.getDestination() == null) {
-							DestinationPatternsMessageCondition mappingCondition = info.getKey().getDestinationConditions();
-							mappingCondition.getPatterns().stream().forEach(pattern -> {
-	
-								if (pattern.contains("{")) {
-									if (((AntPathMatcher) this.pathMatcher).match(("/ws" + pattern), destination)) {
-										matches.add(pattern);
-									} else if (((AntPathMatcher) this.pathMatcher).match(("/private/queue" + pattern), destination)) {
-										matches.add(pattern);
-									}
-								} else {
-									if (("/ws" + pattern).equals(destination)) {
-										request.setDestination(pattern);
-									} else if (("/private/queue" + pattern).equals(destination)) {
-										request.setDestination(pattern);
-									}
-								}
-	
-							});
-						}
-					});
-				}
-	
-				String d = destination;
-	
-				if (destination.startsWith("/ws")) {
-					d = destination.substring(3);
-				} else if (destination.startsWith("/private/queue")) {
-					d = destination.substring(14);
-				}
-	
-				// if multiple patterns match, determine the closest match
-				if (request.getDestination() == null) {
-					String[] destinationPaths = d.split("/");
-					int m = 0;
-					for (String pattern : matches) {
-						String[] patternPaths = pattern.split("/");
-						if (patternPaths.length == destinationPaths.length) {
-							int n = 0;
-							for (int i = 0; i < patternPaths.length; i++) {
-								if (patternPaths[i].equals(destinationPaths[i])) {
-									n++;
-								}
-							}
-							if (n > m) {
-								m = n;
-								request.setDestination(pattern);
+			}
+
+			String d = destination;
+
+			if (destination.startsWith("/ws")) {
+				d = destination.substring(3);
+			} else if (destination.startsWith("/private/queue")) {
+				d = destination.substring(14);
+			}
+
+			// if multiple patterns match, determine the closest match
+			if (request.getDestination() == null) {
+				String[] destinationPaths = d.split("/");
+				int m = 0;
+				for (String pattern : matches) {
+					String[] patternPaths = pattern.split("/");
+					if (patternPaths.length == destinationPaths.length) {
+						int n = 0;
+						for (int i = 0; i < patternPaths.length; i++) {
+							if (patternPaths[i].equals(destinationPaths[i])) {
+								n++;
 							}
 						}
-					}
-				}
-	
-				String requestId = accessor.getNativeHeader("id").get(0);
-	
-				Credentials shib;
-	
-				if (jwt != null && !"undefined".equals(jwt)) {
-	
-					Map<String, String> credentialMap = new HashMap<String, String>();
-	
-					credentialMap = jwtService.validateJWT(jwt);
-	
-					logger.info(credentialMap.get("firstName") + " " + credentialMap.get("lastName") + " (" + credentialMap.get("uin") + ") requesting " + destination);
-	
-					if (logger.isDebugEnabled()) {
-						logger.debug("Credential Map");
-						for (String key : credentialMap.keySet()) {
-							logger.debug(key + " - " + credentialMap.get(key));
+						if (n > m) {
+							m = n;
+							request.setDestination(pattern);
 						}
 					}
-	
-					String errorMessage = credentialMap.get("ERROR");
-					if (errorMessage != null) {
-						logger.error("Security Context Name: " + securityContext.getAuthentication().getName());
-						logger.error("JWT error: " + errorMessage);
-						simpMessagingTemplate.convertAndSend(destination.replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse(requestId, ERROR, errorMessage));
-						return null;
-					}
-	
-					if (jwtService.isExpired(credentialMap)) {
-						logger.info("The token for " + credentialMap.get("firstName") + " " + credentialMap.get("lastName") + " (" + credentialMap.get("uin") + ") has expired. Attempting to get new token.");
-						simpMessagingTemplate.convertAndSend(destination.replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse(requestId, REFRESH));
-						return null;
-					}
-	
-					shib = new Credentials(credentialMap);
-	
-					shib = confirmCreateUser(shib);
-	
-				} else {
-					shib = getAnonymousShib();
 				}
-	
-				Map<String, Object> shibMap = new HashMap<String, Object>();
-	
-				shibMap.put("shib", shib);
-	
-				accessor.setSessionAttributes(shibMap);
-	
-				message = MessageBuilder.withPayload("VALID").setHeaders(accessor).build();
-	
-				// set message with enhanced accessor on request
-				request.setMessage(message);
-	
-				// set username on request
-				request.setUser(securityContext.getAuthentication().getName());
-	
-				webSocketRequestService.addRequest(request);
-	
-			} break;
-			case STOMP: { } break;
-			case SUBSCRIBE: { } break;
-			case UNSUBSCRIBE: { } break;
-			default: { } break;
+			}
+
+			String requestId = accessor.getNativeHeader("id").get(0);
+
+			Credentials shib;
+
+			if (jwt != null && !"undefined".equals(jwt)) {
+
+				Map<String, String> credentialMap = new HashMap<String, String>();
+
+				credentialMap = jwtService.validateJWT(jwt);
+
+				logger.info(credentialMap.get("firstName") + " " + credentialMap.get("lastName") + " (" + credentialMap.get("uin") + ") requesting " + destination);
+
+				if (logger.isDebugEnabled()) {
+					logger.debug("Credential Map");
+					for (String key : credentialMap.keySet()) {
+						logger.debug(key + " - " + credentialMap.get(key));
+					}
+				}
+
+				String errorMessage = credentialMap.get("ERROR");
+				if (errorMessage != null) {
+					logger.error("Security Context Name: " + securityContext.getAuthentication().getName());
+					logger.error("JWT error: " + errorMessage);
+					simpMessagingTemplate.convertAndSend(destination.replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse(requestId, ERROR, errorMessage));
+					return null;
+				}
+
+				if (jwtService.isExpired(credentialMap)) {
+					logger.info("The token for " + credentialMap.get("firstName") + " " + credentialMap.get("lastName") + " (" + credentialMap.get("uin") + ") has expired. Attempting to get new token.");
+					simpMessagingTemplate.convertAndSend(destination.replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse(requestId, REFRESH));
+					return null;
+				}
+
+				shib = new Credentials(credentialMap);
+
+				shib = confirmCreateUser(shib);
+
+			} else {
+				shib = getAnonymousShib();
+			}
+
+			Map<String, Object> shibMap = new HashMap<String, Object>();
+
+			shibMap.put("shib", shib);
+
+			accessor.setSessionAttributes(shibMap);
+
+			message = MessageBuilder.withPayload("VALID").setHeaders(accessor).build();
+
+			// set message with enhanced accessor on request
+			request.setMessage(message);
+
+			// set username on request
+			request.setUser(securityContext.getAuthentication().getName());
+
+			webSocketRequestService.addRequest(request);
+
+		}
+			break;
+		case STOMP: {
+		}
+			break;
+		case SUBSCRIBE: {
+		}
+			break;
+		case UNSUBSCRIBE: {
+		}
+			break;
+		default: {
+		}
+			break;
 		}
 
 		return message;

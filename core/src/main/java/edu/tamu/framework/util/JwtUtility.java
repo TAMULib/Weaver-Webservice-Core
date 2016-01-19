@@ -44,7 +44,7 @@ import edu.tamu.framework.exception.JWTException;
 import edu.tamu.framework.model.jwt.JWT;;
 
 /**
- * JSON Web Token utility.
+ * JSON Web Token Utility.
  * 
  * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
  * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>
@@ -67,8 +67,7 @@ public class JwtUtility {
 
 	private final Logger log = Logger.getLogger(this.getClass());
 
-	public JwtUtility() {
-	}
+	public JwtUtility() { }
 
 	/**
 	 * Instantiate new token.
@@ -124,6 +123,28 @@ public class JwtUtility {
 			log.debug(e.getStackTrace().toString());
 			throw new JWTException("BadPaddingException", e.getMessage());
 		}
+	}
+
+	/**
+	 * Make token from map populated by the user through basic login.
+	 * 
+	 * @param payload
+	 *            Map<String, String>
+	 * @return JWT
+	 * @throws InvalidKeyException
+	 * @throws JsonProcessingException
+	 * @throws NoSuchAlgorithmException
+	 * @throws IllegalStateException
+	 * @throws UnsupportedEncodingException
+	 */
+	public JWT makeToken(Map<String, String> payload) throws InvalidKeyException, JsonProcessingException, NoSuchAlgorithmException, IllegalStateException, UnsupportedEncodingException {
+		JWT token = craftToken();
+		token.makeClaim("lastName", payload.get("lastName"));
+		token.makeClaim("firstName", payload.get("firstName"));
+		token.makeClaim("netid", payload.get("netid"));
+		token.makeClaim("uin", payload.get("uin"));
+		token.makeClaim("email", payload.get("email"));
+		return token;
 	}
 
 	/**

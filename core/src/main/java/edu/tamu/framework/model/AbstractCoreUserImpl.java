@@ -11,13 +11,13 @@ package edu.tamu.framework.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import edu.tamu.framework.model.CoreUser;
-
 /**
- * Abstract core user implementation.
+ * Abstract Core User Implementation.
  * 
  * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
  * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>
@@ -31,7 +31,10 @@ import edu.tamu.framework.model.CoreUser;
 public abstract class AbstractCoreUserImpl implements CoreUser {
 
 	@Id
-	@Column(name = "uin", nullable = false)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+
+	@Column(name = "uin", nullable = true, unique = true)
 	private Long uin;
 
 	@Column(name = "role")
@@ -42,6 +45,10 @@ public abstract class AbstractCoreUserImpl implements CoreUser {
 
 	public AbstractCoreUserImpl(Long uin) {
 		this.uin = uin;
+	}
+
+	public Long getId() {
+		return id;
 	}
 
 	@Override
@@ -63,5 +70,5 @@ public abstract class AbstractCoreUserImpl implements CoreUser {
 	public String getRole() {
 		return role;
 	}
-	
+
 }
