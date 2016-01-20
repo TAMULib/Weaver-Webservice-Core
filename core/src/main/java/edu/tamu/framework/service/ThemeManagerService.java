@@ -85,6 +85,11 @@ public class ThemeManagerService {
 		currentTheme.getProperties().forEach(tp -> {
 			System.out.println(tp.getPropertyName().getName()+": "+tp.getValue());
 		});
+		this.reloadCache();
+	}
+	
+	//tell WRO to reset its resource cache
+	private void reloadCache() {
 		String urlString = "http://localhost:9000/wro/wroAPI/reloadCache";
 		try {
 			httpUtility.makeHttpRequest(urlString, "GET");
@@ -107,7 +112,10 @@ public class ThemeManagerService {
 	}
 
 	public void setCurrentTheme(CoreTheme theme) {
-		coreThemeRepo.updateActiveTheme(theme);
-		this.currentTheme = theme;
+		if (theme.getId() != this.getCurrentTheme().getId()) {
+			coreThemeRepo.updateActiveTheme(theme);
+			this.currentTheme = theme;
+			this.reloadCache();
+		}
 	}
 }
