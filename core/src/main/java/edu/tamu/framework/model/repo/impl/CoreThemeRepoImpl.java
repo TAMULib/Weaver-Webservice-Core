@@ -50,7 +50,9 @@ public class CoreThemeRepoImpl implements CoreThemeRepoCustom {
 
 	public void addThemeProperty(CoreTheme theme,ThemeProperty themeProperty) {
 		theme.addProperty(themeProperty);
-		themeProperty.setTheme(theme);;
+		themeProperty.setTheme(theme);
+		themePropertyRepo.save(themeProperty);
+    	coreThemeRepo.save(theme);
 	}
 	
 	public void updateThemeProperty(Long themeId,Long themePropertyId,String value) {

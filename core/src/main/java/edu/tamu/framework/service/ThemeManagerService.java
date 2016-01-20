@@ -1,14 +1,29 @@
 package edu.tamu.framework.service;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import edu.tamu.framework.events.StompConnectEvent;
 import edu.tamu.framework.model.CoreTheme;
 import edu.tamu.framework.model.ThemeProperty;
 import edu.tamu.framework.model.ThemePropertyName;
@@ -30,15 +45,71 @@ public class ThemeManagerService {
 	
 	@Autowired
 	private HttpUtility httpUtility;
+	
+	@Autowired
+	private ObjectMapper objectMapper;
 
 	private CoreTheme currentTheme;
 	
+	@Value("${theme.defaults.location}")
+	private String themeDefaultsFile;
+
+	private static final Logger logger = Logger.getLogger(ThemeManagerService.class);
+
 	public ThemeManagerService() {}
 	
 	@PostConstruct
 	public void goNow() {
 		//TODO Make the defaults configurable and initially loaded in a better way
-		if (coreThemeRepo.count() < 1) {
+		System.out.println("\n\n\nPrepping Defaults\n\n\n");
+		if (themePropertyNameRepo.count() < 4) {
+			themePropertyNameRepo.create("primary");
+			themePropertyNameRepo.create("secondary");
+			themePropertyNameRepo.create("baseFontSize");
+			themePropertyNameRepo.create("linkColor");
+		}
+		if (coreThemeRepo.getByName("Default") == null || coreThemeRepo.getByName("Another Theme") == null) {
+			ClassPathResource themeDefaultsRaw = new ClassPathResource(themeDefaultsFile); 
+//			File themeDefaultsRaw = new File(themeDefaultsFile);
+			JsonNode themeDefaults = null;
+			try {
+				themeDefaults = objectMapper.readTree(new FileInputStream(themeDefaultsRaw.getFile()));
+			} catch (JsonProcessingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			Iterator<Entry<String,JsonNode>> it = themeDefaults.fields();
+			while (it.hasNext()) {
+			    Map.Entry<String, JsonNode> entry = (Map.Entry<String, JsonNode>) it.next();
+			    if (entry.getValue().isArray()) {
+		        	logger.debug("\n\nNew Props for: "+entry.getKey());
+		        	if (coreThemeRepo.getByName(entry.getKey()) == null) {
+		    			CoreTheme newTheme = coreThemeRepo.create(entry.getKey());
+				        for (JsonNode objNode : entry.getValue()) {
+				            objNode.fieldNames().forEachRemaining(n -> {
+//				            	logger.debug(n+" now what has value: "+objNode.get(n).asText());
+				            	String value = objNode.get(n).textValue();
+				            	if (value != null) {
+				            		coreThemeRepo.addThemeProperty(newTheme, themePropertyRepo.create(themePropertyNameRepo.create(n),value));
+				            	} else {
+				            		logger.debug("\n\n"+n+" was null");
+				            	}
+			        		});
+				        }
+			    	}
+			    }
+			}
+			CoreTheme defaultTheme = coreThemeRepo.getByName("Default");
+			defaultTheme.setActive(true);
+			coreThemeRepo.save(defaultTheme);
+/*			
 			CoreTheme defaultTheme = coreThemeRepo.create("Default");
 			if (themePropertyNameRepo.count() < 1) {
 				Map<ThemePropertyName,String> newProperties = new HashMap<ThemePropertyName,String>();
@@ -56,6 +127,7 @@ public class ThemeManagerService {
 			defaultTheme.setActive(true);
 			coreThemeRepo.save(defaultTheme);
 			currentTheme = defaultTheme;
+			*/
 		}
 	}
 	
