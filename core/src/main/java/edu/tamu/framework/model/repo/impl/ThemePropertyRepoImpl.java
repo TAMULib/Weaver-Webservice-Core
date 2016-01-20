@@ -15,11 +15,7 @@ public class ThemePropertyRepoImpl implements ThemePropertyRepoCustom {
 
 	@Override
 	public ThemeProperty create(ThemePropertyName propertyName, String value) {
-		ThemeProperty themeProperty = themePropertyRepo.getThemePropertyByThemePropertyName(propertyName);
-		if(themeProperty == null) {
-			return themePropertyRepo.save(new ThemeProperty(propertyName,value));
-		}
-		return themeProperty;
+		return themePropertyRepo.save(new ThemeProperty(propertyName,value));
 	}
 
 }

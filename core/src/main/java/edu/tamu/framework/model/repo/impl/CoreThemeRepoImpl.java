@@ -8,6 +8,7 @@ import edu.tamu.framework.model.CoreTheme;
 import edu.tamu.framework.model.ThemeProperty;
 import edu.tamu.framework.model.repo.CoreThemeRepo;
 import edu.tamu.framework.model.repo.CoreThemeRepoCustom;
+import edu.tamu.framework.model.repo.ThemePropertyNameRepo;
 import edu.tamu.framework.model.repo.ThemePropertyRepo;
 
 public class CoreThemeRepoImpl implements CoreThemeRepoCustom {
@@ -17,12 +18,22 @@ public class CoreThemeRepoImpl implements CoreThemeRepoCustom {
 
 	@Autowired
 	private ThemePropertyRepo themePropertyRepo;
+	
+	@Autowired 
+	ThemePropertyNameRepo themePropertyNameRepo;
 
 	@Override
 	public CoreTheme create(String name) {
 		CoreTheme theme = coreThemeRepo.getByName(name);
 		if(theme == null) {
-			return coreThemeRepo.save(new CoreTheme(name));
+			CoreTheme newTheme = new CoreTheme(name);
+			coreThemeRepo.save(newTheme);
+			themePropertyNameRepo.findAll().forEach(tp -> {
+				ThemeProperty newProperty = themePropertyRepo.create(tp,null);
+				this.addThemeProperty(newTheme, newProperty);
+				themePropertyRepo.save(newProperty);
+			});
+			return coreThemeRepo.save(newTheme);
 		}
 		return theme;
 	}
@@ -53,5 +64,5 @@ public class CoreThemeRepoImpl implements CoreThemeRepoCustom {
 		themePropertyRepo.save(themeProperty);
 		coreThemeRepo.save(theme);
 	}
-
+	
 }
