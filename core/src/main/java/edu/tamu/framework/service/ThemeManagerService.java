@@ -1,13 +1,9 @@
 package edu.tamu.framework.service;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -23,7 +19,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import edu.tamu.framework.events.StompConnectEvent;
 import edu.tamu.framework.model.CoreTheme;
 import edu.tamu.framework.model.ThemeProperty;
 import edu.tamu.framework.model.ThemePropertyName;
@@ -70,7 +65,6 @@ public class ThemeManagerService {
 		}
 		if (coreThemeRepo.getByName("Default") == null || coreThemeRepo.getByName("Another Theme") == null) {
 			ClassPathResource themeDefaultsRaw = new ClassPathResource(themeDefaultsFile); 
-//			File themeDefaultsRaw = new File(themeDefaultsFile);
 			JsonNode themeDefaults = null;
 			try {
 				themeDefaults = objectMapper.readTree(new FileInputStream(themeDefaultsRaw.getFile()));
@@ -92,42 +86,18 @@ public class ThemeManagerService {
 		        	logger.debug("\n\nNew Props for: "+entry.getKey());
 		        	if (coreThemeRepo.getByName(entry.getKey()) == null) {
 		    			CoreTheme newTheme = coreThemeRepo.create(entry.getKey());
-				        for (JsonNode objNode : entry.getValue()) {
-				            objNode.fieldNames().forEachRemaining(n -> {
-//				            	logger.debug(n+" now what has value: "+objNode.get(n).asText());
-				            	String value = objNode.get(n).textValue();
-				            	if (value != null) {
-				            		coreThemeRepo.addThemeProperty(newTheme, themePropertyRepo.create(themePropertyNameRepo.create(n),value));
-				            	} else {
-				            		logger.debug("\n\n"+n+" was null");
-				            	}
-			        		});
-				        }
+		        		JsonNode defaultProperties = entry.getValue();
+		        		for (ThemePropertyName propertyName : themePropertyNameRepo.findAll()) {
+		        			String value = defaultProperties.findValue(propertyName.getName()).asText();
+		        			if (!value.isEmpty()) {
+			            		coreThemeRepo.updateThemeProperty(newTheme.getId(), themePropertyRepo.getThemePropertyByThemePropertyNameAndThemeId(propertyName,newTheme.getId()).getId(),value);
+		        			}
+		        		}
 			    	}
 			    }
 			}
 			CoreTheme defaultTheme = coreThemeRepo.getByName("Default");
-			defaultTheme.setActive(true);
-			coreThemeRepo.save(defaultTheme);
-/*			
-			CoreTheme defaultTheme = coreThemeRepo.create("Default");
-			if (themePropertyNameRepo.count() < 1) {
-				Map<ThemePropertyName,String> newProperties = new HashMap<ThemePropertyName,String>();
-				newProperties.put(themePropertyNameRepo.create("primary"), "#500000");
-				newProperties.put(themePropertyNameRepo.create("secondary"), "#3c0000");
-				newProperties.put(themePropertyNameRepo.create("baseFontSize"), "14pt");
-				newProperties.put(themePropertyNameRepo.create("linkColor"), "#337ab7");
-
-				newProperties.forEach((propertyName,defaultValue) -> {
-					ThemeProperty themeProperty = themePropertyRepo.create(propertyName,defaultValue);
-					defaultTheme.addProperty(themeProperty);
-					coreThemeRepo.addThemeProperty(defaultTheme,themeProperty);
-				});
-			}
-			defaultTheme.setActive(true);
-			coreThemeRepo.save(defaultTheme);
-			currentTheme = defaultTheme;
-			*/
+			this.setCurrentTheme(defaultTheme);
 		}
 	}
 	
@@ -184,10 +154,8 @@ public class ThemeManagerService {
 	}
 
 	public void setCurrentTheme(CoreTheme theme) {
-		if (theme.getId() != this.getCurrentTheme().getId()) {
-			coreThemeRepo.updateActiveTheme(theme);
-			this.currentTheme = theme;
-			this.reloadCache();
-		}
+		this.currentTheme = theme;
+		coreThemeRepo.updateActiveTheme(theme);
+		this.reloadCache();
 	}
 }

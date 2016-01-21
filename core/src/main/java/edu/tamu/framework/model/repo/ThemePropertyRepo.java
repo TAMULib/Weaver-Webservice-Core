@@ -24,7 +24,7 @@ import edu.tamu.framework.model.ThemePropertyName;
 @Repository
 public interface ThemePropertyRepo extends JpaRepository<ThemeProperty, Long>, ThemePropertyRepoCustom {
 	
-	public ThemeProperty getThemePropertyByThemePropertyName(ThemePropertyName propertyName);
+	public ThemeProperty getThemePropertyByThemePropertyNameAndThemeId(ThemePropertyName propertyName,Long themeId);
 	
 	public ThemeProperty getThemePropertyById(Long id);
 
