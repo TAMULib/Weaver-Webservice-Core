@@ -57,12 +57,6 @@ public class ThemeManagerService {
 	public void goNow() {
 		//TODO Make the defaults configurable and initially loaded in a better way
 		System.out.println("\n\n\nPrepping Defaults\n\n\n");
-		if (themePropertyNameRepo.count() < 4) {
-			themePropertyNameRepo.create("primary");
-			themePropertyNameRepo.create("secondary");
-			themePropertyNameRepo.create("baseFontSize");
-			themePropertyNameRepo.create("linkColor");
-		}
 		if (coreThemeRepo.count() == 0 && !themeDefaultsFile.equals("")) {
 			ClassPathResource themeDefaultsRaw = new ClassPathResource(themeDefaultsFile); 
 			JsonNode themeDefaults = null;
@@ -78,12 +72,18 @@ public class ThemeManagerService {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			Iterator<JsonNode> itProps = themeDefaults.get("propertyNames").elements();
+			while (itProps.hasNext()) {
+				JsonNode entry = itProps.next();
+		    	logger.debug("Creating Theme Property: "+entry.textValue()+"");
+		    	themePropertyNameRepo.create(entry.textValue());
+			}
 			
-			Iterator<Entry<String,JsonNode>> it = themeDefaults.fields();
+			Iterator<Entry<String,JsonNode>> it = themeDefaults.get("themes").fields();
 			while (it.hasNext()) {
 			    Map.Entry<String, JsonNode> entry = (Map.Entry<String, JsonNode>) it.next();
 			    if (entry.getValue().isArray()) {
-		        	logger.debug("\n\nNew Props for: "+entry.getKey());
+		        	logger.debug("New Props for: "+entry.getKey());
 		        	if (coreThemeRepo.getByName(entry.getKey()) == null) {
 		    			CoreTheme newTheme = coreThemeRepo.create(entry.getKey());
 		        		JsonNode defaultProperties = entry.getValue();
