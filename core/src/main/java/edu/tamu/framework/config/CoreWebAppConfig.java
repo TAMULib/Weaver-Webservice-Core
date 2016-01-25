@@ -17,10 +17,12 @@ import javax.xml.transform.Source;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
+import org.springframework.boot.orm.jpa.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.ResourceHttpMessageConverter;
@@ -59,6 +61,8 @@ import edu.tamu.framework.service.StompConnectionService;
  */
 @Configuration
 @ComponentScan(basePackages = {"edu.tamu.framework.config", "edu.tamu.framework.interceptor", "edu.tamu.framework.controller"})
+@EnableJpaRepositories(basePackages={"edu.tamu.framework.model.repo"})
+@EntityScan(basePackages={"edu.tamu.framework.model"})
 public class CoreWebAppConfig extends WebMvcConfigurerAdapter {	
 	
 	/**
