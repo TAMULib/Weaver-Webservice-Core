@@ -46,7 +46,7 @@ public class ThemeManagerService {
 
 	private CoreTheme currentTheme;
 	
-	@Value("${theme.defaults.location}")
+	@Value("${theme.defaults.location:''}")
 	private String themeDefaultsFile;
 
 	private static final Logger logger = Logger.getLogger(ThemeManagerService.class);
@@ -63,7 +63,7 @@ public class ThemeManagerService {
 			themePropertyNameRepo.create("baseFontSize");
 			themePropertyNameRepo.create("linkColor");
 		}
-		if (coreThemeRepo.getByName("Default") == null || coreThemeRepo.getByName("Another Theme") == null) {
+		if (coreThemeRepo.count() == 0 && !themeDefaultsFile.equals("")) {
 			ClassPathResource themeDefaultsRaw = new ClassPathResource(themeDefaultsFile); 
 			JsonNode themeDefaults = null;
 			try {
@@ -145,12 +145,15 @@ public class ThemeManagerService {
 		StringBuilder formattedProperties = new StringBuilder();
 		StringBuilder formattedComments = new StringBuilder();
 		formattedComments.append("/* The ThemeManagerService added the following SASS vars:\n\n");
-		for (ThemeProperty p : this.getCurrentTheme().getProperties()) {
-			formattedProperties.append("$"+p.getPropertyName().getName()+": "+p.getValue()+";\n");
-			formattedComments.append("* $"+p.getPropertyName().getName()+": "+p.getValue()+";\n");
+		if (this.getCurrentTheme() != null) {
+			for (ThemeProperty p : this.getCurrentTheme().getProperties()) {
+				formattedProperties.append("$"+p.getPropertyName().getName()+": "+p.getValue()+";\n");
+				formattedComments.append("* $"+p.getPropertyName().getName()+": "+p.getValue()+";\n");
+			}
+			formattedComments.append("*/\n\n");
+			return formattedComments+formattedProperties.toString();
 		}
-		formattedComments.append("*/\n\n");
-		return formattedComments+formattedProperties.toString();
+		return formattedComments.toString()+" n/a\n*/\n";
 	}
 
 	public void setCurrentTheme(CoreTheme theme) {
