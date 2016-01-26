@@ -58,7 +58,7 @@ public class ThemeManagerService {
 	
 	@PostConstruct
 	public void goNow() {
-		System.out.println("\n\n\nPrepping Defaults\n\n\n");
+		System.out.println("\n\n\nPrepping Defaults :"+coreThemeRepo.count()+"\n\n\n");
 		if (coreThemeRepo.count() == 0 && !themeDefaultsFile.equals("")) {
 			ClassPathResource themeDefaultsRaw = new ClassPathResource(themeDefaultsFile); 
 			JsonNode themeDefaults = null;
@@ -100,6 +100,8 @@ public class ThemeManagerService {
 			}
 			CoreTheme defaultTheme = coreThemeRepo.getByName("Default");
 			this.setCurrentTheme(defaultTheme);
+		} else {
+			this.setCurrentTheme(coreThemeRepo.findByActiveTrue());
 		}
 	}
 	
