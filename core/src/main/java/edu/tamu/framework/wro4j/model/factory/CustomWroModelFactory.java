@@ -14,7 +14,6 @@ public class CustomWroModelFactory implements WroModelFactory {
 	}
 	
 	public WroModel create() {
-		  //TODO tap ThemeManagerService for dynamic resources
 		  Group cssGroup = new Group("app");
 		  for(String cssResource : defaultResources) {
 			  cssGroup.addResource(

@@ -15,7 +15,6 @@ import java.util.Properties;
 import javax.xml.transform.Source;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.boot.orm.jpa.EntityScan;
 import org.springframework.context.annotation.Bean;
@@ -38,16 +37,16 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+import edu.tamu.framework.events.StompConnectEvent;
+import edu.tamu.framework.events.StompDisconnectEvent;
+import edu.tamu.framework.service.StompConnectionService;
+import edu.tamu.framework.service.ThemeManagerService;
+import edu.tamu.framework.wro4j.manager.factory.CustomConfigurableWroManagerFactory;
 import ro.isdc.wro.config.jmx.ConfigConstants;
 import ro.isdc.wro.http.ConfigurableWroFilter;
 import ro.isdc.wro.http.handler.factory.SimpleRequestHandlerFactory;
 import ro.isdc.wro.model.resource.processor.factory.ConfigurableProcessorsFactory;
 import wro4j.http.handler.CustomRequestHandler;
-import edu.tamu.framework.service.ThemeManagerService;
-import edu.tamu.framework.wro4j.manager.factory.CustomConfigurableWroManagerFactory;
-import edu.tamu.framework.events.StompConnectEvent;
-import edu.tamu.framework.events.StompDisconnectEvent;
-import edu.tamu.framework.service.StompConnectionService;
 
 /** 
  * Web MVC Configuration for application controller.
@@ -145,16 +144,13 @@ public class CoreWebAppConfig extends WebMvcConfigurerAdapter {
 	@Autowired
 	ThemeManagerService themeManagerService;
 	
-	@Value("${theme.default.css}")
-	String[] defaultResources;
-	
     @Bean
     FilterRegistrationBean webResourceOptimizer(Environment env) {
     	FilterRegistrationBean fr = new FilterRegistrationBean();
     	ConfigurableWroFilter filter = new ConfigurableWroFilter();
 		Properties props = buildWroProperties(env);
 		filter.setProperties(props);
-		filter.setWroManagerFactory(new CustomConfigurableWroManagerFactory(props,themeManagerService,defaultResources));
+		filter.setWroManagerFactory(new CustomConfigurableWroManagerFactory(props,themeManagerService));
 		filter.setRequestHandlerFactory(new SimpleRequestHandlerFactory().addHandler(new CustomRequestHandler()));
     	filter.setProperties(props);
     	fr.setFilter(filter);

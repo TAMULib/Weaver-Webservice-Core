@@ -45,7 +45,10 @@ public class ThemeManagerService {
 	private ObjectMapper objectMapper;
 
 	private CoreTheme currentTheme;
-	
+
+	@Value("${theme.default.css}")
+	private String[] defaultCssGroup;
+
 	@Value("${theme.defaults.location:''}")
 	private String themeDefaultsFile;
 
@@ -55,7 +58,6 @@ public class ThemeManagerService {
 	
 	@PostConstruct
 	public void goNow() {
-		//TODO Make the defaults configurable and initially loaded in a better way
 		System.out.println("\n\n\nPrepping Defaults\n\n\n");
 		if (coreThemeRepo.count() == 0 && !themeDefaultsFile.equals("")) {
 			ClassPathResource themeDefaultsRaw = new ClassPathResource(themeDefaultsFile); 
@@ -160,5 +162,9 @@ public class ThemeManagerService {
 		this.currentTheme = theme;
 		coreThemeRepo.updateActiveTheme(theme);
 		this.reloadCache();
+	}
+	
+	public String[] getCssResources() {
+		return this.defaultCssGroup;
 	}
 }

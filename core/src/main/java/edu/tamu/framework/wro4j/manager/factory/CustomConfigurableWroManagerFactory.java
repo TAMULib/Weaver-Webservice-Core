@@ -14,12 +14,10 @@ public class CustomConfigurableWroManagerFactory extends ConfigurableWroManagerF
 	private ThemeManagerService themeManagerService;
 	
 	final private Properties props;
-	final private String[] defaultResources;
 
-	public CustomConfigurableWroManagerFactory(Properties props,ThemeManagerService themeManagerService,String[] defaultResources) {
+	public CustomConfigurableWroManagerFactory(Properties props,ThemeManagerService themeManagerService) {
 		this.props = props;
 		this.themeManagerService = themeManagerService;
-		this.defaultResources = defaultResources;
 	}
 
 	@Override
@@ -34,7 +32,7 @@ public class CustomConfigurableWroManagerFactory extends ConfigurableWroManagerF
 	
 	@Override
 	protected WroModelFactory newModelFactory() {
-		return new CustomWroModelFactory(defaultResources);
+		return new CustomWroModelFactory(themeManagerService.getCssResources());
   }
 
 }
