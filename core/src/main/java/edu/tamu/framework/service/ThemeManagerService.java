@@ -58,7 +58,7 @@ public class ThemeManagerService {
 	
 	@PostConstruct
 	public void goNow() {
-		System.out.println("\n\n\nPrepping Defaults :"+coreThemeRepo.count()+"\n\n\n");
+		logger.debug("Prepping Defaults :"+coreThemeRepo.count()+"");
 		if (coreThemeRepo.count() == 0 && !themeDefaultsFile.equals("")) {
 			ClassPathResource themeDefaultsRaw = new ClassPathResource(themeDefaultsFile); 
 			JsonNode themeDefaults = null;
@@ -125,15 +125,15 @@ public class ThemeManagerService {
 	 * Gets a fresh version of the active theme from the repo
 	 */
 	public void refreshCurrentTheme() {
-		System.out.println("\n\n\nThe properties were:\n\n");
+		logger.debug("The properties were:");
 		currentTheme.getProperties().forEach(tp -> {
-			System.out.println(tp.getPropertyName().getName()+": "+tp.getValue());
+			logger.debug(tp.getPropertyName().getName()+": "+tp.getValue());
 		});
 		currentTheme = coreThemeRepo.getById(currentTheme.getId());
 		
-		System.out.println("\n\n\nThe properties are now:\n\n");
+		logger.debug("The properties are now:");
 		currentTheme.getProperties().forEach(tp -> {
-			System.out.println(tp.getPropertyName().getName()+": "+tp.getValue());
+			logger.debug(tp.getPropertyName().getName()+": "+tp.getValue());
 		});
 		this.reloadCache();
 	}
