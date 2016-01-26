@@ -82,12 +82,16 @@ public class ThemeManagerService {
 			}
 			
 			Iterator<Entry<String,JsonNode>> it = themeDefaults.get("themes").fields();
+			Long activateId = 0L;
 			while (it.hasNext()) {
 			    Map.Entry<String, JsonNode> entry = (Map.Entry<String, JsonNode>) it.next();
 			    if (entry.getValue().isArray()) {
 		        	logger.debug("New Props for: "+entry.getKey());
 		        	if (coreThemeRepo.getByName(entry.getKey()) == null) {
 		    			CoreTheme newTheme = coreThemeRepo.create(entry.getKey());
+		    			if (activateId == 0) {
+		    				activateId = newTheme.getId();
+		    			}
 		        		JsonNode defaultProperties = entry.getValue();
 		        		for (ThemePropertyName propertyName : themePropertyNameRepo.findAll()) {
 		        			String value = defaultProperties.findValue(propertyName.getName()).asText();
@@ -98,7 +102,7 @@ public class ThemeManagerService {
 			    	}
 			    }
 			}
-			CoreTheme defaultTheme = coreThemeRepo.getByName("Default");
+			CoreTheme defaultTheme = coreThemeRepo.findOne(activateId);
 			this.setCurrentTheme(defaultTheme);
 		} else {
 			this.setCurrentTheme(coreThemeRepo.findByActiveTrue());
