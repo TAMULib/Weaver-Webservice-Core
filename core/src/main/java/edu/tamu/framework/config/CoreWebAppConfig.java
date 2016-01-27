@@ -10,12 +10,18 @@
 package edu.tamu.framework.config;
 
 import java.util.List;
+import java.util.Properties;
 
 import javax.xml.transform.Source;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.embedded.FilterRegistrationBean;
+import org.springframework.boot.orm.jpa.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.ResourceHttpMessageConverter;
@@ -35,6 +41,13 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import edu.tamu.framework.events.StompConnectEvent;
 import edu.tamu.framework.events.StompDisconnectEvent;
 import edu.tamu.framework.service.StompConnectionService;
+import edu.tamu.framework.service.ThemeManagerService;
+import edu.tamu.framework.wro4j.manager.factory.CustomConfigurableWroManagerFactory;
+import ro.isdc.wro.config.jmx.ConfigConstants;
+import ro.isdc.wro.http.ConfigurableWroFilter;
+import ro.isdc.wro.http.handler.factory.SimpleRequestHandlerFactory;
+import ro.isdc.wro.model.resource.processor.factory.ConfigurableProcessorsFactory;
+import wro4j.http.handler.CustomRequestHandler;
 
 /** 
  * Web MVC Configuration for application controller.
@@ -48,6 +61,8 @@ import edu.tamu.framework.service.StompConnectionService;
  */
 @Configuration
 @ComponentScan(basePackages = {"edu.tamu.framework.config", "edu.tamu.framework.interceptor", "edu.tamu.framework.controller"})
+@EnableJpaRepositories(basePackages={"edu.tamu.framework.model.repo"})
+@EntityScan(basePackages={"edu.tamu.framework.model"})
 public class CoreWebAppConfig extends WebMvcConfigurerAdapter {	
 	
 	/**
@@ -126,5 +141,48 @@ public class CoreWebAppConfig extends WebMvcConfigurerAdapter {
 	public StompDisconnectEvent stompDisconnectEvent() {
 		return new StompDisconnectEvent();
 	}
+	
+	
+	/**
+	 * WRO Configuration
+	 */
+
+	@Autowired
+	ThemeManagerService themeManagerService;
+	
+    @Bean
+    FilterRegistrationBean webResourceOptimizer(Environment env) {
+    	FilterRegistrationBean fr = new FilterRegistrationBean();
+    	ConfigurableWroFilter filter = new ConfigurableWroFilter();
+		Properties props = buildWroProperties(env);
+		filter.setProperties(props);
+		filter.setWroManagerFactory(new CustomConfigurableWroManagerFactory(props,themeManagerService));
+		filter.setRequestHandlerFactory(new SimpleRequestHandlerFactory().addHandler(new CustomRequestHandler()));
+    	filter.setProperties(props);
+    	fr.setFilter(filter);
+    	fr.addUrlPatterns("/wro/*");
+    	return fr;
+    }
+    
+    private static final String[] OTHER_WRO_PROP = new String[] { ConfigurableProcessorsFactory.PARAM_PRE_PROCESSORS,
+    		ConfigurableProcessorsFactory.PARAM_POST_PROCESSORS };
+
+    private Properties buildWroProperties(Environment env) {
+    	Properties prop = new Properties();
+    	for (ConfigConstants c : ConfigConstants.values()) {
+    		addProperty(env, prop, c.name());
+    	}
+    	for (String name : OTHER_WRO_PROP) {
+    		addProperty(env, prop, name);
+    	}
+    	return prop;
+    }
+
+    private void addProperty(Environment env, Properties to, String name) {
+    	String value = env.getProperty("wro." + name);
+    	if (value != null) {
+    		to.put(name, value);
+    	}
+    }
 		
 }
