@@ -1,5 +1,5 @@
 /* 
- * ScheduleConfig.java 
+ * CoreScheduleConfig.java 
  * 
  * Version: 
  *     $Id$ 
@@ -16,7 +16,7 @@ import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 
-/** 
+/**
  * Schedule Configuration.
  * 
  * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
@@ -28,13 +28,12 @@ import org.springframework.scheduling.config.ScheduledTaskRegistrar;
  */
 @Configuration
 @EnableScheduling
-public class CoreScheduleConfig implements SchedulingConfigurer
-{
-	
+public class CoreScheduleConfig implements SchedulingConfigurer {
+
 	/**
 	 * Thread pool task scheduler bean.
 	 * 
-	 * @return		ThreadPoolTaskScheduler
+	 * @return ThreadPoolTaskScheduler
 	 */
 	@Bean()
 	public ThreadPoolTaskScheduler taskScheduler() {
@@ -42,13 +41,11 @@ public class CoreScheduleConfig implements SchedulingConfigurer
 	}
 
 	/**
-	 * Configure task registrar.
-	 * 
-	 * @param		taskRegistrar	ScheduledTaskRegistrar
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
 		taskRegistrar.setTaskScheduler(taskScheduler());
 	}
-	
+
 }

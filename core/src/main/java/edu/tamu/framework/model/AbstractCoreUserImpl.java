@@ -17,6 +17,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
+ * Abstract Core User Implementation.
  * 
  * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
  * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>
@@ -26,28 +27,26 @@ import javax.persistence.Table;
  *
  */
 @Entity
-@Table(name="core_users")
+@Table(name = "core_users")
 public abstract class AbstractCoreUserImpl implements CoreUser {
-	
+
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
+
 	@Column(name = "uin", nullable = true, unique = true)
 	private Long uin;
-	
-	@Column(name="role")
+
+	@Column(name = "role")
 	private String role;
-	
-	public AbstractCoreUserImpl() {}
-	
+
+	public AbstractCoreUserImpl() {
+	}
+
 	public AbstractCoreUserImpl(Long uin) {
 		this.uin = uin;
 	}
-	
-	/**
-	 * @return the id
-	 */
+
 	public Long getId() {
 		return id;
 	}
@@ -56,7 +55,7 @@ public abstract class AbstractCoreUserImpl implements CoreUser {
 	public void setUin(Long uin) {
 		this.uin = uin;
 	}
-	
+
 	@Override
 	public Long getUin() {
 		return uin;
@@ -71,4 +70,5 @@ public abstract class AbstractCoreUserImpl implements CoreUser {
 	public String getRole() {
 		return role;
 	}
+
 }

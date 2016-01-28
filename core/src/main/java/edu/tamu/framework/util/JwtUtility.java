@@ -44,7 +44,7 @@ import edu.tamu.framework.exception.JWTException;
 import edu.tamu.framework.model.jwt.JWT;;
 
 /**
- * JSON Web Token service.
+ * JSON Web Token Utility.
  * 
  * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
  * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>
@@ -67,13 +67,7 @@ public class JwtUtility {
 
 	private final Logger log = Logger.getLogger(this.getClass());
 
-	/**
-	 * Constructor.
-	 *
-	 */
-	public JwtUtility() {
-
-	}
+	public JwtUtility() { }
 
 	/**
 	 * Instantiate new token.
@@ -239,6 +233,13 @@ public class JwtUtility {
 
 	}
 
+	/**
+	 * Check if token has expired.
+	 * 
+	 * @param tokenMap
+	 *            Map<String, String>
+	 * @return
+	 */
 	public boolean isExpired(Map<String, String> tokenMap) {
 		long currentTime = Calendar.getInstance().getTime().getTime() + 90000;
 
@@ -253,10 +254,11 @@ public class JwtUtility {
 			return true;
 		} else {
 			Long remainingTimeInSeconds = (expTime - currentTime) / 1000;
-			if (remainingTimeInSeconds > 60)
+			if (remainingTimeInSeconds > 60) {
 				log.debug("Token expires in " + remainingTimeInSeconds / 60 + " minutes.");
-			else
+			} else {
 				log.debug("Token expires in " + remainingTimeInSeconds + " seconds.");
+			}
 		}
 
 		return false;

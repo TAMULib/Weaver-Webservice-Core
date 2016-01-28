@@ -1,3 +1,12 @@
+/* 
+ * ReportingController.java 
+ * 
+ * Version: 
+ *     $Id$ 
+ * 
+ * Revisions: 
+ *     $Log$ 
+ */
 package edu.tamu.framework.controller;
 
 import static edu.tamu.framework.enums.ApiResponseType.SUCCESS;
@@ -32,41 +41,52 @@ import edu.tamu.framework.util.EmailUtility;
 @RestController
 @ApiMapping("/report")
 public class ReportingController {
-	
+
 	@Autowired
 	private EmailUtility emailUtility;
-	
+
 	@Autowired
 	private ObjectMapper objectMapper;
-	
+
+	/**
+	 * Report error endpoint.
+	 * 
+	 * @param shibObj
+	 *            Object
+	 * @param data
+	 *            String
+	 * @return ApiResponse
+	 * @throws Exception
+	 */
 	@ApiMapping(value = "/error", method = POST)
 	public ApiResponse reportError(@Shib Object shibObj, @Data String data) throws Exception {
 
 		Credentials shib = (Credentials) shibObj;
-		
+
 		Map<String, String> errorReport = new HashMap<String, String>();
-		
+
 		try {
-			errorReport = objectMapper.readValue(data, new TypeReference<HashMap<String, String>>(){});
+			errorReport = objectMapper.readValue(data, new TypeReference<HashMap<String, String>>() {
+			});
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		errorReport.put("user", shib.getFirstName() + " " + shib.getLastName() + " (" + shib.getUin() + ")");
-		
+
 		String content = "Error Report\n\n";
-		
+
 		Date now = new Date();
-		
-		content += "channel: " +  errorReport.get("channel") + "\n";
+
+		content += "channel: " + errorReport.get("channel") + "\n";
 		content += "time: " + now + "\n";
-		content += "type: " +  errorReport.get("type") + "\n";
-		content += "message: " +  errorReport.get("message") + "\n";
-		content += "user: " +  errorReport.get("user") + "\n";
-		
+		content += "type: " + errorReport.get("type") + "\n";
+		content += "message: " + errorReport.get("message") + "\n";
+		content += "user: " + errorReport.get("user") + "\n";
+
 		emailUtility.sendEmail("Error Report", content);
-		
+
 		return new ApiResponse(SUCCESS, now.toString());
 	}
-	
+
 }

@@ -1,5 +1,5 @@
 /* 
- * WebAppConfig.java 
+ * CoreWebAppConfig.java 
  * 
  * Version: 
  *     $Id$ 
@@ -49,7 +49,7 @@ import ro.isdc.wro.http.handler.factory.SimpleRequestHandlerFactory;
 import ro.isdc.wro.model.resource.processor.factory.ConfigurableProcessorsFactory;
 import wro4j.http.handler.CustomRequestHandler;
 
-/** 
+/**
  * Web MVC Configuration for application controller.
  * 
  * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
@@ -59,89 +59,104 @@ import wro4j.http.handler.CustomRequestHandler;
  * @author <a href="mailto:wwelling@library.tamu.edu">William Welling</a>
  *
  */
-@Configuration
-@ComponentScan(basePackages = {"edu.tamu.framework.config", "edu.tamu.framework.interceptor", "edu.tamu.framework.controller"})
+@Configuration@ComponentScan(basePackages = {"edu.tamu.framework.config", "edu.tamu.framework.interceptor", "edu.tamu.framework.controller"})
 @EnableJpaRepositories(basePackages={"edu.tamu.framework.model.repo"})
 @EntityScan(basePackages={"edu.tamu.framework.model"})
-public class CoreWebAppConfig extends WebMvcConfigurerAdapter {	
+public class CoreWebAppConfig extends WebMvcConfigurerAdapter {
 	
 	/**
-	 * Configures message converters.
-	 *
-	 * @param       converters    	List<HttpMessageConverter<?>>
-	 *
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-	    StringHttpMessageConverter stringConverter = new StringHttpMessageConverter();
-	    stringConverter.setWriteAcceptCharset(false);
-	    converters.add(new ByteArrayHttpMessageConverter());
-	    converters.add(stringConverter);
-	    converters.add(new ResourceHttpMessageConverter());
-	    converters.add(new SourceHttpMessageConverter<Source>());
-	    converters.add(new AllEncompassingFormHttpMessageConverter());
-	    converters.add(jackson2Converter());
+		StringHttpMessageConverter stringConverter = new StringHttpMessageConverter();
+		stringConverter.setWriteAcceptCharset(false);
+		converters.add(new ByteArrayHttpMessageConverter());
+		converters.add(stringConverter);
+		converters.add(new ResourceHttpMessageConverter());
+		converters.add(new SourceHttpMessageConverter<Source>());
+		converters.add(new AllEncompassingFormHttpMessageConverter());
+		converters.add(jackson2Converter());
 	}
 
 	/**
 	 * Set object mapper to jackson converter bean.
 	 *
-	 * @return      MappingJackson2HttpMessageConverter
+	 * @return MappingJackson2HttpMessageConverter
 	 *
 	 */
 	@Bean
 	public MappingJackson2HttpMessageConverter jackson2Converter() {
-	    MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-	    converter.setObjectMapper(objectMapper());
-	    return converter;
+		MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+		converter.setObjectMapper(objectMapper());
+		return converter;
 	}
-	
+
 	/**
 	 * Object mapper bean.
 	 *
-	 * @return     	ObjectMapper
+	 * @return ObjectMapper
 	 *
 	 */
 	@Bean
 	public ObjectMapper objectMapper() {
-	    ObjectMapper objectMapper = new ObjectMapper();
-	    objectMapper.enable(SerializationFeature.INDENT_OUTPUT);	
-	    objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
-	    objectMapper.configure(JsonParser.Feature.ALLOW_BACKSLASH_ESCAPING_ANY_CHARACTER, true);
-	    return objectMapper;
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+		objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
+		objectMapper.configure(JsonParser.Feature.ALLOW_BACKSLASH_ESCAPING_ANY_CHARACTER, true);
+		return objectMapper;
 	}
-	
+
+	/**
+	 * BCrypt Passowrd Encoder bean.
+	 * 
+	 * @return BCryptPasswordEncoder
+	 */
 	@Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-	
+	public BCryptPasswordEncoder bCryptPasswordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
+
 	/**
 	 * Security context bean.
 	 * 
-	 * @return		SecurityContext
+	 * @return SecurityContext
 	 * 
 	 */
 	@Bean
 	public SecurityContext securityContext() {
 		return SecurityContextHolder.getContext();
 	}
-	
+
+	/**
+	 * Stomp connection service bean.
+	 * 
+	 * @return StompConnectionService
+	 */
 	@Bean
 	public StompConnectionService stopmConnectionService() {
 		return new StompConnectionService();
 	}
-	
+
+	/**
+	 * Stomp connect event bean.
+	 * 
+	 * @return StompConnectEvent
+	 */
 	@Bean
 	public StompConnectEvent stompConnectEvent() {
 		return new StompConnectEvent();
 	}
-	
+
+	/**
+	 * Stomp disconnect event bean.
+	 * 
+	 * @return StompDisconnectEvent
+	 */
 	@Bean
 	public StompDisconnectEvent stompDisconnectEvent() {
 		return new StompDisconnectEvent();
-	}
-	
+	}	
 	
 	/**
 	 * WRO Configuration
@@ -164,8 +179,10 @@ public class CoreWebAppConfig extends WebMvcConfigurerAdapter {
     	return fr;
     }
     
-    private static final String[] OTHER_WRO_PROP = new String[] { ConfigurableProcessorsFactory.PARAM_PRE_PROCESSORS,
-    		ConfigurableProcessorsFactory.PARAM_POST_PROCESSORS };
+    private static final String[] OTHER_WRO_PROP = new String[] { 
+		ConfigurableProcessorsFactory.PARAM_PRE_PROCESSORS,
+		ConfigurableProcessorsFactory.PARAM_POST_PROCESSORS 
+    };
 
     private Properties buildWroProperties(Environment env) {
     	Properties prop = new Properties();
@@ -184,5 +201,5 @@ public class CoreWebAppConfig extends WebMvcConfigurerAdapter {
     		to.put(name, value);
     	}
     }
-		
+
 }

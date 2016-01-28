@@ -1,3 +1,12 @@
+/* 
+ * CoreRoles.java 
+ * 
+ * Version: 
+ *     $Id$ 
+ * 
+ * Revisions: 
+ *     $Log$ 
+ */
 package edu.tamu.framework.enums;
 
 /**
@@ -9,11 +18,13 @@ package edu.tamu.framework.enums;
  * @author <a href="mailto:wwelling@library.tamu.edu">William Welling</a>
  *
  */
-public enum CoreRoles {	
-    ROLE_NONE,
+public enum CoreRoles {
+	
+	ROLE_NONE, 
 	ROLE_ANONYMOUS, 
 	ROLE_USER, 
-	ROLE_ANNOTATOR,
+	ROLE_ANNOTATOR, 
 	ROLE_MANAGER, 
 	ROLE_ADMIN
+	
 }

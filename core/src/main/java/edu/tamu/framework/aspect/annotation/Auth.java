@@ -1,5 +1,5 @@
 /* 
- * RestAuth.java 
+ * Auth.java 
  * 
  * Version: 
  *     $Id$ 
@@ -16,6 +16,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Annotation to authorize request.
  * 
  * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
  * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>
@@ -28,5 +29,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Auth {
+	
 	String role() default "ROLE_USER";
+	
 }

@@ -14,22 +14,27 @@ import java.util.Map;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-/** 
+/**
  * JSON Web Token header.
  * 
- * @author
- *
+ * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
+ * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>
+ * @author <a href="mailto:huff@library.tamu.edu">Jeremy Huff</a>
+ * @author <a href="mailto:jsavell@library.tamu.edu">Jason Savell</a>
+ * @author <a href="mailto:wwelling@library.tamu.edu">William Welling</a>
+ * 
  */
 public class JWTheader {
-	
+
 	private Map<String, String> header;
-		
+
 	/**
 	 * Constructor.
 	 *
-	 * @param       header    		Map<String, String>
+	 * @param header
+	 *            Map<String, String>
 	 *
-	 * @exception   JsonProcessingException
+	 * @exception JsonProcessingException
 	 * 
 	 */
 	public JWTheader(Map<String, String> header) throws JsonProcessingException {
@@ -41,7 +46,7 @@ public class JWTheader {
 	/**
 	 * Retrieve header as map.
 	 *
-	 * @return      Map<String, String>
+	 * @return Map<String, String>
 	 *
 	 */
 	public Map<String, String> getHeaderAsMap() {
@@ -51,19 +56,20 @@ public class JWTheader {
 	/**
 	 * Set header from map.
 	 *
-	 * @param       header    		Map<String, String>
+	 * @param header
+	 *            Map<String, String>
 	 *
 	 */
 	public void setHeader(Map<String, String> header) {
 		this.header = header;
 	}
-	
+
 	/**
 	 * Retrieve header as a JSON.
 	 *
-	 * @return      String
+	 * @return String
 	 *
-	 * @exception   JsonProcessingException
+	 * @exception JsonProcessingException
 	 * 
 	 */
 	public String getHeaderAsJSON() throws JsonProcessingException {

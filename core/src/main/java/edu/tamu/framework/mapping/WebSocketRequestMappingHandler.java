@@ -1,3 +1,12 @@
+/* 
+ * WebSocketRequestMappingHandler.java 
+ * 
+ * Version: 
+ *     $Id$ 
+ * 
+ * Revisions: 
+ *     $Log$ 
+ */
 package edu.tamu.framework.mapping;
 
 import java.lang.reflect.Method;
@@ -56,6 +65,9 @@ import edu.tamu.framework.mapping.condition.WebSocketRequestCondition;
 import edu.tamu.framework.mapping.info.CustomSimpMessageMappingInfo;
 
 /**
+ * Websocket request mapping handler. Duplication of mostly spring
+ * MessageMapping handler. Used to mapping combined RequestMapping and
+ * MessageMapping annotations into ApiMapping.
  * 
  * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
  * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>
@@ -87,7 +99,7 @@ public class WebSocketRequestMappingHandler extends AbstractMethodMessageHandler
 	private final Object lifecycleMonitor = new Object();
 
 	private volatile boolean running = false;
-	
+
 	public WebSocketRequestMappingHandler(SubscribableChannel clientInboundChannel, MessageChannel clientOutboundChannel, SimpMessageSendingOperations brokerTemplate) {
 
 		Assert.notNull(clientInboundChannel, "clientInboundChannel must not be null");
@@ -103,7 +115,10 @@ public class WebSocketRequestMappingHandler extends AbstractMethodMessageHandler
 		converters.add(new ByteArrayMessageConverter());
 		this.messageConverter = new CompositeMessageConverter(converters);
 	}
-	
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean isRunning() {
 		synchronized (this.lifecycleMonitor) {
@@ -111,6 +126,9 @@ public class WebSocketRequestMappingHandler extends AbstractMethodMessageHandler
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void start() {
 		synchronized (this.lifecycleMonitor) {
@@ -119,6 +137,9 @@ public class WebSocketRequestMappingHandler extends AbstractMethodMessageHandler
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void stop() {
 		synchronized (this.lifecycleMonitor) {
@@ -127,16 +148,25 @@ public class WebSocketRequestMappingHandler extends AbstractMethodMessageHandler
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public int getPhase() {
 		return Integer.MAX_VALUE;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean isAutoStartup() {
 		return true;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void stop(Runnable callback) {
 		synchronized (this.lifecycleMonitor) {
@@ -144,7 +174,10 @@ public class WebSocketRequestMappingHandler extends AbstractMethodMessageHandler
 			callback.run();
 		}
 	}
-	
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void setDestinationPrefixes(Collection<String> prefixes) {
 		super.setDestinationPrefixes(appendSlashes(prefixes));
@@ -197,16 +230,19 @@ public class WebSocketRequestMappingHandler extends AbstractMethodMessageHandler
 	public void setValidator(Validator validator) {
 		this.validator = validator;
 	}
-	
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void handleMatch(CustomSimpMessageMappingInfo mapping, HandlerMethod handlerMethod, String lookupDestination, Message<?> message) {
 
-		if("SUBSCRIBE".equals(message.getHeaders().get("stompCommand").toString())) {
+		if ("SUBSCRIBE".equals(message.getHeaders().get("stompCommand").toString())) {
 			return;
 		}
-		
+
 		String matchedPattern = mapping.getDestinationConditions().getPatterns().iterator().next();
-		
+
 		Map<String, String> vars = getPathMatcher().extractUriTemplateVariables(matchedPattern, lookupDestination);
 
 		if (!CollectionUtils.isEmpty(vars)) {
@@ -217,25 +253,33 @@ public class WebSocketRequestMappingHandler extends AbstractMethodMessageHandler
 
 		try {
 			SimpAttributesContextHolder.setAttributesFromMessage(message);
-			
+
 			super.handleMatch(mapping, handlerMethod, lookupDestination, message);
-		}
-		finally {
+		} finally {
 			SimpAttributesContextHolder.resetAttributes();
 		}
-		
+
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected AbstractExceptionHandlerMethodResolver createExceptionHandlerMethodResolverFor(Class<?> beanType) {
 		return new AnnotationExceptionHandlerMethodResolver(beanType);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected String getDestination(Message<?> message) {
 		return SimpMessageHeaderAccessor.getDestination(message.getHeaders());
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected Set<String> getDirectLookupDestinations(CustomSimpMessageMappingInfo mapping) {
 		Set<String> result = new LinkedHashSet<String>();
@@ -246,7 +290,10 @@ public class WebSocketRequestMappingHandler extends AbstractMethodMessageHandler
 		}
 		return result;
 	}
-	
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected String getLookupDestination(String destination) {
 		if (destination == null) {
@@ -259,8 +306,7 @@ public class WebSocketRequestMappingHandler extends AbstractMethodMessageHandler
 			if (destination.startsWith(prefix)) {
 				if (this.slashPathSeparator) {
 					return destination.substring(prefix.length() - 1);
-				}
-				else {
+				} else {
 					return destination.substring(prefix.length());
 				}
 			}
@@ -268,6 +314,9 @@ public class WebSocketRequestMappingHandler extends AbstractMethodMessageHandler
 		return null;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected Comparator<CustomSimpMessageMappingInfo> getMappingComparator(final Message<?> message) {
 		return new Comparator<CustomSimpMessageMappingInfo>() {
@@ -278,13 +327,16 @@ public class WebSocketRequestMappingHandler extends AbstractMethodMessageHandler
 		};
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected CustomSimpMessageMappingInfo getMappingForMethod(Method method, Class<?> handlerType) {
-		
+
 		ApiMapping methodAnnotation = AnnotationUtils.findAnnotation(method, ApiMapping.class);
-		
+
 		ApiMapping typeAnnotation = AnnotationUtils.findAnnotation(handlerType, ApiMapping.class);
-		
+
 		if (methodAnnotation != null) {
 			CustomSimpMessageMappingInfo result = createMessageMappingInfo(methodAnnotation);
 			if (typeAnnotation != null) {
@@ -292,19 +344,25 @@ public class WebSocketRequestMappingHandler extends AbstractMethodMessageHandler
 			}
 			return result;
 		}
-		
+
 		return null;
 	}
-	
+
 	private CustomSimpMessageMappingInfo createMessageMappingInfo(ApiMapping annotation) {
 		return new CustomSimpMessageMappingInfo(SimpMessageTypeMessageCondition.MESSAGE, new WebSocketRequestCondition(annotation.value(), this.pathMatcher));
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected CustomSimpMessageMappingInfo getMatchingMapping(CustomSimpMessageMappingInfo mapping, Message<?> message) {
 		return mapping.getMatchingCondition(message);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected List<? extends HandlerMethodArgumentResolver> initArgumentResolvers() {
 		ConfigurableBeanFactory beanFactory = (ClassUtils.isAssignableValue(ConfigurableApplicationContext.class, getApplicationContext())) ? ((ConfigurableApplicationContext) getApplicationContext()).getBeanFactory() : null;
@@ -326,6 +384,9 @@ public class WebSocketRequestMappingHandler extends AbstractMethodMessageHandler
 		return resolvers;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected List<? extends HandlerMethodReturnValueHandler> initReturnValueHandlers() {
 		List<HandlerMethodReturnValueHandler> handlers = new ArrayList<HandlerMethodReturnValueHandler>();
@@ -346,10 +407,13 @@ public class WebSocketRequestMappingHandler extends AbstractMethodMessageHandler
 		sth = new SendToMethodReturnValueHandler(this.brokerTemplate, false);
 		sth.setHeaderInitializer(this.headerInitializer);
 		handlers.add(sth);
-		
+
 		return handlers;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected boolean isHandler(Class<?> beanType) {
 		Method[] methods = ReflectionUtils.getAllDeclaredMethods(beanType);

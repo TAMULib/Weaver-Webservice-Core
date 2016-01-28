@@ -1,5 +1,5 @@
 /* 
- * SecurityConfig.java 
+ * CoreSecurityConfig.java 
  * 
  * Version: 
  *     $Id$ 
@@ -14,7 +14,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
-/** 
+/**
  * Web security configuration.
  * 
  * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
@@ -27,19 +27,13 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @Configuration
 @EnableWebSecurity
 public class CoreSecurityConfig extends WebSecurityConfigurerAdapter {
-	
+
 	/**
-	 * Configures web security. Disables cross-site request forgery.
-	 *
-	 * @param       http    		HttpSecurity
-	 *
-	 * @exception   Exception
-	 * 
+	 * {@inheritDoc}
 	 */
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-    	http.csrf().disable()
-    		.headers().frameOptions().disable();
-    }
-    
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+		http.csrf().disable().headers().frameOptions().disable();
+	}
+
 }

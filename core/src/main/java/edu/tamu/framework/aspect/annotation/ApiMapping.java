@@ -1,3 +1,12 @@
+/* 
+ * ApiMapping.java 
+ * 
+ * Version: 
+ *     $Id$ 
+ * 
+ * Revisions: 
+ *     $Log$ 
+ */
 package edu.tamu.framework.aspect.annotation;
 
 import java.lang.annotation.Documented;
@@ -10,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
+ * Annotation for combined RequestMapping and MessageMapping.
  * 
  * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
  * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>
@@ -18,11 +28,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author <a href="mailto:wwelling@library.tamu.edu">William Welling</a>
  *
  */
-@Target({ElementType.TYPE, ElementType.METHOD})
+@Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
-@ResponseBody 
+@ResponseBody
 @Documented
 public @interface ApiMapping {
+	
 	String[] value() default {};
-	RequestMethod[] method() default {RequestMethod.GET};
+
+	RequestMethod[] method() default { RequestMethod.GET };
+	
 }
