@@ -2,7 +2,8 @@ package edu.tamu.framework.controller;
 
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,7 +31,7 @@ public abstract class CoreAuthController {
 	@Autowired
 	protected EmailUtility emailUtility;
 
-	protected final Logger logger = Logger.getLogger(this.getClass());
+	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	public abstract ApiResponse registration(@Data String data, @Parameters Map<String, String[]> parameters);
 

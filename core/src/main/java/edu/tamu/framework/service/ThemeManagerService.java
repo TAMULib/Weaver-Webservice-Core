@@ -9,7 +9,8 @@ import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
@@ -52,7 +53,7 @@ public class ThemeManagerService {
 	@Value("${theme.defaults.location:''}")
 	private String themeDefaultsFile;
 
-	private static final Logger logger = Logger.getLogger(ThemeManagerService.class);
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	public ThemeManagerService() {}
 	

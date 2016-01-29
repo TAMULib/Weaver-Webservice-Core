@@ -16,6 +16,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -47,6 +50,8 @@ public class ReportingController {
 
 	@Autowired
 	private ObjectMapper objectMapper;
+	
+	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	/**
 	 * Report error endpoint.
@@ -66,8 +71,7 @@ public class ReportingController {
 		Map<String, String> errorReport = new HashMap<String, String>();
 
 		try {
-			errorReport = objectMapper.readValue(data, new TypeReference<HashMap<String, String>>() {
-			});
+			errorReport = objectMapper.readValue(data, new TypeReference<HashMap<String, String>>() { });
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -85,6 +89,8 @@ public class ReportingController {
 		content += "user: " + errorReport.get("user") + "\n";
 
 		emailUtility.sendEmail("Error Report", content);
+		
+		logger.info(content);
 
 		return new ApiResponse(SUCCESS, now.toString());
 	}
