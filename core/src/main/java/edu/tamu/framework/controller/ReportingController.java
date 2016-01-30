@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -27,7 +28,7 @@ import edu.tamu.framework.aspect.annotation.Data;
 import edu.tamu.framework.aspect.annotation.Shib;
 import edu.tamu.framework.model.ApiResponse;
 import edu.tamu.framework.model.Credentials;
-import edu.tamu.framework.util.EmailUtility;
+import edu.tamu.framework.util.EmailSender;
 
 /**
  * 
@@ -41,9 +42,12 @@ import edu.tamu.framework.util.EmailUtility;
 @RestController
 @ApiMapping("/report")
 public class ReportingController {
+	
+	@Value("${app.reporting.address}")
+	private String reportingAddress;
 
 	@Autowired
-	private EmailUtility emailUtility;
+	private EmailSender emailSender;
 
 	@Autowired
 	private ObjectMapper objectMapper;
@@ -84,7 +88,7 @@ public class ReportingController {
 		content += "message: " + errorReport.get("message") + "\n";
 		content += "user: " + errorReport.get("user") + "\n";
 
-		emailUtility.sendEmail("Error Report", content);
+		emailSender.sendEmail(reportingAddress, "Error Report", content);
 
 		return new ApiResponse(SUCCESS, now.toString());
 	}

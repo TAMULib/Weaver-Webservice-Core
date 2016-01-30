@@ -187,8 +187,8 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 		auth.setAuthenticated(true);
 
 		securityContext.setAuthentication(auth);
-
-		httpRequestService.addRequest(new HttpRequest(request, response, shib.getNetid(), request.getServletPath()));
+		
+		httpRequestService.addRequest(new HttpRequest(request, response, shib.getNetid(), request.getRequestURI()));
 
 		return true;
 	}
