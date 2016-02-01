@@ -93,6 +93,14 @@ public class CoreEmailUtility extends JavaMailSenderImpl implements EmailSender 
 		super.setProtocol(protocol);
 	}
 	
+	public String getDefaultEncoding() {
+		return super.getDefaultEncoding();
+	}
+	
+	public void setDefaultEncoding(String encoding) {
+		super.setDefaultEncoding(encoding);
+	}
+	
 	public String getUsername() {
 		return super.getUsername();
 	}
