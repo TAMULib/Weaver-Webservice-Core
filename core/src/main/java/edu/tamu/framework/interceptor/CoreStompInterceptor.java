@@ -17,7 +17,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.messaging.Message;
@@ -81,7 +82,7 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 
 	private final PathMatcher pathMatcher;
 
-	private static final Logger logger = Logger.getLogger(CoreStompInterceptor.class);
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	public CoreStompInterceptor() {
 		pathMatcher = (PathMatcher) new AntPathMatcher();

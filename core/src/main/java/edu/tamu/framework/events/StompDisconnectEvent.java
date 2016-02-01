@@ -9,7 +9,8 @@
  */
 package edu.tamu.framework.events;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.web.socket.config.WebSocketMessageBrokerStats;
@@ -28,7 +29,7 @@ import edu.tamu.framework.service.StompConnectionService;
  */
 public class StompDisconnectEvent implements ApplicationListener<SessionDisconnectEvent> {
 
-	private static final Logger logger = Logger.getLogger(StompDisconnectEvent.class);
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Autowired
 	private StompConnectionService stompConnectionService;
