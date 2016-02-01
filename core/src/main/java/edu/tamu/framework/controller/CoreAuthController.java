@@ -12,7 +12,7 @@ import edu.tamu.framework.aspect.annotation.Data;
 import edu.tamu.framework.aspect.annotation.Parameters;
 import edu.tamu.framework.model.ApiResponse;
 import edu.tamu.framework.util.AuthUtility;
-import edu.tamu.framework.util.EmailUtility;
+import edu.tamu.framework.util.EmailSender;
 import edu.tamu.framework.util.JwtUtility;
 
 public abstract class CoreAuthController {
@@ -29,7 +29,7 @@ public abstract class CoreAuthController {
 	protected JwtUtility jwtUtility;
 
 	@Autowired
-	protected EmailUtility emailUtility;
+	protected EmailSender emailSender;
 
 	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
