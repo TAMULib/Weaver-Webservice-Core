@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class CoreSpringBanner implements Banner {
 	
-    private static final String BOOT = " :: 01010110 01101001 01110010 01100101 01101111 :: ";
+    private static final String BOOT = " :: 01010111 01100101 01100001 01110110 01100101 01110010 :: ";
 
     private static final int STRAP_LINE_SIZE = 42;
     
