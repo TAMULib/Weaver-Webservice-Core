@@ -107,8 +107,9 @@
 		    <artifactId>h2</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
+		    <groupId>org.logback-extensions</groupId>
+		    <artifactId>logback-ext-spring</artifactId>
+		    <version>0.1.4</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
