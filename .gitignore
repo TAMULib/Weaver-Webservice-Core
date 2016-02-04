@@ -1,6 +1,7 @@
 target/
-core/.settings/
-core/.factorypath
-core/.classpath
-core/.project
-core/.springBeans
+.settings/
+.factorypath
+.classpath
+.project
+.springBeans
+.DS_Store
