@@ -1,5 +1,5 @@
 # Weaver-Webservice-Framework
-This is a bare bones app for starting new Spring MVC applications.
+An open source Spring-boot webservice framework.
 
 <a href="http://tamulib.github.io/Weaver-Webservice-Framework/docs/html/index.html">Weaver Webservice Framework Doxygen Documentation</a>
 
