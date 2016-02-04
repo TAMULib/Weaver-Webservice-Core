@@ -1,14 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>webservice-framework-core</artifactId>
-  <name>webservice-framework-core</name>
+  <artifactId>weaver-webservice-core</artifactId>
+  <name>weaver-webservice-core</name>
   <url>http://maven.apache.org</url>
   
 	<parent>
-		<groupId>edu.tamu.framework</groupId>
-		<artifactId>webservice-framework-parent</artifactId>
-		<version>2.1.1-SNAPSHOT</version>
+		<groupId>edu.tamu.weaver</groupId>
+		<artifactId>weaver-webservice-parent</artifactId>
+		<version>1.0-SNAPSHOT</version>
 	</parent>
 	
 	<build>
