@@ -6,4 +6,4 @@ if [[ $# -ne 1 ]]; then
 fi
 
 mvn clean install
-mvn install:install-file -Dfile=core/target/weaver-webservice-core-$1.jar -DgroupId=edu.tamu.weaver -DartifactId=weaver-webservice-core -Dversion=$1 -Dpackaging=jar
+mvn install:install-file -Dfile=core/target/weaver-webservice-core-$1.jar -DgroupId=edu.tamu.weaverframework -DartifactId=weaver-webservice-core -Dversion=$1 -Dpackaging=jar
