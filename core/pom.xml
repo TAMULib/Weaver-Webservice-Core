@@ -6,7 +6,7 @@
   <url>http://maven.apache.org</url>
   
 	<parent>
-		<groupId>edu.tamu.weaver</groupId>
+		<groupId>edu.tamu.weaverframework</groupId>
 		<artifactId>weaver-webservice-parent</artifactId>
 		<version>1.0-SNAPSHOT</version>
 	</parent>
