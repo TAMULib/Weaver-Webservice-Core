@@ -1,5 +1,5 @@
-# Weaver-Webservice-Framework
-An open source Spring-boot webservice framework.
+# Weaver-Webservice-Core
+An open source Webservice Framework using Spring-boot.
 
-<a href="http://tamulib.github.io/Weaver-Webservice-Framework/docs/html/index.html">Weaver Webservice Framework Doxygen Documentation</a>
+<a href="http://tamulib.github.io/Weaver-Webservice-Core/docs/html/index.html">Weaver Webservice Core Framework Doxygen Documentation</a>
 
