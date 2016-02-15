@@ -210,7 +210,7 @@ public abstract class CoreControllerAspect {
 			protocol = Protocol.HTTP;
 
 			// determine endpoint path either from ApiMapping or RequestMapping annotation
-			String path = "/";
+			String path = "";
 
 			if (clazz.getAnnotationsByType(RequestMapping.class).length > 0) {
 				path += clazz.getAnnotationsByType(RequestMapping.class)[0].value()[0];
@@ -225,15 +225,15 @@ public abstract class CoreControllerAspect {
 			}
 			
 			HttpRequest request = httpRequestService.getAndRemoveRequestByDestinationAndUser(path, securityContext.getAuthentication().getName());
-
+			
 			servletRequest = request.getRequest();
-
+			
 			parameters = servletRequest.getParameterMap();
 
 			logger.debug("The request: " + servletRequest);
-
-			if (request.getDestination().contains("{")) {
-				apiVariables = getApiVariable(request.getDestination(), servletRequest.getServletPath());
+			
+			if (path.contains("{")) {
+				apiVariables = getApiVariable(path, servletRequest.getServletPath());
 			}
 
 			if (servletRequest.getAttribute("shib") != null) {
@@ -247,7 +247,7 @@ public abstract class CoreControllerAspect {
 		} else {
 
 			// determine endpoint path either from ApiMapping or MessageMapping annotation
-			String path = "/";
+			String path = "";
 
 			if (clazz.getAnnotationsByType(MessageMapping.class).length > 0) {
 				path += clazz.getAnnotationsByType(MessageMapping.class)[0].value()[0];
@@ -277,8 +277,8 @@ public abstract class CoreControllerAspect {
 
 			shib = (Credentials) accessor.getSessionAttributes().get("shib");
 
-			if (request.getDestination().contains("{")) {
-				apiVariables = getApiVariable(request.getDestination(), accessor.getDestination());
+			if (path.contains("{")) {
+				apiVariables = getApiVariable(path, accessor.getDestination());
 			}
 
 			if (accessor.getNativeHeader("data") != null) {

@@ -82,6 +82,7 @@ public class WebSocketRequestService {
 	 * @return WebSocketRequest
 	 */
 	public synchronized WebSocketRequest getAndRemoveMessageByDestinationAndUser(String pattern, String user) {
+	    if(pattern.charAt(0) != '/') pattern = "/" + pattern;
 		for (int index = 0; index < requests.size(); index++) {
 			WebSocketRequest request = requests.get(index);
 			if (request.getUser().equals(user) && pathMatcher.match(pattern, request.getDestination())) {

@@ -82,6 +82,7 @@ public class HttpRequestService {
 	 * @return WebSocketRequest
 	 */
 	public synchronized HttpRequest getAndRemoveRequestByDestinationAndUser(String pattern, String user) {
+	    if(pattern.charAt(0) != '/') pattern = "/" + pattern;
 		for (int index = 0; index < requests.size(); index++) {
 			HttpRequest request = requests.get(index);
 			if (request.getUser().equals(user) && pathMatcher.match(pattern, request.getDestination())) {

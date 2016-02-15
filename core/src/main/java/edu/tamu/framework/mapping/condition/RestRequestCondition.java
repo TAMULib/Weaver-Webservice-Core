@@ -10,10 +10,12 @@
 package edu.tamu.framework.mapping.condition;
 
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -94,13 +96,17 @@ public class RestRequestCondition implements RequestCondition<RestRequestConditi
 		// to match if type with class annotation include a path variable
 		String fullPathPattern = "";
 
-		for (String pattern : patterns) {
-			fullPathPattern = pattern + fullPathPattern;
-		}
-
-		if (((AntPathMatcher) this.pathMatcher).match(fullPathPattern, destination)) {
-			return this;
-		}
+		List<String> patternList = new ArrayList<String>();
+        
+        patternList.addAll(patterns);
+        
+        for (int i = patternList.size()-1; i >= 0; i--) {
+            fullPathPattern = patternList.get(i) + fullPathPattern;
+        }
+        
+        if (((AntPathMatcher) this.pathMatcher).match(fullPathPattern, destination)) {
+            return this;
+        }
 
 		return null;
 	}
