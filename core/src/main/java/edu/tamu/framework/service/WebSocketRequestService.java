@@ -12,7 +12,10 @@ package edu.tamu.framework.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.util.PathMatcher;
 
 import edu.tamu.framework.model.WebSocketRequest;
 
@@ -29,6 +32,10 @@ import edu.tamu.framework.model.WebSocketRequest;
  */
 @Service
 public class WebSocketRequestService {
+    
+    @Autowired
+    @Lazy
+    private PathMatcher pathMatcher;
 
 	protected List<WebSocketRequest> requests = new ArrayList<WebSocketRequest>();
 
@@ -68,16 +75,17 @@ public class WebSocketRequestService {
 	/**
 	 * Get and remove request.
 	 * 
-	 * @param destination
+	 * @param pattern
 	 *            String
 	 * @param user
 	 *            String
 	 * @return WebSocketRequest
 	 */
-	public synchronized WebSocketRequest getAndRemoveMessageByDestinationAndUser(String destination, String user) {
+	public synchronized WebSocketRequest getAndRemoveMessageByDestinationAndUser(String pattern, String user) {
+	    if(pattern.charAt(0) != '/') pattern = "/" + pattern;
 		for (int index = 0; index < requests.size(); index++) {
 			WebSocketRequest request = requests.get(index);
-			if (request.getUser().equals(user) && request.getDestination().contains(destination)) {
+			if (request.getUser().equals(user) && pathMatcher.match(pattern, request.getDestination())) {
 				requests.remove(index);
 				return request;
 			}

@@ -223,17 +223,17 @@ public abstract class CoreControllerAspect {
 			} else {
 				path += method.getAnnotation(ApiMapping.class).value()[0];
 			}
-
+			
 			HttpRequest request = httpRequestService.getAndRemoveRequestByDestinationAndUser(path, securityContext.getAuthentication().getName());
-
+			
 			servletRequest = request.getRequest();
-
+			
 			parameters = servletRequest.getParameterMap();
 
 			logger.debug("The request: " + servletRequest);
-
-			if (request.getDestination().contains("{")) {
-				apiVariables = getApiVariable(request.getDestination(), servletRequest.getServletPath());
+			
+			if (path.contains("{")) {
+				apiVariables = getApiVariable(path, servletRequest.getServletPath());
 			}
 
 			if (servletRequest.getAttribute("shib") != null) {
@@ -277,8 +277,8 @@ public abstract class CoreControllerAspect {
 
 			shib = (Credentials) accessor.getSessionAttributes().get("shib");
 
-			if (request.getDestination().contains("{")) {
-				apiVariables = getApiVariable(request.getDestination(), accessor.getDestination());
+			if (path.contains("{")) {
+				apiVariables = getApiVariable(path, accessor.getDestination());
 			}
 
 			if (accessor.getNativeHeader("data") != null) {
