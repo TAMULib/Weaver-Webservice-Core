@@ -36,6 +36,6 @@ public @interface ApiMapping {
 	
 	String[] value() default {};
 
-	RequestMethod[] method() default { RequestMethod.GET };
+	RequestMethod[] method() default { RequestMethod.GET, RequestMethod.POST };
 	
 }
