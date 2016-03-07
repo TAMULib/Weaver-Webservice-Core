@@ -96,27 +96,31 @@ public abstract class CoreControllerAspect {
 	public ApiResponse polpulateCredentialsAndAuthorize(ProceedingJoinPoint joinPoint, Auth auth) throws Throwable {
 
 		PreProcessObject preProcessObject = preProcess(joinPoint);
+		
+		ApiResponse apiresponse = null;
 
 		if (CoreRoles.valueOf(preProcessObject.shib.getRole()).ordinal() < CoreRoles.valueOf(auth.role()).ordinal()) {
 			logger.info(preProcessObject.shib.getFirstName() + " " + preProcessObject.shib.getLastName() + "(" + preProcessObject.shib.getUin() + ") attempted restricted access.");
-			return new ApiResponse(preProcessObject.requestId, ERROR, "You are not authorized for this request.");
+			apiresponse = new ApiResponse(preProcessObject.requestId, ERROR, "You are not authorized for this request.");
 		}
+		else {
 
-		ApiResponse apiresponse = (ApiResponse) joinPoint.proceed(preProcessObject.arguments);
+		    apiresponse = (ApiResponse) joinPoint.proceed(preProcessObject.arguments);
 
-		if (apiresponse != null) {
-
-			// retry endpoint if error response type
-			int attempt = 0;
-			while (attempt < NUMBER_OF_RETRY_ATTEMPTS && apiresponse.getMeta().getType() == ApiResponseType.ERROR) {
-				attempt++;
-				logger.debug("Retry attempt " + attempt);
-				apiresponse = (ApiResponse) joinPoint.proceed(preProcessObject.arguments);
-			}
-
-			apiresponse.getMeta().setId(preProcessObject.requestId);
-		} else {
-			apiresponse = new ApiResponse(WARNING, "Endpoint returns void!");
+    		if (apiresponse != null) {
+    
+    			// retry endpoint if error response type
+    			int attempt = 0;
+    			while (attempt < NUMBER_OF_RETRY_ATTEMPTS && apiresponse.getMeta().getType() == ApiResponseType.ERROR) {
+    				attempt++;
+    				logger.debug("Retry attempt " + attempt);
+    				apiresponse = (ApiResponse) joinPoint.proceed(preProcessObject.arguments);
+    			}
+    
+    			apiresponse.getMeta().setId(preProcessObject.requestId);
+    		} else {
+    			apiresponse = new ApiResponse(WARNING, "Endpoint returns void!");
+    		}
 		}
 
 		// if using combined ApiMapping annotation send message as similar to
