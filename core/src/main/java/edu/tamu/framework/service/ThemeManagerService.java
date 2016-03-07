@@ -166,9 +166,12 @@ public class ThemeManagerService {
 	}
 
 	public void setCurrentTheme(CoreTheme theme) {
+		Boolean hadTheme = (this.currentTheme != null) ? true:false;
 		this.currentTheme = theme;
 		coreThemeRepo.updateActiveTheme(theme);
-		this.reloadCache();
+		if (hadTheme) {
+			this.reloadCache();
+		}
 	}
 	
 	public String[] getCssResources() {
