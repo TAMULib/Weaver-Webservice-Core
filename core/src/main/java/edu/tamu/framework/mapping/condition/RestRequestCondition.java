@@ -102,7 +102,7 @@ public class RestRequestCondition implements RequestCondition<RestRequestConditi
 		String patternltr = "";
 		String patternrtl = "";
 		
-		int j = patternList.size();
+		int j = patternList.size() - 1;
 		
 		for(int i = 0; i < patternList.size(); i++, j--) {
 			patternltr += patternList.get(i);
