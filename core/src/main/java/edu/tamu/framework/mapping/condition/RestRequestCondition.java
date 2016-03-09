@@ -43,7 +43,7 @@ public class RestRequestCondition implements RequestCondition<RestRequestConditi
 
 	private final PathMatcher pathMatcher;
 
-	public RestRequestCondition(String... paths) {
+	public RestRequestCondition(String...paths) {
 		this(Arrays.asList(paths), null);
 	}
 
@@ -81,34 +81,43 @@ public class RestRequestCondition implements RequestCondition<RestRequestConditi
 	public RestRequestCondition getMatchingCondition(HttpServletRequest request) {
 		String uri = request.getRequestURI();
 		String destination = uri.contains("?") ? uri.split("?")[0] : uri;
-
-		boolean match = true;
-		for (String pattern : this.patterns) {
-			if (!destination.toLowerCase().contains(pattern.toLowerCase())) {
-				match = false;
-			}
+		
+		if (destination == null) {
+			return null;
 		}
 
-		if (match) {
+		if (this.patterns.isEmpty()) {
 			return this;
 		}
-
-		// to match if type with class annotation include a path variable
-		String fullPathPattern = "";
-
+		
 		List<String> patternList = new ArrayList<String>();
-        
-        patternList.addAll(patterns);
-        
-        for (int i = patternList.size()-1; i >= 0; i--) {
-            fullPathPattern = patternList.get(i) + fullPathPattern;
-        }
-        
-        if (((AntPathMatcher) this.pathMatcher).match(fullPathPattern, destination)) {
-            return this;
-        }
-
-		return null;
+		
+		patternList.addAll(this.patterns);
+		
+		// order of set not maintained
+		
+		// class annotation combined with method annotation
+		// order can either be 0:class, 1:method or 0:method, 1:class
+		
+		String patternltr = "";
+		String patternrtl = "";
+		
+		int j = patternList.size();
+		
+		for(int i = 0; i < patternList.size(); i++, j--) {
+			patternltr += patternList.get(i);
+			patternrtl += patternList.get(j);
+		}
+		
+		if (((AntPathMatcher) this.pathMatcher).match(patternltr, destination)) {
+			return this;
+		}
+		
+		if (((AntPathMatcher) this.pathMatcher).match(patternrtl, destination)) {
+			return this;
+		}
+		
+		return null;		
 	}
 
 }
