@@ -103,11 +103,14 @@ public class WebSocketRequestCondition implements MessageCondition<WebSocketRequ
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public WebSocketRequestCondition getMatchingCondition(Message<?> message) {
 		StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 		String destination = accessor.getDestination();
-
+		
 		if (destination == null) {
 			return null;
 		}
@@ -122,6 +125,10 @@ public class WebSocketRequestCondition implements MessageCondition<WebSocketRequ
 			if (("/ws" + pattern).equals(destination)) {
 				matches.add("/ws" + pattern);
 			}
+			
+			if (("/channel" + pattern).equals(destination)) {
+				matches.add("/channel" + pattern);
+			}
 
 			if (("/private/queue" + pattern).equals(destination)) {
 				matches.add("/private/queue" + pattern);
@@ -129,6 +136,10 @@ public class WebSocketRequestCondition implements MessageCondition<WebSocketRequ
 
 			if (((AntPathMatcher) this.pathMatcher).match(("/ws" + pattern), destination)) {
 				matches.add("/ws" + pattern);
+			}
+			
+			if (((AntPathMatcher) this.pathMatcher).match(("/channel" + pattern), destination)) {
+				matches.add("/channel" + pattern);
 			}
 
 			if (((AntPathMatcher) this.pathMatcher).match(("/private/queue" + pattern), destination)) {
