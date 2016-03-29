@@ -36,6 +36,7 @@ import edu.tamu.framework.model.Credentials;
 import edu.tamu.framework.model.HttpRequest;
 import edu.tamu.framework.service.HttpRequestService;
 import edu.tamu.framework.util.JwtUtility;
+import edu.tamu.framework.exception.JWTException;
 
 /**
  * REST interceptor. Intercepts AJAX request to decode and verify token before
@@ -51,188 +52,152 @@ import edu.tamu.framework.util.JwtUtility;
 @Component
 public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 
-	@Value("${app.whitelist}")
-	private String[] whitelist;
+    @Value("${app.whitelist}")
+    private String[] whitelist;
 
-	@Autowired
-	private JwtUtility jwtService;
+    @Autowired
+    private JwtUtility jwtService;
 
-	@Autowired
-	private HttpRequestService httpRequestService;
+    @Autowired
+    private HttpRequestService httpRequestService;
 
-	@Autowired
-	private SecurityContext securityContext;
+    @Autowired
+    private SecurityContext securityContext;
 
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	public CoreRestInterceptor() {
-	}
+    public CoreRestInterceptor() {
+    }
 
-	public Credentials getAnonymousShib() {
-		Credentials anonymousShib = new Credentials();
-		anonymousShib.setAffiliation("NA");
-		anonymousShib.setLastName("Anonymous");
-		anonymousShib.setFirstName("Role");
-		anonymousShib.setNetid("anonymous-" + Math.round(Math.random() * 100000));
-		anonymousShib.setUin("000000000");
-		anonymousShib.setExp("1436982214754");
-		anonymousShib.setEmail("helpdesk@mailinator.com");
-		anonymousShib.setRole("ROLE_ANONYMOUS");
-		return anonymousShib;
-	}
+    public Credentials getAnonymousShib() {
+        Credentials anonymousShib = new Credentials();
+        anonymousShib.setAffiliation("NA");
+        anonymousShib.setLastName("Anonymous");
+        anonymousShib.setFirstName("Role");
+        anonymousShib.setNetid("anonymous-" + Math.round(Math.random() * 100000));
+        anonymousShib.setUin("000000000");
+        anonymousShib.setExp("1436982214754");
+        anonymousShib.setEmail("helpdesk@mailinator.com");
+        anonymousShib.setRole("ROLE_ANONYMOUS");
+        return anonymousShib;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-		Map<String, String> credentialMap = new HashMap<String, String>();
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        Map<String, String> credentialMap = new HashMap<String, String>();
 
-		String jwt = request.getHeader("jwt");
+        String jwt = request.getHeader("jwt");
 
-		Credentials shib = null;
+        Credentials shib = null;
 
-		if (jwt == null) {
+        if (jwt == null) {
 
-			String ip = request.getHeader("X-FORWARDED-FOR");
+            String ip = request.getHeader("X-FORWARDED-FOR");
 
-			if (ip == null) {
-				ip = request.getRemoteAddr();
-			}
+            if (ip == null) {
+                ip = request.getRemoteAddr();
+            }
 
-			logger.debug("Referrer: " + ip);
+            logger.debug("Referrer: " + ip);
 
-			if (logger.isDebugEnabled()) {
-				Enumeration<String> headers = request.getHeaderNames();
-				while (headers.hasMoreElements()) {
-					String key = (String) headers.nextElement();
-					logger.debug(key + ": " + request.getHeader(key));
-				}
-			}
+            if (logger.isDebugEnabled()) {
+                Enumeration<String> headers = request.getHeaderNames();
+                while (headers.hasMoreElements()) {
+                    String key = (String) headers.nextElement();
+                    logger.debug(key + ": " + request.getHeader(key));
+                }
+            }
 
-			if (ip == null) {
-				ip = request.getRemoteAddr();
-			}
+            if (ip == null) {
+                ip = request.getRemoteAddr();
+            }
 
-			boolean accepted = false;
+            boolean accepted = false;
 
-			for (String accept : whitelist) {
-				if (ip.equals(accept)) {
-					credentialMap.put("lastName", "Admin");
-					credentialMap.put("firstName", "Server");
-					credentialMap.put("netid", ip);
-					credentialMap.put("affiliation", "Server");
-					credentialMap.put("uin", "123456789");
-					credentialMap.put("exp", "1436982214754");
-					credentialMap.put("email", "helpdesk@mailinator.com");
-					credentialMap.put("role", "ROLE_ADMIN");
-					accepted = true;
-					shib = new Credentials(credentialMap);
-					break;
-				}
-			}
+            for (String accept : whitelist) {
+                if (ip.equals(accept)) {
+                    credentialMap.put("lastName", "Admin");
+                    credentialMap.put("firstName", "Server");
+                    credentialMap.put("netid", ip);
+                    credentialMap.put("affiliation", "Server");
+                    credentialMap.put("uin", "123456789");
+                    credentialMap.put("exp", "1436982214754");
+                    credentialMap.put("email", "helpdesk@mailinator.com");
+                    credentialMap.put("role", "ROLE_ADMIN");
+                    accepted = true;
+                    shib = new Credentials(credentialMap);
+                    break;
+                }
+            }
 
-			if (!accepted) {
-				shib = getAnonymousShib();
-			}
-		} else {
-			credentialMap = jwtService.validateJWT(request.getHeader("jwt"));
+            if (!accepted) {
+                shib = getAnonymousShib();
+            }
+        } else {
+            credentialMap = jwtService.validateJWT(request.getHeader("jwt"));
 
-			if (logger.isDebugEnabled()) {
-				Enumeration<String> headers = request.getHeaderNames();
-				while (headers.hasMoreElements()) {
-					String key = (String) headers.nextElement();
-					logger.debug(key + ": " + request.getHeader(key));
-				}
+            if (logger.isDebugEnabled()) {
+                Enumeration<String> headers = request.getHeaderNames();
+                while (headers.hasMoreElements()) {
+                    String key = (String) headers.nextElement();
+                    logger.debug(key + ": " + request.getHeader(key));
+                }
 
-				logger.debug("Credential Map");
-				for (String key : credentialMap.keySet()) {
-					logger.debug(key + " - " + credentialMap.get(key));
-				}
-			}
+                logger.debug("Credential Map");
+                for (String key : credentialMap.keySet()) {
+                    logger.debug(key + " - " + credentialMap.get(key));
+                }
+            }
 
-			String errorMessage = credentialMap.get("ERROR");
-			if (errorMessage != null) {
-				logger.error("JWT error: " + errorMessage);
-				throw new InvalidJwtException();
-			}
+            String errorMessage = credentialMap.get("ERROR");
+            if (errorMessage != null) {
+                logger.error("JWT error: " + errorMessage);
+                throw new JWTException("INVALID_JWT", errorMessage);
+            }
 
-			if (jwtService.isExpired(credentialMap)) {
-				logger.info("The token for " + credentialMap.get("firstName") + " " + credentialMap.get("lastName") + " (" + credentialMap.get("uin") + ") has expired. Attempting to get new token.");
-				throw new ExpiredJwtException();
-			}
+            if (jwtService.isExpired(credentialMap)) {
+                logger.info("The token for " + credentialMap.get("firstName") + " " + credentialMap.get("lastName") + " (" + credentialMap.get("uin") + ") has expired. Attempting to get new token.");
+                throw new JWTException("EXPIRED_JWT", "JWT is expired!");
+            }
 
-			shib = confirmCreateUser(new Credentials(credentialMap));
+            shib = confirmCreateUser(new Credentials(credentialMap));
 
-			if (shib == null) {
-				errorMessage = "Could not confirm user!";
-				logger.error(errorMessage);
-				throw new ConfirmUserException();
-			}
-		}
+            if (shib == null) {
+                errorMessage = "Could not confirm user!";
+                logger.error(errorMessage);
+                throw new JWTException("INVALID_USER", errorMessage);
+            }
+        }
 
-		request.setAttribute("shib", shib);
+        request.setAttribute("shib", shib);
 
-		request.setAttribute("data", request.getHeader("data"));
+        request.setAttribute("data", request.getHeader("data"));
 
-		List<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
+        List<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
 
-		grantedAuthorities.add(new SimpleGrantedAuthority(shib.getRole()));
+        grantedAuthorities.add(new SimpleGrantedAuthority(shib.getRole()));
 
-		if (shib.getNetid() == null) {
-			shib.setNetid(shib.getEmail());
-		}
+        if (shib.getNetid() == null) {
+            shib.setNetid(shib.getEmail());
+        }
 
-		Authentication auth = new AnonymousAuthenticationToken(shib.getUin(), shib.getNetid(), grantedAuthorities);
+        Authentication auth = new AnonymousAuthenticationToken(shib.getUin(), shib.getNetid(), grantedAuthorities);
 
-		auth.setAuthenticated(true);
+        auth.setAuthenticated(true);
 
-		securityContext.setAuthentication(auth);
-		
-		httpRequestService.addRequest(new HttpRequest(request, response, shib.getNetid(), request.getRequestURI()));
+        securityContext.setAuthentication(auth);
+        
+        httpRequestService.addRequest(new HttpRequest(request, response, shib.getNetid(), request.getRequestURI()));
 
-		return true;
-	}
+        return true;
+    }
 
-	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
 
-	}
+    }
 
-	/**
-	 * Expired JWT Exception class.
-	 * 
-	 */
-	@ResponseStatus(value = HttpStatus.FORBIDDEN, reason = "EXPIRED_JWT")
-	public class ExpiredJwtException extends RuntimeException {
-		private static final long serialVersionUID = 1L;
-	}
-
-	/**
-	 * Missing JWT Exception class.
-	 * 
-	 */
-	@ResponseStatus(value = HttpStatus.FORBIDDEN, reason = "MISSING_JWT")
-	public class MissingJwtException extends RuntimeException {
-		private static final long serialVersionUID = 1L;
-	}
-
-	/**
-	 * Invalid JWT Exception class.
-	 * 
-	 */
-	@ResponseStatus(value = HttpStatus.FORBIDDEN, reason = "INVALID_JWT")
-	public class InvalidJwtException extends RuntimeException {
-		private static final long serialVersionUID = 1L;
-	}
-
-	/**
-	 * Could not confirm user exception class.
-	 *
-	 */
-	@ResponseStatus(value = HttpStatus.FORBIDDEN, reason = "INVALID_USER")
-	public class ConfirmUserException extends RuntimeException {
-		private static final long serialVersionUID = 1L;
-	}
-
-	public abstract Credentials confirmCreateUser(Credentials shib);
+    public abstract Credentials confirmCreateUser(Credentials shib);
 }
