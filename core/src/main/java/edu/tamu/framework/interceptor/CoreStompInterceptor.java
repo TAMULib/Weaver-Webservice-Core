@@ -12,6 +12,10 @@ package edu.tamu.framework.interceptor;
 import static edu.tamu.framework.enums.ApiResponseType.ERROR;
 import static edu.tamu.framework.enums.ApiResponseType.REFRESH;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -67,6 +71,9 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 
 	@Autowired
 	private SecurityContext securityContext;
+	
+	@Autowired
+    private ObjectMapper objectMapper;
 
 	@Autowired
 	@Lazy
@@ -340,13 +347,18 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 				shib = getAnonymousShib();
 			}
 
+			
+			// TODO: deprecate putting shib on session attributes
 			Map<String, Object> shibMap = new HashMap<String, Object>();
-
-			shibMap.put("shib", shib);
-
+			shibMap.put("shib", shib);			
 			accessor.setSessionAttributes(shibMap);
-
-			message = MessageBuilder.withPayload("VALID").setHeaders(accessor).build();
+			
+			
+			
+			JsonNode shibNode = objectMapper.valueToTree(shib);
+						
+			message = MessageBuilder.withPayload(shibNode).setHeaders(accessor).build();
+			
 
 			// set message with enhanced accessor on request
 			request.setMessage(message);

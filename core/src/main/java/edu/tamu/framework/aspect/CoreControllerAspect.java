@@ -35,6 +35,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.RequestContextHolder;
 
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.tamu.framework.aspect.annotation.ApiMapping;
@@ -96,27 +97,31 @@ public abstract class CoreControllerAspect {
 	public ApiResponse polpulateCredentialsAndAuthorize(ProceedingJoinPoint joinPoint, Auth auth) throws Throwable {
 
 		PreProcessObject preProcessObject = preProcess(joinPoint);
+		
+		ApiResponse apiresponse = null;
 
 		if (CoreRoles.valueOf(preProcessObject.shib.getRole()).ordinal() < CoreRoles.valueOf(auth.role()).ordinal()) {
 			logger.info(preProcessObject.shib.getFirstName() + " " + preProcessObject.shib.getLastName() + "(" + preProcessObject.shib.getUin() + ") attempted restricted access.");
-			return new ApiResponse(preProcessObject.requestId, ERROR, "You are not authorized for this request.");
+			apiresponse = new ApiResponse(preProcessObject.requestId, ERROR, "You are not authorized for this request.");
 		}
+		else {
 
-		ApiResponse apiresponse = (ApiResponse) joinPoint.proceed(preProcessObject.arguments);
+		    apiresponse = (ApiResponse) joinPoint.proceed(preProcessObject.arguments);
 
-		if (apiresponse != null) {
-
-			// retry endpoint if error response type
-			int attempt = 0;
-			while (attempt < NUMBER_OF_RETRY_ATTEMPTS && apiresponse.getMeta().getType() == ApiResponseType.ERROR) {
-				attempt++;
-				logger.debug("Retry attempt " + attempt);
-				apiresponse = (ApiResponse) joinPoint.proceed(preProcessObject.arguments);
-			}
-
-			apiresponse.getMeta().setId(preProcessObject.requestId);
-		} else {
-			apiresponse = new ApiResponse(WARNING, "Endpoint returns void!");
+    		if (apiresponse != null) {
+    
+    			// retry endpoint if error response type
+    			int attempt = 0;
+    			while (attempt < NUMBER_OF_RETRY_ATTEMPTS && apiresponse.getMeta().getType() == ApiResponseType.ERROR) {
+    				attempt++;
+    				logger.debug("Retry attempt " + attempt);
+    				apiresponse = (ApiResponse) joinPoint.proceed(preProcessObject.arguments);
+    			}
+    
+    			apiresponse.getMeta().setId(preProcessObject.requestId);
+    		} else {
+    			apiresponse = new ApiResponse(WARNING, "Endpoint returns void!");
+    		}
 		}
 
 		// if using combined ApiMapping annotation send message as similar to
@@ -190,9 +195,11 @@ public abstract class CoreControllerAspect {
 		MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
 
 		Object[] arguments = joinPoint.getArgs();
-
+		
 		String[] argNames = methodSignature.getParameterNames();
 
+		Class<?>[] argTypes = methodSignature.getParameterTypes();
+		
 		Class<?> clazz = methodSignature.getDeclaringType();
 
 		Method method = clazz.getDeclaredMethod(methodSignature.getName(), methodSignature.getParameterTypes());
@@ -307,6 +314,9 @@ public abstract class CoreControllerAspect {
 					case "Data": {
 						arguments[index] = data;
 					} break;
+					case "ApiModel": {
+                        arguments[index] = objectMapper.convertValue(objectMapper.readTree(data), objectMapper.constructType(argTypes[index]));
+                    } break;
 					case "Parameters": {
 						arguments[index] = parameters;
 					} break;
