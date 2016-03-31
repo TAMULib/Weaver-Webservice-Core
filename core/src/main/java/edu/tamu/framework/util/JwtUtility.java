@@ -17,7 +17,6 @@ import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -242,7 +241,7 @@ public class JwtUtility {
 	 * @return
 	 */
 	public boolean isExpired(Map<String, String> tokenMap) {
-		long currentTime = Calendar.getInstance().getTime().getTime() + 90000;
+		long currentTime = new Date().getTime();
 
 		long expTime = Long.parseLong(tokenMap.get("exp"));
 
