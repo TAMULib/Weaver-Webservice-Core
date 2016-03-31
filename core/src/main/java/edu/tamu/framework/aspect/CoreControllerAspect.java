@@ -35,6 +35,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.RequestContextHolder;
 
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.tamu.framework.aspect.annotation.ApiMapping;
@@ -194,9 +195,11 @@ public abstract class CoreControllerAspect {
 		MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
 
 		Object[] arguments = joinPoint.getArgs();
-
+		
 		String[] argNames = methodSignature.getParameterNames();
 
+		Class<?>[] argTypes = methodSignature.getParameterTypes();
+		
 		Class<?> clazz = methodSignature.getDeclaringType();
 
 		Method method = clazz.getDeclaredMethod(methodSignature.getName(), methodSignature.getParameterTypes());
@@ -311,6 +314,9 @@ public abstract class CoreControllerAspect {
 					case "Data": {
 						arguments[index] = data;
 					} break;
+					case "ApiModel": {
+                        arguments[index] = objectMapper.convertValue(objectMapper.readTree(data), objectMapper.constructType(argTypes[index]));
+                    } break;
 					case "Parameters": {
 						arguments[index] = parameters;
 					} break;

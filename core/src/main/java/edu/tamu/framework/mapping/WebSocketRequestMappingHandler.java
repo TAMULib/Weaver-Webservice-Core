@@ -9,6 +9,12 @@
  */
 package edu.tamu.framework.mapping;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+
+import org.springframework.messaging.converter.MappingJackson2MessageConverter;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,6 +30,7 @@ import org.springframework.context.SmartLifecycle;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.format.support.DefaultFormattingConversionService;
+
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.SubscribableChannel;
@@ -113,6 +120,16 @@ public class WebSocketRequestMappingHandler extends AbstractMethodMessageHandler
 		Collection<MessageConverter> converters = new ArrayList<MessageConverter>();
 		converters.add(new StringMessageConverter());
 		converters.add(new ByteArrayMessageConverter());
+		
+		MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
+		ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+        objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
+        objectMapper.configure(JsonParser.Feature.ALLOW_BACKSLASH_ESCAPING_ANY_CHARACTER, true);
+        converter.setObjectMapper(objectMapper);
+		
+        converters.add(converter);
+		
 		this.messageConverter = new CompositeMessageConverter(converters);
 	}
 

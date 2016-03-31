@@ -235,34 +235,30 @@ public class JwtUtility {
 	}
 
 	/**
-	 * Check if token has expired.
-	 * 
-	 * @param tokenMap
-	 *            Map<String, String>
-	 * @return
-	 */
-	public boolean isExpired(Map<String, String> tokenMap) {
-		long currentTime = Calendar.getInstance().getTime().getTime() + 90000;
-
-		long expTime = Long.parseLong(tokenMap.get("exp"));
-
-		if (log.isDebugEnabled()) {
-			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy - hh:mm:ss");
-			log.debug("Token expiration time: " + sdf.format(new Date(expTime)));
-		}
-
-		if (expTime < currentTime) {
-			return true;
-		} else {
-			Long remainingTimeInSeconds = (expTime - currentTime) / 1000;
-			if (remainingTimeInSeconds > 60) {
-				log.debug("Token expires in " + remainingTimeInSeconds / 60 + " minutes.");
-			} else {
-				log.debug("Token expires in " + remainingTimeInSeconds + " seconds.");
-			}
-		}
-
-		return false;
-	}
+     * Check if token has expired.
+     * 
+     * @param tokenMap
+     *            Map<String, String>
+     * @return
+     */
+    public boolean isExpired(Map<String, String> tokenMap) {
+        long currentTime = new Date().getTime();
+        long expTime = Long.parseLong(tokenMap.get("exp"));
+        if (log.isDebugEnabled()) {
+            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy - hh:mm:ss");
+            log.debug("Token expiration time: " + sdf.format(new Date(expTime)));
+        }
+        if (currentTime >= expTime) {
+            return true;
+        } else {
+            Long remainingTimeInSeconds = (expTime - currentTime) / 1000;
+            if (remainingTimeInSeconds > 60) {
+                log.debug("Token expires in " + remainingTimeInSeconds / 60 + " minutes.");
+            } else {
+                log.debug("Token expires in " + remainingTimeInSeconds + " seconds.");
+            }
+        }
+        return false;
+    }
 
 }

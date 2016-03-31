@@ -8,7 +8,9 @@
 	<parent>
 		<groupId>edu.tamu.weaverframework</groupId>
 		<artifactId>weaver-webservice-parent</artifactId>
+
 		<version>1.0.1-RC2-SNAPSHOT</version>
+
 	</parent>
 	
 	<build>
