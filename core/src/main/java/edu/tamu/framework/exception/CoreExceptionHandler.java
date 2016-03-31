@@ -20,14 +20,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @ControllerAdvice
 public class CoreExceptionHandler {
-    
+
     @ResponseBody
     @ExceptionHandler(JWTException.class)
-    public ResponseEntity<Object> handleJWTException(JWTException ex) {
+    public ResponseEntity<Map> handleJWTException(JWTException ex) {
         Map<String, String> errorMap = new HashMap<String, String>();
         errorMap.put("code", ex.getErrCode());
         errorMap.put("message", ex.getErrMsg());
-        return new ResponseEntity<Object>(errorMap, null, HttpStatus.FORBIDDEN);
+        return new ResponseEntity<Map>(errorMap, null, HttpStatus.FORBIDDEN);
     }
-    
+
 }
