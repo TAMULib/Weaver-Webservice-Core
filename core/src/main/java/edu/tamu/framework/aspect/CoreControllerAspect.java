@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.RequestContextHolder;
 
 import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.tamu.framework.aspect.annotation.ApiMapping;
@@ -64,7 +65,7 @@ import edu.tamu.framework.service.WebSocketRequestService;
 public abstract class CoreControllerAspect {
 
 	// TODO: put in application.properties of each app
-	private final static int NUMBER_OF_RETRY_ATTEMPTS = 2;
+	private final static int NUMBER_OF_RETRY_ATTEMPTS = 3;
 
 	@Autowired
 	public ObjectMapper objectMapper;
@@ -112,7 +113,7 @@ public abstract class CoreControllerAspect {
     
     			// retry endpoint if error response type
     			int attempt = 0;
-    			while (attempt < NUMBER_OF_RETRY_ATTEMPTS && apiresponse.getMeta().getType() == ApiResponseType.ERROR) {
+    			while (attempt <= NUMBER_OF_RETRY_ATTEMPTS && apiresponse.getMeta().getType() == ApiResponseType.ERROR) {
     				attempt++;
     				logger.debug("Retry attempt " + attempt);
     				apiresponse = (ApiResponse) joinPoint.proceed(preProcessObject.arguments);
@@ -152,7 +153,7 @@ public abstract class CoreControllerAspect {
 
 			// retry endpoint if error response type
 			int attempt = 0;
-			while (attempt < NUMBER_OF_RETRY_ATTEMPTS && apiresponse.getMeta().getType() == ApiResponseType.ERROR) {
+			while (attempt <= NUMBER_OF_RETRY_ATTEMPTS && apiresponse.getMeta().getType() == ApiResponseType.ERROR) {
 				attempt++;
 				logger.debug("Retry attempt " + attempt);
 				apiresponse = (ApiResponse) joinPoint.proceed(preProcessObject.arguments);
@@ -282,8 +283,10 @@ public abstract class CoreControllerAspect {
 
 			requestId = accessor.getNativeHeader("id").get(0);
 
-			shib = (Credentials) accessor.getSessionAttributes().get("shib");
 
+			shib = objectMapper.convertValue(objectMapper.readTree((String) message.getPayload()), objectMapper.constructType(Credentials.class));
+
+			
 			if (path.contains("{")) {
 				apiVariables = getApiVariable(path, accessor.getDestination());
 			}

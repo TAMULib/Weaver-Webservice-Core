@@ -348,18 +348,19 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 			}
 
 			
-			// TODO: deprecate putting shib on session attributes
-			Map<String, Object> shibMap = new HashMap<String, Object>();
-			shibMap.put("shib", shib);			
-			accessor.setSessionAttributes(shibMap);
+			String shibString;
 			
+			try {
+			    shibString = objectMapper.writeValueAsString(shib);
+			}
+			catch(Exception r) {
+			    logger.error("Could not write shib as a string!");
+			    return null;
+			}
 			
-			
-			JsonNode shibNode = objectMapper.valueToTree(shib);
+			message = MessageBuilder.withPayload(shibString).setHeaders(accessor).build();
 						
-			message = MessageBuilder.withPayload(shibNode).setHeaders(accessor).build();
 			
-
 			// set message with enhanced accessor on request
 			request.setMessage(message);
 

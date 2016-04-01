@@ -65,13 +65,4 @@ public abstract class CoreWebSocketConfig extends AbstractWebSocketMessageBroker
 	public void configureClientInboundChannel(ChannelRegistration registration) {
 		registration.taskExecutor().corePoolSize(8).maxPoolSize(Integer.MAX_VALUE);
 	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void configureClientOutboundChannel(ChannelRegistration registration) {
-		registration.taskExecutor().corePoolSize(8).maxPoolSize(Integer.MAX_VALUE);
-	}
-
 }
