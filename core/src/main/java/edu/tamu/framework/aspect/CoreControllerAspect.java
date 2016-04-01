@@ -245,7 +245,7 @@ public abstract class CoreControllerAspect {
 			}
 
 			if (servletRequest.getAttribute("shib") != null) {
-			    shib = objectMapper.convertValue(objectMapper.readTree((String) servletRequest.getAttribute("shib")), objectMapper.constructType(Credentials.class));
+			    shib = (Credentials) servletRequest.getAttribute("shib");
 			}
 
 			if (servletRequest.getAttribute("data") != null) {
