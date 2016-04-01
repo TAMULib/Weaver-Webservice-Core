@@ -43,8 +43,8 @@ import org.springframework.http.converter.HttpMessageConverter;
  *
  */
 @Configuration
-@EnableWebMvc
-public class CoreWebMvcConfig extends WebMvcConfigurerAdapter {
+@AutoConfigureAfter(DispatcherServletAutoConfiguration.class)
+public class CoreWebMvcConfig extends WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter {
 
 	@Autowired
 	private Environment env;
