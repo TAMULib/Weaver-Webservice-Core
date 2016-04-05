@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.ServletContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,6 +77,9 @@ public abstract class CoreControllerAspect {
 
 	@Autowired
 	private SecurityContext securityContext;
+	
+	@Autowired
+    private ServletContext servletContext;
 
 	@Autowired
 	private SimpMessagingTemplate simpMessagingTemplate;
@@ -214,7 +218,7 @@ public abstract class CoreControllerAspect {
 			protocol = Protocol.HTTP;
 
 			// determine endpoint path either from ApiMapping or RequestMapping annotation
-			String path = "";
+			String path = servletContext.getContextPath();
 
 			if (clazz.getAnnotationsByType(RequestMapping.class).length > 0) {
 				path += clazz.getAnnotationsByType(RequestMapping.class)[0].value()[0];
