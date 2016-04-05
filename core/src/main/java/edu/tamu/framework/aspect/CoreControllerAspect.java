@@ -83,6 +83,8 @@ public abstract class CoreControllerAspect {
 	private SimpMessagingTemplate simpMessagingTemplate;
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	
+	public abstract Object validate(Object object, Annotation annotation, String className);
 
 	/**
 	 * JoinPoint in which populates credentials and authorizes request.
@@ -299,9 +301,11 @@ public abstract class CoreControllerAspect {
 		int index = 0;
 		for (Annotation[] annotations : method.getParameterAnnotations()) {
 
+		    Annotation ann = null;
 			String annotationString = null;
 
 			for (Annotation annotation : annotations) {
+			    ann = annotation;
 				annotationString = annotation.toString();
 				annotationString = annotationString.substring(annotationString.lastIndexOf('.') + 1, annotationString.indexOf("("));
 			}
@@ -319,6 +323,9 @@ public abstract class CoreControllerAspect {
 					} break;
 					case "ApiModel": {
                         arguments[index] = objectMapper.convertValue(objectMapper.readTree(data), objectMapper.constructType(argTypes[index]));
+                    } break;
+					case "ApiValidatedModel": {                     
+                        arguments[index] = validate(objectMapper.convertValue(objectMapper.readTree(data), objectMapper.constructType(argTypes[index])), ann, argTypes[index].getCanonicalName());   
                     } break;
 					case "Parameters": {
 						arguments[index] = parameters;
