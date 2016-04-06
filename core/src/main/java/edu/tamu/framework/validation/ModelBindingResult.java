@@ -9,12 +9,10 @@ import org.springframework.validation.ObjectError;
 
 public class ModelBindingResult extends BeanPropertyBindingResult {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 2834743206746612206L;
 	
 	private final List<ObjectError> warnings = new LinkedList<ObjectError>();
+	
 	private final List<ObjectError> infos = new LinkedList<ObjectError>();
 
 	public ModelBindingResult(Object target, String objectName) {
@@ -26,7 +24,7 @@ public class ModelBindingResult extends BeanPropertyBindingResult {
 		this.warnings.add(warning);
 	}
 	
-	public boolean hasWarning() {
+	public boolean hasWarnings() {
 		return !this.warnings.isEmpty();
 	}
 	
@@ -38,12 +36,27 @@ public class ModelBindingResult extends BeanPropertyBindingResult {
 		this.infos.add(warning);
 	}
 	
-	public boolean hasInfo() {
+	public boolean hasInfos() {
 		return !this.infos.isEmpty();
 	}
 	
 	public List<ObjectError> getAllInfos() {
 		return Collections.unmodifiableList(this.infos);
 	}
+	
+	public List<ObjectError> getAll() {
+	    List<ObjectError> ret = new LinkedList<ObjectError>();
+	    ret.addAll(this.infos);
+	    ret.addAll(this.warnings);
+	    ret.addAll(super.getAllErrors());
+	    return Collections.unmodifiableList(ret);
+	}
+	
+	public List<ObjectError> getAllWarningsAndInfos() {
+        List<ObjectError> ret = new LinkedList<ObjectError>();
+        ret.addAll(this.infos);
+        ret.addAll(this.warnings);
+        return Collections.unmodifiableList(ret);
+    }
 
 }
