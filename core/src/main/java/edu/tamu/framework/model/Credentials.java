@@ -32,6 +32,7 @@ public class Credentials {
 	private String email;
 	private String role;
 	private String affiliation;
+	private Map<String,String> allCredentials;
 
 	public Credentials() { }
 
@@ -51,6 +52,7 @@ public class Credentials {
 		this.email = token.get("email");
 		this.role = token.get("role");
 		this.affiliation = token.get("affiliation");
+		this.allCredentials = token;
 	}
 
 	/**
@@ -208,4 +210,17 @@ public class Credentials {
 		this.affiliation = affiliation;
 	}
 
+	/**
+	 * @return all credentials
+	 */
+	public Map<String,String> getAllCredentials() {
+		return this.allCredentials;
+	}
+
+	/**
+	 * @param allCredentials
+	 */
+	public void setAllCredentials(Map<String,String> allCredentials) {
+		this.allCredentials = allCredentials;
+	}
 }
