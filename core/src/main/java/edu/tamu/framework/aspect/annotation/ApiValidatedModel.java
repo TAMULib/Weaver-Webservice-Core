@@ -1,5 +1,5 @@
 /* 
- * ApiModel.java 
+ * ApiValidatedModel.java 
  * 
  * Version: 
  *     $Id$ 
@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Target({ ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface ApiModel {
+public @interface ApiValidatedModel {
     
     String value() default "";
     
