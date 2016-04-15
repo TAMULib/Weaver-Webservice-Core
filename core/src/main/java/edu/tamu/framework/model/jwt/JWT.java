@@ -30,6 +30,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import edu.tamu.framework.util.JwtUtility;
 
+import edu.tamu.framework.model.jwt.JWTheader;
+import edu.tamu.framework.model.jwt.JWTclaim;
+
 /**
  * JSON Web Token.
  * 
