@@ -99,8 +99,10 @@ public class RestRequestCondition implements RequestCondition<RestRequestConditi
 		// class annotation combined with method annotation
 		// order can either be 0:class, 1:method or 0:method, 1:class
 		
-		String patternltr = "";
-		String patternrtl = "";
+		String app = request.getServletContext().getContextPath();
+
+		String patternltr = (app != null && app.length() > 0) ? app :"";
+		String patternrtl = patternltr;
 		
 		int j = patternList.size() - 1;
 		
