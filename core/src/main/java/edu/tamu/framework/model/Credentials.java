@@ -22,7 +22,7 @@ import java.util.Map;
  * @author <a href="mailto:wwelling@library.tamu.edu">William Welling</a>
  *
  */
-public class Credentials {
+public class Credentials extends Base {
 
 	private String lastName;
 	private String firstName;
