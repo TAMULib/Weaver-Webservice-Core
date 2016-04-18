@@ -247,7 +247,7 @@ public abstract class CoreControllerAspect {
 			logger.debug("The request: " + servletRequest);
 			
 			if (path.contains("{")) {
-				apiVariables = getApiVariable(path, servletRequest.getServletPath());
+				apiVariables = getApiVariable(path, servletContext.getContextPath() + servletRequest.getServletPath());
 			}
 
 			if (servletRequest.getAttribute("shib") != null) {
@@ -357,18 +357,14 @@ public abstract class CoreControllerAspect {
 	protected Map<String, String> getApiVariable(String mapping, String path) {
 		if (path.contains("/ws")) mapping = "/ws" + mapping;
 		if (path.contains("/private/queue")) mapping = "/private/queue" + mapping;
-
 		Map<String, String> valuesMap = new HashMap<String, String>();
-
 		String[] keys = mapping.split("/");
 		String[] values = path.split("/");
-
 		for (int i = 0; i < keys.length; i++) {
 			if (keys[i].contains("{") && keys[i].contains("}")) {
 				valuesMap.put(keys[i].substring(1, keys[i].length() - 1), values[i]);
 			}
 		}
-
 		return valuesMap;
 	}
 
