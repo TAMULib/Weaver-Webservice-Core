@@ -36,6 +36,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.RequestContextHolder;
 
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.tamu.framework.aspect.annotation.ApiMapping;
@@ -64,7 +66,7 @@ import edu.tamu.framework.service.WebSocketRequestService;
 public abstract class CoreControllerAspect {
 
 	// TODO: put in application.properties of each app
-	private final static int NUMBER_OF_RETRY_ATTEMPTS = 2;
+	private final static int NUMBER_OF_RETRY_ATTEMPTS = 3;
 
 	@Autowired
 	public ObjectMapper objectMapper;
@@ -85,6 +87,8 @@ public abstract class CoreControllerAspect {
 	private SimpMessagingTemplate simpMessagingTemplate;
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	
+	public abstract Object validate(Object object, Annotation annotation, String className);
 
 	/**
 	 * JoinPoint in which populates credentials and authorizes request.
@@ -115,7 +119,7 @@ public abstract class CoreControllerAspect {
     
     			// retry endpoint if error response type
     			int attempt = 0;
-    			while (attempt < NUMBER_OF_RETRY_ATTEMPTS && apiresponse.getMeta().getType() == ApiResponseType.ERROR) {
+    			while (attempt <= NUMBER_OF_RETRY_ATTEMPTS && apiresponse.getMeta().getType() == ApiResponseType.ERROR) {
     				attempt++;
     				logger.debug("Retry attempt " + attempt);
     				apiresponse = (ApiResponse) joinPoint.proceed(preProcessObject.arguments);
@@ -155,7 +159,7 @@ public abstract class CoreControllerAspect {
 
 			// retry endpoint if error response type
 			int attempt = 0;
-			while (attempt < NUMBER_OF_RETRY_ATTEMPTS && apiresponse.getMeta().getType() == ApiResponseType.ERROR) {
+			while (attempt <= NUMBER_OF_RETRY_ATTEMPTS && apiresponse.getMeta().getType() == ApiResponseType.ERROR) {
 				attempt++;
 				logger.debug("Retry attempt " + attempt);
 				apiresponse = (ApiResponse) joinPoint.proceed(preProcessObject.arguments);
@@ -198,9 +202,11 @@ public abstract class CoreControllerAspect {
 		MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
 
 		Object[] arguments = joinPoint.getArgs();
-
+		
 		String[] argNames = methodSignature.getParameterNames();
 
+		Class<?>[] argTypes = methodSignature.getParameterTypes();
+		
 		Class<?> clazz = methodSignature.getDeclaringType();
 
 		Method method = clazz.getDeclaredMethod(methodSignature.getName(), methodSignature.getParameterTypes());
@@ -245,7 +251,7 @@ public abstract class CoreControllerAspect {
 			}
 
 			if (servletRequest.getAttribute("shib") != null) {
-				shib = (Credentials) servletRequest.getAttribute("shib");
+			    shib = (Credentials) servletRequest.getAttribute("shib");
 			}
 
 			if (servletRequest.getAttribute("data") != null) {
@@ -283,8 +289,10 @@ public abstract class CoreControllerAspect {
 
 			requestId = accessor.getNativeHeader("id").get(0);
 
-			shib = (Credentials) accessor.getSessionAttributes().get("shib");
 
+			shib = objectMapper.convertValue(objectMapper.readTree((String) message.getPayload()), objectMapper.constructType(Credentials.class));
+
+			
 			if (path.contains("{")) {
 				apiVariables = getApiVariable(path, accessor.getDestination());
 			}
@@ -297,9 +305,11 @@ public abstract class CoreControllerAspect {
 		int index = 0;
 		for (Annotation[] annotations : method.getParameterAnnotations()) {
 
+		    Annotation ann = null;
 			String annotationString = null;
 
 			for (Annotation annotation : annotations) {
+			    ann = annotation;
 				annotationString = annotation.toString();
 				annotationString = annotationString.substring(annotationString.lastIndexOf('.') + 1, annotationString.indexOf("("));
 			}
@@ -315,6 +325,12 @@ public abstract class CoreControllerAspect {
 					case "Data": {
 						arguments[index] = data;
 					} break;
+					case "ApiModel": {
+                        arguments[index] = objectMapper.convertValue(objectMapper.readTree(data), objectMapper.constructType(argTypes[index]));
+                    } break;
+					case "ApiValidatedModel": {                     
+                        arguments[index] = validate(objectMapper.convertValue(objectMapper.readTree(data), objectMapper.constructType(argTypes[index])), ann, argTypes[index].getCanonicalName());   
+                    } break;
 					case "Parameters": {
 						arguments[index] = parameters;
 					} break;

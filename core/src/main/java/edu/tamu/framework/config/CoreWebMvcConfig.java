@@ -9,6 +9,8 @@
  */
 package edu.tamu.framework.config;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
@@ -21,6 +23,14 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.resource.AppCacheManifestTransformer;
 import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 import org.springframework.web.servlet.resource.VersionResourceResolver;
+
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+
+import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.http.converter.FormHttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverter;
 
 /**
  * Core Web MVC auto configuration.
@@ -72,5 +82,5 @@ public class CoreWebMvcConfig extends WebMvcAutoConfiguration.WebMvcAutoConfigur
 				.addResolver(new VersionResourceResolver().addContentVersionStrategy("/**"))
 				.addTransformer(new AppCacheManifestTransformer());
 	}
-
+	
 }

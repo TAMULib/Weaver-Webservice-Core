@@ -9,6 +9,14 @@
  */
 package edu.tamu.framework.mapping;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+
+
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,19 +26,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import java.nio.charset.Charset;
+
+import org.springframework.util.MimeTypeUtils;
+
+import org.springframework.messaging.converter.DefaultContentTypeResolver;
+
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.SmartLifecycle;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.format.support.DefaultFormattingConversionService;
+
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.SubscribableChannel;
 import org.springframework.messaging.converter.ByteArrayMessageConverter;
 import org.springframework.messaging.converter.CompositeMessageConverter;
 import org.springframework.messaging.converter.MessageConverter;
+import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.converter.StringMessageConverter;
+import org.springframework.messaging.converter.SimpleMessageConverter;
 import org.springframework.messaging.handler.HandlerMethod;
 import org.springframework.messaging.handler.annotation.support.AnnotationExceptionHandlerMethodResolver;
 import org.springframework.messaging.handler.annotation.support.DestinationVariableMethodArgumentResolver;
@@ -64,18 +81,6 @@ import edu.tamu.framework.aspect.annotation.ApiMapping;
 import edu.tamu.framework.mapping.condition.WebSocketRequestCondition;
 import edu.tamu.framework.mapping.info.CustomSimpMessageMappingInfo;
 
-/**
- * Websocket request mapping handler. Duplication of mostly spring
- * MessageMapping handler. Used to mapping combined RequestMapping and
- * MessageMapping annotations into ApiMapping.
- * 
- * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
- * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>
- * @author <a href="mailto:huff@library.tamu.edu">Jeremy Huff</a>
- * @author <a href="mailto:jsavell@library.tamu.edu">Jason Savell</a>
- * @author <a href="mailto:wwelling@library.tamu.edu">William Welling</a>
- *
- */
 public class WebSocketRequestMappingHandler extends AbstractMethodMessageHandler<CustomSimpMessageMappingInfo> implements SmartLifecycle {
 
 	private final SubscribableChannel clientInboundChannel;
@@ -110,10 +115,34 @@ public class WebSocketRequestMappingHandler extends AbstractMethodMessageHandler
 		this.clientMessagingTemplate = new SimpMessagingTemplate(clientOutboundChannel);
 		this.brokerTemplate = brokerTemplate;
 
-		Collection<MessageConverter> converters = new ArrayList<MessageConverter>();
-		converters.add(new StringMessageConverter());
-		converters.add(new ByteArrayMessageConverter());
-		this.messageConverter = new CompositeMessageConverter(converters);
+		Collection<MessageConverter> messageConverters = new ArrayList<MessageConverter>();
+		
+		MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
+		ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+        objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
+        objectMapper.configure(JsonParser.Feature.ALLOW_BACKSLASH_ESCAPING_ANY_CHARACTER, true);
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        objectMapper.configure(MapperFeature.DEFAULT_VIEW_INCLUSION, true);
+
+        converter.setObjectMapper(objectMapper);		
+        
+        messageConverters.add(converter);
+        
+        
+        DefaultContentTypeResolver resolver = new DefaultContentTypeResolver();
+        resolver.setDefaultMimeType(MimeTypeUtils.ALL);
+
+        StringMessageConverter stringMessageConverter = new StringMessageConverter();
+        stringMessageConverter.setContentTypeResolver(resolver);
+        
+        messageConverters.add(stringMessageConverter);
+        
+        
+        messageConverters.add(new SimpleMessageConverter());
+        messageConverters.add(new ByteArrayMessageConverter());
+		
+		this.messageConverter = new CompositeMessageConverter(messageConverters);
 	}
 
 	/**

@@ -94,7 +94,22 @@ public class Credentials {
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
+	
+	/**
+	 * @return the netid
+	 */
+	public String getNetid() {
+		return netid;
+	}
 
+	/**
+	 * @param netid
+	 *            the netid to set
+	 */
+	public void setNetid(String netid) {
+		this.netid = netid;
+	}
+	
 	/**
 	 * Gets UIN.
 	 * 
@@ -178,22 +193,7 @@ public class Credentials {
 	public void setRole(String role) {
 		this.role = role;
 	}
-
-	/**
-	 * @return the netid
-	 */
-	public String getNetid() {
-		return netid;
-	}
-
-	/**
-	 * @param netid
-	 *            the netid to set
-	 */
-	public void setNetid(String netid) {
-		this.netid = netid;
-	}
-
+	
 	/**
 	 * @return affiliation
 	 */
