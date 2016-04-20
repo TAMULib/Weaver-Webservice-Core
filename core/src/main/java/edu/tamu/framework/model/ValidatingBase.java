@@ -24,6 +24,7 @@ public abstract class ValidatingBase {
     /**
      * @return the bindingResult
      */
+    @JsonIgnore
     public ModelBindingResult getBindingResult() {
         return bindingResult;
     }
@@ -32,6 +33,7 @@ public abstract class ValidatingBase {
      * @param bindingResult
      *            the bindingResult to set
      */
+    @JsonIgnore
     public void setBindingResult(ModelBindingResult bindingResult) {
         this.bindingResult = bindingResult;
     }
