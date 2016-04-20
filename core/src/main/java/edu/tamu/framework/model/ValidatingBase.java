@@ -1,5 +1,5 @@
 /* 
- * Base.java 
+ * ValidatingBase.java 
  * 
  * Version: 
  *     $Id$ 
@@ -11,11 +11,14 @@ package edu.tamu.framework.model;
 
 import javax.persistence.Transient;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import edu.tamu.framework.validation.ModelBindingResult;
 
 public abstract class ValidatingBase {
 
     @Transient
+    @JsonIgnore
     protected ModelBindingResult bindingResult;
 
     /**
