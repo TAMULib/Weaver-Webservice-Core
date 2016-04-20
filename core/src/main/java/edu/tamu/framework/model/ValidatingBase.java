@@ -9,16 +9,19 @@
  */
 package edu.tamu.framework.model;
 
-import org.springframework.validation.BeanPropertyBindingResult;
+import javax.persistence.Transient;
 
-public abstract class Base {
+import edu.tamu.framework.validation.ModelBindingResult;
 
-    protected BeanPropertyBindingResult bindingResult;
+public abstract class ValidatingBase {
+
+    @Transient
+    protected ModelBindingResult bindingResult;
 
     /**
      * @return the bindingResult
      */
-    public BeanPropertyBindingResult getBindingResult() {
+    public ModelBindingResult getBindingResult() {
         return bindingResult;
     }
 
@@ -26,7 +29,7 @@ public abstract class Base {
      * @param bindingResult
      *            the bindingResult to set
      */
-    public void setBindingResult(BeanPropertyBindingResult bindingResult) {
+    public void setBindingResult(ModelBindingResult bindingResult) {
         this.bindingResult = bindingResult;
     }
 

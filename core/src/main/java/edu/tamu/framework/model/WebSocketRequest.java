@@ -31,8 +31,7 @@ public class WebSocketRequest {
 
 	private String destination;
 
-	public WebSocketRequest() {
-	}
+	public WebSocketRequest() {}
 
 	public WebSocketRequest(Message<?> message, String user, String destination) {
 		this.message = message;
