@@ -25,6 +25,7 @@ public class CoreSpringBanner implements Banner {
     private static final int STRAP_LINE_SIZE = 42;
     
     @Override
+    @SuppressWarnings("deprecation")
     public void printBanner(Environment environment, Class<?> sourceClass, PrintStream out) {
     	
     	ResourceLoader resourceLoader = new DefaultResourceLoader();
@@ -57,6 +58,7 @@ public class CoreSpringBanner implements Banner {
         while (padding.length() < STRAP_LINE_SIZE - (version.length() + BOOT.length())) {
             padding += " ";
         }
+        
         out.println(AnsiOutput.toString(AnsiElement.GREEN, BOOT, AnsiElement.DEFAULT, padding, AnsiElement.FAINT, version));
         out.println();
     }
