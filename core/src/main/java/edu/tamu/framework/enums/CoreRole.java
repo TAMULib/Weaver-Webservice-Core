@@ -1,5 +1,5 @@
 /* 
- * CoreRoles.java 
+ * CoreRole.java 
  * 
  * Version: 
  *     $Id$ 
@@ -8,6 +8,8 @@
  *     $Log$ 
  */
 package edu.tamu.framework.enums;
+
+import edu.tamu.framework.model.IRole;
 
 /**
  * 
@@ -18,15 +20,27 @@ package edu.tamu.framework.enums;
  * @author <a href="mailto:wwelling@library.tamu.edu">William Welling</a>
  *
  */
-public enum CoreRoles {
+public enum CoreRole implements IRole {
 	
-	ROLE_NONE, 
-	ROLE_ANONYMOUS, 
-	ROLE_USER, 
-	ROLE_STUDENT,
-	ROLE_REVIEWER,
-	ROLE_ANNOTATOR, 
-	ROLE_MANAGER, 
-	ROLE_ADMIN
-	
+	ROLE_NONE(0), 
+	ROLE_ANONYMOUS(1), 
+	ROLE_USER(2),
+	ROLE_MANAGER(3),
+	ROLE_ADMIN(4);
+    
+    private int value;
+
+    CoreRole(int value) {
+        this.value = value;
+    }
+
+    public int getValue() {
+        return value;
+    }
+    
+    @Override
+    public String toString() {
+        return this.name();
+    }
+    
 }

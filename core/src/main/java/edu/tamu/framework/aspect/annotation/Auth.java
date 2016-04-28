@@ -30,6 +30,6 @@ import java.lang.annotation.Target;
 @Documented
 public @interface Auth {
 	
-	String role() default "ROLE_USER";
+	String role();
 	
 }

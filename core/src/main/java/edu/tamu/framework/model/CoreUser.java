@@ -45,14 +45,14 @@ public interface CoreUser {
 	 *            String
 	 * 
 	 */
-	public void setRole(String role);
-
+	public void setRole(IRole role);
+	
 	/**
 	 * Gets role.
 	 * 
 	 * @return String
 	 * 
 	 */
-	public String getRole();
-
+	public IRole getRole();
+	
 }

@@ -41,12 +41,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.tamu.framework.aspect.annotation.ApiMapping;
 import edu.tamu.framework.aspect.annotation.Auth;
 import edu.tamu.framework.enums.ApiResponseType;
-import edu.tamu.framework.enums.CoreRoles;
 import edu.tamu.framework.model.ApiResponse;
 import edu.tamu.framework.model.Credentials;
 import edu.tamu.framework.model.HttpRequest;
 import edu.tamu.framework.model.WebSocketRequest;
 import edu.tamu.framework.service.HttpRequestService;
+import edu.tamu.framework.service.RoleService;
 import edu.tamu.framework.service.WebSocketRequestService;
 
 /**
@@ -80,6 +80,9 @@ public abstract class CoreControllerAspect {
 	
 	@Autowired
     private ServletContext servletContext;
+	
+	@Autowired 
+	private RoleService roleService;
 
 	@Autowired
 	private SimpMessagingTemplate simpMessagingTemplate;
@@ -104,8 +107,8 @@ public abstract class CoreControllerAspect {
 		PreProcessObject preProcessObject = preProcess(joinPoint);
 		
 		ApiResponse apiresponse = null;
-
-		if (CoreRoles.valueOf(preProcessObject.shib.getRole()).ordinal() < CoreRoles.valueOf(auth.role()).ordinal()) {
+		
+		if (roleService.valueOf(preProcessObject.shib.getRole()).ordinal() < roleService.valueOf(auth.role()).ordinal()) {
 			logger.info(preProcessObject.shib.getFirstName() + " " + preProcessObject.shib.getLastName() + "(" + preProcessObject.shib.getUin() + ") attempted restricted access.");
 			apiresponse = new ApiResponse(preProcessObject.requestId, ERROR, "You are not authorized for this request.");
 		}
