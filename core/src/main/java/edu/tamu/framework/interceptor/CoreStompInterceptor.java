@@ -12,10 +12,6 @@ package edu.tamu.framework.interceptor;
 import static edu.tamu.framework.enums.ApiResponseType.ERROR;
 import static edu.tamu.framework.enums.ApiResponseType.REFRESH;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +37,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.tamu.framework.mapping.WebSocketRequestMappingHandler;
 import edu.tamu.framework.mapping.condition.WebSocketRequestCondition;
