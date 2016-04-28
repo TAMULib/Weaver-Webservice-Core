@@ -22,7 +22,7 @@ import java.util.Map;
  * @author <a href="mailto:wwelling@library.tamu.edu">William Welling</a>
  *
  */
-public class Credentials {
+public class Credentials extends ValidatingBase {
 
 	private String lastName;
 	private String firstName;
@@ -32,6 +32,7 @@ public class Credentials {
 	private String email;
 	private String role;
 	private String affiliation;
+	private Map<String,String> allCredentials;
 
 	public Credentials() { }
 
@@ -51,6 +52,7 @@ public class Credentials {
 		this.email = token.get("email");
 		this.role = token.get("role");
 		this.affiliation = token.get("affiliation");
+		this.allCredentials = token;
 	}
 
 	/**
@@ -94,7 +96,22 @@ public class Credentials {
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
+	
+	/**
+	 * @return the netid
+	 */
+	public String getNetid() {
+		return netid;
+	}
 
+	/**
+	 * @param netid
+	 *            the netid to set
+	 */
+	public void setNetid(String netid) {
+		this.netid = netid;
+	}
+	
 	/**
 	 * Gets UIN.
 	 * 
@@ -178,22 +195,7 @@ public class Credentials {
 	public void setRole(String role) {
 		this.role = role;
 	}
-
-	/**
-	 * @return the netid
-	 */
-	public String getNetid() {
-		return netid;
-	}
-
-	/**
-	 * @param netid
-	 *            the netid to set
-	 */
-	public void setNetid(String netid) {
-		this.netid = netid;
-	}
-
+	
 	/**
 	 * @return affiliation
 	 */
@@ -208,4 +210,17 @@ public class Credentials {
 		this.affiliation = affiliation;
 	}
 
+	/**
+	 * @return all credentials
+	 */
+	public Map<String,String> getAllCredentials() {
+		return this.allCredentials;
+	}
+
+	/**
+	 * @param allCredentials
+	 */
+	public void setAllCredentials(Map<String,String> allCredentials) {
+		this.allCredentials = allCredentials;
+	}
 }

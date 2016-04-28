@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.security.jwt.Jwt;
 import org.springframework.security.jwt.JwtHelper;
 import org.springframework.security.jwt.crypto.sign.MacSigner;
@@ -61,6 +62,12 @@ public class JwtUtility {
 
 	@Value("${auth.security.jwt-expiration}")
 	private Long expiration;
+
+	@Value("${shib.keys}")
+    private String[] shibKeys;
+
+	@Autowired
+    private Environment env;
 
 	@Autowired
 	public ObjectMapper objectMapper;
@@ -139,11 +146,11 @@ public class JwtUtility {
 	 */
 	public JWT makeToken(Map<String, String> payload) throws InvalidKeyException, JsonProcessingException, NoSuchAlgorithmException, IllegalStateException, UnsupportedEncodingException {
 		JWT token = craftToken();
-		token.makeClaim("lastName", payload.get("lastName"));
-		token.makeClaim("firstName", payload.get("firstName"));
-		token.makeClaim("netid", payload.get("netid"));
-		token.makeClaim("uin", payload.get("uin"));
-		token.makeClaim("email", payload.get("email"));
+		for (String k : shibKeys) {
+            String p = payload.get(env.getProperty("shib." + k, ""));
+            token.makeClaim(k, p);
+            // System.out.println("Adding " + k +": " + p + " to JWT.");
+        }
 		return token;
 	}
 
@@ -234,34 +241,30 @@ public class JwtUtility {
 	}
 
 	/**
-	 * Check if token has expired.
-	 * 
-	 * @param tokenMap
-	 *            Map<String, String>
-	 * @return
-	 */
-	public boolean isExpired(Map<String, String> tokenMap) {
-		long currentTime = new Date().getTime();
-
-		long expTime = Long.parseLong(tokenMap.get("exp"));
-
-		if (log.isDebugEnabled()) {
-			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy - hh:mm:ss");
-			log.debug("Token expiration time: " + sdf.format(new Date(expTime)));
-		}
-
-		if (expTime < currentTime) {
-			return true;
-		} else {
-			Long remainingTimeInSeconds = (expTime - currentTime) / 1000;
-			if (remainingTimeInSeconds > 60) {
-				log.debug("Token expires in " + remainingTimeInSeconds / 60 + " minutes.");
-			} else {
-				log.debug("Token expires in " + remainingTimeInSeconds + " seconds.");
-			}
-		}
-
-		return false;
-	}
+     * Check if token has expired.
+     * 
+     * @param tokenMap
+     *            Map<String, String>
+     * @return
+     */
+    public boolean isExpired(Map<String, String> tokenMap) {
+        long currentTime = new Date().getTime();
+        long expTime = Long.parseLong(tokenMap.get("exp"));
+        if (log.isDebugEnabled()) {
+            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy - hh:mm:ss");
+            log.debug("Token expiration time: " + sdf.format(new Date(expTime)));
+        }
+        if (currentTime >= expTime) {
+            return true;
+        } else {
+            Long remainingTimeInSeconds = (expTime - currentTime) / 1000;
+            if (remainingTimeInSeconds > 60) {
+                log.debug("Token expires in " + remainingTimeInSeconds / 60 + " minutes.");
+            } else {
+                log.debug("Token expires in " + remainingTimeInSeconds + " seconds.");
+            }
+        }
+        return false;
+    }
 
 }

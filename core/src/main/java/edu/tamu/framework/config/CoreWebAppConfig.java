@@ -37,7 +37,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 
 import edu.tamu.framework.events.StompConnectEvent;
 import edu.tamu.framework.events.StompDisconnectEvent;
@@ -106,6 +108,8 @@ public class CoreWebAppConfig extends WebMvcConfigurerAdapter {
 		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 		objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
 		objectMapper.configure(JsonParser.Feature.ALLOW_BACKSLASH_ESCAPING_ANY_CHARACTER, true);
+		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        objectMapper.configure(MapperFeature.DEFAULT_VIEW_INCLUSION, true);
 		return objectMapper;
 	}
 

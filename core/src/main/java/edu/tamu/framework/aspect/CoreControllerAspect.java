@@ -17,15 +17,15 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -41,12 +41,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.tamu.framework.aspect.annotation.ApiMapping;
 import edu.tamu.framework.aspect.annotation.Auth;
 import edu.tamu.framework.enums.ApiResponseType;
-import edu.tamu.framework.enums.CoreRoles;
 import edu.tamu.framework.model.ApiResponse;
 import edu.tamu.framework.model.Credentials;
 import edu.tamu.framework.model.HttpRequest;
 import edu.tamu.framework.model.WebSocketRequest;
 import edu.tamu.framework.service.HttpRequestService;
+import edu.tamu.framework.service.RoleService;
 import edu.tamu.framework.service.WebSocketRequestService;
 
 /**
@@ -64,7 +64,7 @@ import edu.tamu.framework.service.WebSocketRequestService;
 public abstract class CoreControllerAspect {
 
 	// TODO: put in application.properties of each app
-	private final static int NUMBER_OF_RETRY_ATTEMPTS = 2;
+	private final static int NUMBER_OF_RETRY_ATTEMPTS = 3;
 
 	@Autowired
 	public ObjectMapper objectMapper;
@@ -80,11 +80,16 @@ public abstract class CoreControllerAspect {
 	
 	@Autowired
     private ServletContext servletContext;
+	
+	@Autowired 
+	private RoleService roleService;
 
 	@Autowired
 	private SimpMessagingTemplate simpMessagingTemplate;
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	
+	public abstract Object validate(Object object, Annotation annotation, String className);
 
 	/**
 	 * JoinPoint in which populates credentials and authorizes request.
@@ -102,8 +107,8 @@ public abstract class CoreControllerAspect {
 		PreProcessObject preProcessObject = preProcess(joinPoint);
 		
 		ApiResponse apiresponse = null;
-
-		if (CoreRoles.valueOf(preProcessObject.shib.getRole()).ordinal() < CoreRoles.valueOf(auth.role()).ordinal()) {
+		
+		if (roleService.valueOf(preProcessObject.shib.getRole()).ordinal() < roleService.valueOf(auth.role()).ordinal()) {
 			logger.info(preProcessObject.shib.getFirstName() + " " + preProcessObject.shib.getLastName() + "(" + preProcessObject.shib.getUin() + ") attempted restricted access.");
 			apiresponse = new ApiResponse(preProcessObject.requestId, ERROR, "You are not authorized for this request.");
 		}
@@ -115,7 +120,7 @@ public abstract class CoreControllerAspect {
     
     			// retry endpoint if error response type
     			int attempt = 0;
-    			while (attempt < NUMBER_OF_RETRY_ATTEMPTS && apiresponse.getMeta().getType() == ApiResponseType.ERROR) {
+    			while (attempt <= NUMBER_OF_RETRY_ATTEMPTS && apiresponse.getMeta().getType() == ApiResponseType.ERROR) {
     				attempt++;
     				logger.debug("Retry attempt " + attempt);
     				apiresponse = (ApiResponse) joinPoint.proceed(preProcessObject.arguments);
@@ -155,7 +160,7 @@ public abstract class CoreControllerAspect {
 
 			// retry endpoint if error response type
 			int attempt = 0;
-			while (attempt < NUMBER_OF_RETRY_ATTEMPTS && apiresponse.getMeta().getType() == ApiResponseType.ERROR) {
+			while (attempt <= NUMBER_OF_RETRY_ATTEMPTS && apiresponse.getMeta().getType() == ApiResponseType.ERROR) {
 				attempt++;
 				logger.debug("Retry attempt " + attempt);
 				apiresponse = (ApiResponse) joinPoint.proceed(preProcessObject.arguments);
@@ -198,9 +203,11 @@ public abstract class CoreControllerAspect {
 		MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
 
 		Object[] arguments = joinPoint.getArgs();
-
+		
 		String[] argNames = methodSignature.getParameterNames();
 
+		Class<?>[] argTypes = methodSignature.getParameterTypes();
+		
 		Class<?> clazz = methodSignature.getDeclaringType();
 
 		Method method = clazz.getDeclaredMethod(methodSignature.getName(), methodSignature.getParameterTypes());
@@ -245,7 +252,7 @@ public abstract class CoreControllerAspect {
 			}
 
 			if (servletRequest.getAttribute("shib") != null) {
-				shib = (Credentials) servletRequest.getAttribute("shib");
+			    shib = (Credentials) servletRequest.getAttribute("shib");
 			}
 
 			if (servletRequest.getAttribute("data") != null) {
@@ -283,8 +290,10 @@ public abstract class CoreControllerAspect {
 
 			requestId = accessor.getNativeHeader("id").get(0);
 
-			shib = (Credentials) accessor.getSessionAttributes().get("shib");
 
+			shib = objectMapper.convertValue(objectMapper.readTree((String) message.getPayload()), objectMapper.constructType(Credentials.class));
+
+			
 			if (path.contains("{")) {
 				apiVariables = getApiVariable(path, accessor.getDestination());
 			}
@@ -297,9 +306,11 @@ public abstract class CoreControllerAspect {
 		int index = 0;
 		for (Annotation[] annotations : method.getParameterAnnotations()) {
 
+		    Annotation ann = null;
 			String annotationString = null;
 
 			for (Annotation annotation : annotations) {
+			    ann = annotation;
 				annotationString = annotation.toString();
 				annotationString = annotationString.substring(annotationString.lastIndexOf('.') + 1, annotationString.indexOf("("));
 			}
@@ -315,6 +326,12 @@ public abstract class CoreControllerAspect {
 					case "Data": {
 						arguments[index] = data;
 					} break;
+					case "ApiModel": {
+                        arguments[index] = objectMapper.convertValue(objectMapper.readTree(data), objectMapper.constructType(argTypes[index]));
+                    } break;
+					case "ApiValidatedModel": {                     
+                        arguments[index] = validate(objectMapper.convertValue(objectMapper.readTree(data), objectMapper.constructType(argTypes[index])), ann, argTypes[index].getCanonicalName());   
+                    } break;
 					case "Parameters": {
 						arguments[index] = parameters;
 					} break;

@@ -1,5 +1,5 @@
 /* 
- * Auth.java 
+ * ApiValidatedModel.java 
  * 
  * Version: 
  *     $Id$ 
@@ -16,7 +16,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation to authorize request.
+ * Annotation for combined RequestMapping and MessageMapping.
  * 
  * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
  * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>
@@ -25,11 +25,11 @@ import java.lang.annotation.Target;
  * @author <a href="mailto:wwelling@library.tamu.edu">William Welling</a>
  *
  */
-@Target(ElementType.METHOD)
+@Target({ ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface Auth {
-	
-	String role();
-	
+public @interface ApiValidatedModel {
+    
+    String value() default "";
+    
 }

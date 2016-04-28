@@ -16,6 +16,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import edu.tamu.framework.enums.CoreRole;
+
 /**
  * Abstract Core User Implementation.
  * 
@@ -38,7 +43,7 @@ public abstract class AbstractCoreUserImpl implements CoreUser {
 	private Long uin;
 
 	@Column(name = "role")
-	private String role;
+	private CoreRole role;
 
 	public AbstractCoreUserImpl() {
 	}
@@ -62,13 +67,15 @@ public abstract class AbstractCoreUserImpl implements CoreUser {
 	}
 
 	@Override
-	public void setRole(String role) {
-		this.role = role;
+	@JsonDeserialize(as = CoreRole.class)
+	public void setRole(IRole role) {
+		this.role = (CoreRole) role;
 	}
-
+	
 	@Override
-	public String getRole() {
-		return role;
-	}
+	@JsonSerialize(as = CoreRole.class)
+    public IRole getRole() {
+        return role;
+    }
 
 }

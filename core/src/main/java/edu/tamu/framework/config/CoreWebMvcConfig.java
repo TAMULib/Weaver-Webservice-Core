@@ -72,5 +72,5 @@ public class CoreWebMvcConfig extends WebMvcAutoConfiguration.WebMvcAutoConfigur
 				.addResolver(new VersionResourceResolver().addContentVersionStrategy("/**"))
 				.addTransformer(new AppCacheManifestTransformer());
 	}
-
+	
 }
