@@ -47,10 +47,13 @@ public class ThemeManagerService {
 
 	private CoreTheme currentTheme;
 
-	@Value("${theme.default.css}")
+	@Value("${theme.manager:false}")
+	private Boolean useThemeManager;
+	
+	@Value("${theme.default.css:}")
 	private String[] defaultCssGroup;
 
-	@Value("${theme.defaults.location:''}")
+	@Value("${theme.defaults.location:}")
 	private String themeDefaultsFile;
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -59,54 +62,56 @@ public class ThemeManagerService {
 	
 	@PostConstruct
 	public void goNow() {
-		logger.debug("Prepping Defaults :"+coreThemeRepo.count()+"");
-		if (coreThemeRepo.count() == 0 && !themeDefaultsFile.equals("")) {
-			ClassPathResource themeDefaultsRaw = new ClassPathResource(themeDefaultsFile); 
-			JsonNode themeDefaults = null;
-			try {
-				themeDefaults = objectMapper.readTree(new FileInputStream(themeDefaultsRaw.getFile()));
-			} catch (JsonProcessingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		if (useThemeManager) {
+			if (coreThemeRepo.count() == 0 && !themeDefaultsFile.equals("")) {
+				logger.debug("Prepping Defaults :"+coreThemeRepo.count()+"");
+				ClassPathResource themeDefaultsRaw = new ClassPathResource(themeDefaultsFile); 
+				JsonNode themeDefaults = null;
+				try {
+					themeDefaults = objectMapper.readTree(new FileInputStream(themeDefaultsRaw.getFile()));
+				} catch (JsonProcessingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				Iterator<JsonNode> itProps = themeDefaults.get("propertyNames").elements();
+				while (itProps.hasNext()) {
+					JsonNode entry = itProps.next();
+			    	logger.debug("Creating Theme Property: "+entry.textValue()+"");
+			    	themePropertyNameRepo.create(entry.textValue());
+				}
+				
+				Iterator<Entry<String,JsonNode>> it = themeDefaults.get("themes").fields();
+				Long activateId = 0L;
+				while (it.hasNext()) {
+				    Map.Entry<String, JsonNode> entry = (Map.Entry<String, JsonNode>) it.next();
+				    if (entry.getValue().isArray()) {
+			        	logger.debug("New Props for: "+entry.getKey());
+			        	if (coreThemeRepo.getByName(entry.getKey()) == null) {
+			    			CoreTheme newTheme = coreThemeRepo.create(entry.getKey());
+			    			if (activateId == 0) {
+			    				activateId = newTheme.getId();
+			    			}
+			        		JsonNode defaultProperties = entry.getValue();
+			        		for (ThemePropertyName propertyName : themePropertyNameRepo.findAll()) {
+			        			String value = defaultProperties.findValue(propertyName.getName()).asText();
+			        			if (!value.isEmpty()) {
+				            		coreThemeRepo.updateThemeProperty(newTheme.getId(), themePropertyRepo.getThemePropertyByThemePropertyNameAndThemeId(propertyName,newTheme.getId()).getId(),value);
+			        			}
+			        		}
+				    	}
+				    }
+				}
+				CoreTheme defaultTheme = coreThemeRepo.findOne(activateId);
+				this.setCurrentTheme(defaultTheme);
+			} else {
+				this.setCurrentTheme(coreThemeRepo.findByActiveTrue());
 			}
-			Iterator<JsonNode> itProps = themeDefaults.get("propertyNames").elements();
-			while (itProps.hasNext()) {
-				JsonNode entry = itProps.next();
-		    	logger.debug("Creating Theme Property: "+entry.textValue()+"");
-		    	themePropertyNameRepo.create(entry.textValue());
-			}
-			
-			Iterator<Entry<String,JsonNode>> it = themeDefaults.get("themes").fields();
-			Long activateId = 0L;
-			while (it.hasNext()) {
-			    Map.Entry<String, JsonNode> entry = (Map.Entry<String, JsonNode>) it.next();
-			    if (entry.getValue().isArray()) {
-		        	logger.debug("New Props for: "+entry.getKey());
-		        	if (coreThemeRepo.getByName(entry.getKey()) == null) {
-		    			CoreTheme newTheme = coreThemeRepo.create(entry.getKey());
-		    			if (activateId == 0) {
-		    				activateId = newTheme.getId();
-		    			}
-		        		JsonNode defaultProperties = entry.getValue();
-		        		for (ThemePropertyName propertyName : themePropertyNameRepo.findAll()) {
-		        			String value = defaultProperties.findValue(propertyName.getName()).asText();
-		        			if (!value.isEmpty()) {
-			            		coreThemeRepo.updateThemeProperty(newTheme.getId(), themePropertyRepo.getThemePropertyByThemePropertyNameAndThemeId(propertyName,newTheme.getId()).getId(),value);
-		        			}
-		        		}
-			    	}
-			    }
-			}
-			CoreTheme defaultTheme = coreThemeRepo.findOne(activateId);
-			this.setCurrentTheme(defaultTheme);
-		} else {
-			this.setCurrentTheme(coreThemeRepo.findByActiveTrue());
 		}
 	}
 	
@@ -141,6 +146,7 @@ public class ThemeManagerService {
 	
 	//tell WRO to reset its resource cache
 	private void reloadCache() {
+		// TODO This string should be crafted using configuration values.
 		String urlString = "http://localhost:9000/wro/wroAPI/reloadCache";
 		try {
 			httpUtility.makeHttpRequest(urlString, "GET");
