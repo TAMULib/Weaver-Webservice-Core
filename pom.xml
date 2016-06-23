@@ -3,14 +3,14 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>edu.tamu.weaverframework</groupId>
   <artifactId>weaver-webservice-parent</artifactId>
-  <version>1.1.0-RC3-SNAPSHOT</version>
+  <version>1.1.0-DESERIALIZATION-SNAPSHOT</version>
   <name>weaver-webservice-parent</name>
   <url>http://maven.apache.org</url>
   
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.3.3.RELEASE</version>
+		<version>1.3.5.RELEASE</version>
 	</parent>
 	
 	<modules>

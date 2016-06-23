@@ -13,21 +13,17 @@ import static edu.tamu.framework.enums.ApiResponseType.SUCCESS;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
 
+import edu.tamu.framework.aspect.annotation.ApiData;
 import edu.tamu.framework.aspect.annotation.ApiMapping;
-import edu.tamu.framework.aspect.annotation.Data;
 import edu.tamu.framework.aspect.annotation.Shib;
 import edu.tamu.framework.model.ApiResponse;
 import edu.tamu.framework.model.Credentials;
@@ -45,57 +41,42 @@ import edu.tamu.framework.util.EmailSender;
 @RestController
 @ApiMapping("/report")
 public class ReportingController {
-	
-	@Value("${app.reporting.address}")
-	private String reportingAddress;
 
-	@Autowired
-	private EmailSender emailSender;
+    @Value("${app.reporting.address}")
+    private String reportingAddress;
 
-	@Autowired
-	private ObjectMapper objectMapper;
-	
-	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
+    @Autowired
+    private EmailSender emailSender;
 
-	/**
-	 * Report error endpoint.
-	 * 
-	 * @param shibObj
-	 *            Object
-	 * @param data
-	 *            String
-	 * @return ApiResponse
-	 * @throws Exception
-	 */
-	@ApiMapping(value = "/error", method = POST)
-	public ApiResponse reportError(@Shib Object shibObj, @Data String data) throws Exception {
+    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-		Credentials shib = (Credentials) shibObj;
+    /**
+     * Report error endpoint.
+     * 
+     * @param shibObj
+     *            Object
+     * @param data
+     *            String
+     * @return ApiResponse
+     * @throws Exception
+     */
+    @ApiMapping(value = "/error", method = POST)
+    public ApiResponse reportError(@Shib Credentials shib, @ApiData JsonNode errorReport) throws Exception {
 
-		Map<String, String> errorReport = new HashMap<String, String>();
+        String content = "Error Report\n\n";
 
-		try {
-			errorReport = objectMapper.readValue(data, new TypeReference<HashMap<String, String>>() { });
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+        Date now = new Date();
 
-		errorReport.put("user", shib.getFirstName() + " " + shib.getLastName() + " (" + shib.getUin() + ")");
+        content += "channel: " + errorReport.get("channel").textValue() + "\n";
+        content += "time: " + now + "\n";
+        content += "type: " + errorReport.get("type").textValue() + "\n";
+        content += "message: " + errorReport.get("message").textValue() + "\n";
+        content += "user: " + shib.getFirstName() + " " + shib.getLastName() + " (" + shib.getUin() + ")" + "\n";
 
-		String content = "Error Report\n\n";
+        emailSender.sendEmail(reportingAddress, "Error Report", content);
+        logger.info(content);
 
-		Date now = new Date();
-
-		content += "channel: " + errorReport.get("channel") + "\n";
-		content += "time: " + now + "\n";
-		content += "type: " + errorReport.get("type") + "\n";
-		content += "message: " + errorReport.get("message") + "\n";
-		content += "user: " + errorReport.get("user") + "\n";
-		
-		emailSender.sendEmail(reportingAddress, "Error Report", content);
-		logger.info(content);
-
-		return new ApiResponse(SUCCESS, now.toString());
-	}
+        return new ApiResponse(SUCCESS, now.toString());
+    }
 
 }

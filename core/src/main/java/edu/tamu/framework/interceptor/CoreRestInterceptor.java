@@ -170,8 +170,6 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
             }
         }
 
-        request.setAttribute("shib", shib);
-
         request.setAttribute("data", request.getHeader("data"));
 
         List<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
@@ -188,7 +186,7 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 
         securityContext.setAuthentication(auth);
 
-        httpRequestService.addRequest(new HttpRequest(request, response, shib.getNetid(), request.getRequestURI()));
+        httpRequestService.addRequest(new HttpRequest(request, response, shib.getNetid(), request.getRequestURI(), shib));
 
         return true;
     }

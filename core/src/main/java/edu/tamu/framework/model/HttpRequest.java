@@ -33,12 +33,15 @@ public class HttpRequest {
 	private String user;
 
 	private String destination;
+	
+	private Credentials credentials;
 
-	public HttpRequest(HttpServletRequest request, HttpServletResponse response, String user, String destination) {
+	public HttpRequest(HttpServletRequest request, HttpServletResponse response, String user, String destination, Credentials credentials) {
 		this.request = request;
 		this.response = response;
 		this.user = user;
 		this.destination = destination;
+		this.credentials = credentials;
 	}
 
 	/**
@@ -117,4 +120,18 @@ public class HttpRequest {
 		this.destination = destination;
 	}
 
+    /**
+     * @return the credentials
+     */
+    public Credentials getCredentials() {
+        return credentials;
+    }
+
+    /**
+     * @param credentials the credentials to set
+     */
+    public void setCredentials(Credentials credentials) {
+        this.credentials = credentials;
+    }
+	
 }

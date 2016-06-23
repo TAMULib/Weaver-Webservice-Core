@@ -29,26 +29,26 @@ import edu.tamu.framework.service.StompConnectionService;
  */
 public class StompDisconnectEvent implements ApplicationListener<SessionDisconnectEvent> {
 
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	@Autowired
-	private StompConnectionService stompConnectionService;
+    @Autowired
+    private StompConnectionService stompConnectionService;
 
-	@Autowired
-	private WebSocketMessageBrokerStats webSocketMessageBrokerStats;
+    @Autowired
+    private WebSocketMessageBrokerStats webSocketMessageBrokerStats;
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onApplicationEvent(SessionDisconnectEvent event) {
-		stompConnectionService.decrementActiveConnections();
-		logger.debug("Disconnect event [sessionId: " + event.getSessionId() + "]");
-		logger.debug("Timestamp: " + event.getTimestamp());
-		logger.debug("Status: " + event.getCloseStatus());
-		logger.debug("Message: " + event.getMessage());
-		logger.debug("ApplicationListener: Total number of web socket connections: " + stompConnectionService.getActiveConnections());
-		logger.debug(webSocketMessageBrokerStats.getWebSocketSessionStatsInfo());
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onApplicationEvent(SessionDisconnectEvent event) {
+        stompConnectionService.decrementActiveConnections();
+        logger.debug("Disconnect event [sessionId: " + event.getSessionId() + "]");
+        logger.debug("Timestamp: " + event.getTimestamp());
+        logger.debug("Status: " + event.getCloseStatus());
+        logger.debug("Message: " + event.getMessage());
+        logger.debug("ApplicationListener: Total number of web socket connections: " + stompConnectionService.getActiveConnections());
+        logger.debug(webSocketMessageBrokerStats.getWebSocketSessionStatsInfo());
+    }
 
 }

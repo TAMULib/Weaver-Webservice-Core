@@ -30,6 +30,8 @@ public class WebSocketRequest {
 	private String user;
 
 	private String destination;
+	
+	private Credentials credentials;
 
 	public WebSocketRequest() {}
 
@@ -96,4 +98,18 @@ public class WebSocketRequest {
 		this.destination = destination;
 	}
 
+    /**
+     * @return the credentials
+     */
+    public Credentials getCredentials() {
+        return credentials;
+    }
+
+    /**
+     * @param credentials the credentials to set
+     */
+    public void setCredentials(Credentials credentials) {
+        this.credentials = credentials;
+    }
+	
 }

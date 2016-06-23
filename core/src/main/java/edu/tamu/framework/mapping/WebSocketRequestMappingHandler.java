@@ -40,9 +40,7 @@ import org.springframework.messaging.handler.annotation.support.DestinationVaria
 import org.springframework.messaging.handler.annotation.support.HeaderMethodArgumentResolver;
 import org.springframework.messaging.handler.annotation.support.HeadersMethodArgumentResolver;
 import org.springframework.messaging.handler.annotation.support.MessageMethodArgumentResolver;
-import org.springframework.messaging.handler.annotation.support.PayloadArgumentResolver;
 import org.springframework.messaging.handler.invocation.AbstractExceptionHandlerMethodResolver;
-import org.springframework.messaging.handler.invocation.AbstractMethodMessageHandler;
 import org.springframework.messaging.handler.invocation.HandlerMethodArgumentResolver;
 import org.springframework.messaging.handler.invocation.HandlerMethodReturnValueHandler;
 import org.springframework.messaging.simp.SimpAttributesContextHolder;
@@ -66,15 +64,14 @@ import org.springframework.validation.Validator;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 
 import edu.tamu.framework.aspect.annotation.ApiMapping;
 import edu.tamu.framework.mapping.condition.WebSocketRequestCondition;
 import edu.tamu.framework.mapping.info.CustomSimpMessageMappingInfo;
+import edu.tamu.framework.mapping.support.CustomPayloadArgumentResolver;
 
-public class WebSocketRequestMappingHandler extends AbstractMethodMessageHandler<CustomSimpMessageMappingInfo> implements SmartLifecycle {
+public class WebSocketRequestMappingHandler extends CustomAbstractMethodMessageHandler<CustomSimpMessageMappingInfo> implements SmartLifecycle {
 
 	private final SubscribableChannel clientInboundChannel;
 
@@ -110,17 +107,15 @@ public class WebSocketRequestMappingHandler extends AbstractMethodMessageHandler
 
 		Collection<MessageConverter> messageConverters = new ArrayList<MessageConverter>();
 		
-		MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
+		MappingJackson2MessageConverter jacksonConverter = new MappingJackson2MessageConverter();
 		ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
         objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
         objectMapper.configure(JsonParser.Feature.ALLOW_BACKSLASH_ESCAPING_ANY_CHARACTER, true);
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        objectMapper.configure(MapperFeature.DEFAULT_VIEW_INCLUSION, true);
 
-        converter.setObjectMapper(objectMapper);		
-        
-        messageConverters.add(converter);
+        jacksonConverter.setObjectMapper(objectMapper);
+
+        messageConverters.add(jacksonConverter);
         
         
         DefaultContentTypeResolver resolver = new DefaultContentTypeResolver();
@@ -131,10 +126,9 @@ public class WebSocketRequestMappingHandler extends AbstractMethodMessageHandler
         
         messageConverters.add(stringMessageConverter);
         
-        
         messageConverters.add(new SimpleMessageConverter());
-        messageConverters.add(new ByteArrayMessageConverter());
-		
+		messageConverters.add(new ByteArrayMessageConverter());
+        
 		this.messageConverter = new CompositeMessageConverter(messageConverters);
 	}
 
@@ -275,7 +269,6 @@ public class WebSocketRequestMappingHandler extends AbstractMethodMessageHandler
 
 		try {
 			SimpAttributesContextHolder.setAttributesFromMessage(message);
-
 			super.handleMatch(mapping, handlerMethod, lookupDestination, message);
 		} finally {
 			SimpAttributesContextHolder.resetAttributes();
@@ -401,7 +394,7 @@ public class WebSocketRequestMappingHandler extends AbstractMethodMessageHandler
 		resolvers.add(new MessageMethodArgumentResolver());
 
 		resolvers.addAll(getCustomArgumentResolvers());
-		resolvers.add(new PayloadArgumentResolver(this.messageConverter, this.validator));
+		resolvers.add(new CustomPayloadArgumentResolver(this.messageConverter, this.validator));
 
 		return resolvers;
 	}

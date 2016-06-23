@@ -63,149 +63,147 @@ import wro4j.http.handler.CustomRequestHandler;
  *
  */
 @Configuration
-@ComponentScan(basePackages = {"edu.tamu.framework.config", "edu.tamu.framework.interceptor", "edu.tamu.framework.controller"})
-@EnableJpaRepositories(basePackages={"edu.tamu.framework.model.repo"})
-@EntityScan(basePackages={"edu.tamu.framework.model"})
+@ComponentScan(basePackages = { "edu.tamu.framework.config", "edu.tamu.framework.interceptor", "edu.tamu.framework.controller" })
+@EnableJpaRepositories(basePackages = { "edu.tamu.framework.model.repo" })
+@EntityScan(basePackages = { "edu.tamu.framework.model" })
 public class CoreWebAppConfig extends WebMvcConfigurerAdapter {
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-		StringHttpMessageConverter stringConverter = new StringHttpMessageConverter();
-		stringConverter.setWriteAcceptCharset(false);
-		converters.add(new ByteArrayHttpMessageConverter());
-		converters.add(stringConverter);
-		converters.add(new ResourceHttpMessageConverter());
-		converters.add(new SourceHttpMessageConverter<Source>());
-		converters.add(new AllEncompassingFormHttpMessageConverter());
-		converters.add(jackson2Converter());
-	}
 
-	/**
-	 * Set object mapper to jackson converter bean.
-	 *
-	 * @return MappingJackson2HttpMessageConverter
-	 *
-	 */
-	@Bean
-	public MappingJackson2HttpMessageConverter jackson2Converter() {
-		MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-		converter.setObjectMapper(objectMapper());
-		return converter;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+        StringHttpMessageConverter stringConverter = new StringHttpMessageConverter();
+        stringConverter.setWriteAcceptCharset(false);
+        converters.add(new ByteArrayHttpMessageConverter());
+        converters.add(stringConverter);
+        converters.add(new ResourceHttpMessageConverter());
+        converters.add(new SourceHttpMessageConverter<Source>());
+        converters.add(new AllEncompassingFormHttpMessageConverter());
+        converters.add(jackson2Converter());
+    }
 
-	/**
-	 * Object mapper bean.
-	 *
-	 * @return ObjectMapper
-	 *
-	 */
-	@Bean
-	public ObjectMapper objectMapper() {
-		ObjectMapper objectMapper = new ObjectMapper();
-		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-		objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
-		objectMapper.configure(JsonParser.Feature.ALLOW_BACKSLASH_ESCAPING_ANY_CHARACTER, true);
-		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    /**
+     * Set object mapper to jackson converter bean.
+     *
+     * @return MappingJackson2HttpMessageConverter
+     *
+     */
+    @Bean
+    public MappingJackson2HttpMessageConverter jackson2Converter() {
+        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+        converter.setObjectMapper(objectMapper());
+        return converter;
+    }
+
+    /**
+     * Object mapper bean.
+     *
+     * @return ObjectMapper
+     *
+     */
+    @Bean
+    public ObjectMapper objectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+        objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
+        objectMapper.configure(JsonParser.Feature.ALLOW_BACKSLASH_ESCAPING_ANY_CHARACTER, true);
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         objectMapper.configure(MapperFeature.DEFAULT_VIEW_INCLUSION, true);
-		return objectMapper;
-	}
+        return objectMapper;
+    }
 
-	/**
-	 * BCrypt Passowrd Encoder bean.
-	 * 
-	 * @return BCryptPasswordEncoder
-	 */
-	@Bean
-	public BCryptPasswordEncoder bCryptPasswordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
+    /**
+     * BCrypt Passowrd Encoder bean.
+     * 
+     * @return BCryptPasswordEncoder
+     */
+    @Bean
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
-	/**
-	 * Security context bean.
-	 * 
-	 * @return SecurityContext
-	 * 
-	 */
-	@Bean
-	public SecurityContext securityContext() {
-		return SecurityContextHolder.getContext();
-	}
+    /**
+     * Security context bean.
+     * 
+     * @return SecurityContext
+     * 
+     */
+    @Bean
+    public SecurityContext securityContext() {
+        return SecurityContextHolder.getContext();
+    }
 
-	/**
-	 * Stomp connection service bean.
-	 * 
-	 * @return StompConnectionService
-	 */
-	@Bean
-	public StompConnectionService stopmConnectionService() {
-		return new StompConnectionService();
-	}
+    /**
+     * Stomp connection service bean.
+     * 
+     * @return StompConnectionService
+     */
+    @Bean
+    public StompConnectionService stopmConnectionService() {
+        return new StompConnectionService();
+    }
 
-	/**
-	 * Stomp connect event bean.
-	 * 
-	 * @return StompConnectEvent
-	 */
-	@Bean
-	public StompConnectEvent stompConnectEvent() {
-		return new StompConnectEvent();
-	}
+    /**
+     * Stomp connect event bean.
+     * 
+     * @return StompConnectEvent
+     */
+    @Bean
+    public StompConnectEvent stompConnectEvent() {
+        return new StompConnectEvent();
+    }
 
-	/**
-	 * Stomp disconnect event bean.
-	 * 
-	 * @return StompDisconnectEvent
-	 */
-	@Bean
-	public StompDisconnectEvent stompDisconnectEvent() {
-		return new StompDisconnectEvent();
-	}	
-	
-	/**
-	 * WRO Configuration
-	 */
+    /**
+     * Stomp disconnect event bean.
+     * 
+     * @return StompDisconnectEvent
+     */
+    @Bean
+    public StompDisconnectEvent stompDisconnectEvent() {
+        return new StompDisconnectEvent();
+    }
 
-	@Autowired @Lazy
-	private ThemeManagerService themeManagerService;
-	
+    /**
+     * WRO Configuration
+     */
+
+    @Autowired
+    @Lazy
+    private ThemeManagerService themeManagerService;
+
     @Bean
     public FilterRegistrationBean webResourceOptimizer(Environment env) {
-    	FilterRegistrationBean fr = new FilterRegistrationBean();
-    	ConfigurableWroFilter filter = new ConfigurableWroFilter();
-		Properties props = buildWroProperties(env);
-		filter.setProperties(props);
-		filter.setWroManagerFactory(new CustomConfigurableWroManagerFactory(props,themeManagerService));
-		filter.setRequestHandlerFactory(new SimpleRequestHandlerFactory().addHandler(new CustomRequestHandler()));
-    	filter.setProperties(props);
-    	fr.setFilter(filter);
-    	fr.addUrlPatterns("/wro/*");
-    	return fr;
+        FilterRegistrationBean fr = new FilterRegistrationBean();
+        ConfigurableWroFilter filter = new ConfigurableWroFilter();
+        Properties props = buildWroProperties(env);
+        filter.setProperties(props);
+        filter.setWroManagerFactory(new CustomConfigurableWroManagerFactory(props, themeManagerService));
+        filter.setRequestHandlerFactory(new SimpleRequestHandlerFactory().addHandler(new CustomRequestHandler()));
+        filter.setProperties(props);
+        fr.setFilter(filter);
+        fr.addUrlPatterns("/wro/*");
+        return fr;
     }
-    
-    private static final String[] OTHER_WRO_PROP = new String[] { 
-		ConfigurableProcessorsFactory.PARAM_PRE_PROCESSORS,
-		ConfigurableProcessorsFactory.PARAM_POST_PROCESSORS 
-    };
+
+    private static final String[] OTHER_WRO_PROP = new String[] { ConfigurableProcessorsFactory.PARAM_PRE_PROCESSORS, ConfigurableProcessorsFactory.PARAM_POST_PROCESSORS };
 
     private Properties buildWroProperties(Environment env) {
-    	Properties prop = new Properties();
-    	for (ConfigConstants c : ConfigConstants.values()) {
-    		addProperty(env, prop, c.name());
-    	}
-    	for (String name : OTHER_WRO_PROP) {
-    		addProperty(env, prop, name);
-    	}
-    	return prop;
+        Properties prop = new Properties();
+        for (ConfigConstants c : ConfigConstants.values()) {
+            addProperty(env, prop, c.name());
+        }
+        for (String name : OTHER_WRO_PROP) {
+            addProperty(env, prop, name);
+        }
+        return prop;
     }
 
     private void addProperty(Environment env, Properties to, String name) {
-    	String value = env.getProperty("wro." + name);
-    	if (value != null) {
-    		to.put(name, value);
-    	}
+        String value = env.getProperty("wro." + name);
+        if (value != null) {
+            to.put(name, value);
+        }
     }
 
 }

@@ -145,11 +145,9 @@ public class JwtUtility {
 	 * @throws UnsupportedEncodingException
 	 */
 	public JWT makeToken(Map<String, String> payload) throws InvalidKeyException, JsonProcessingException, NoSuchAlgorithmException, IllegalStateException, UnsupportedEncodingException {
-		JWT token = craftToken();
+	    JWT token = craftToken();
 		for (String k : shibKeys) {
-            String p = payload.get(env.getProperty("shib." + k, ""));
-            token.makeClaim(k, p);
-            // System.out.println("Adding " + k +": " + p + " to JWT.");
+            token.makeClaim(k, payload.get(env.getProperty("shib." + k, "")) != null ? payload.get(env.getProperty("shib." + k, "")) : payload.get(k));
         }
 		return token;
 	}
@@ -182,19 +180,16 @@ public class JwtUtility {
 	 * 
 	 */
 	public String hashSignature(String sig, String secret) throws NoSuchAlgorithmException, InvalidKeyException {
-
 		Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
 		SecretKeySpec secret_key = new SecretKeySpec(secret.getBytes(), "HmacSHA256");
 		sha256_HMAC.init(secret_key);
-
 		byte[] signature = sha256_HMAC.doFinal(sig.getBytes());
-
 		return encodeBase64URLSafeString(signature);
 	}
 
 	@SuppressWarnings("unchecked")
 	public Map<String, String> validateJWT(String jwe) {
-
+	    
 		Map<String, String> tokenMap = new HashMap<String, String>();
 
 		if (jwe == null) {
@@ -204,6 +199,7 @@ public class JwtUtility {
 
 		Key key = new SecretKeySpec(secret_key.getBytes(), "AES");
 		Cipher c = null;
+		
 		byte[] decordedValue = decodeBase64(jwe);
 		byte[] decValue = null;
 
@@ -227,7 +223,7 @@ public class JwtUtility {
 			tokenMap.put("ERROR", "INVALID_JWT");
 			return tokenMap;
 		}
-
+		
 		try {
 			tokenMap = objectMapper.readValue(token.getClaims(), Map.class);
 		} catch (Exception e) {
@@ -237,7 +233,6 @@ public class JwtUtility {
 		}
 
 		return tokenMap;
-
 	}
 
 	/**
