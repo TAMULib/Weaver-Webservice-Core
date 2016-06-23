@@ -313,19 +313,19 @@ public abstract class CoreControllerAspect {
             if (annotationString != null) {
                 switch (annotationString) {
                 case "ApiVariable":
-                    arguments[index] = objectMapper.convertValue(apiVariables.get(argNames[index]), objectMapper.constructType(argTypes[index]));
+                    arguments[index] = apiVariables.get(argNames[index]) != null ? objectMapper.convertValue(apiVariables.get(argNames[index]), objectMapper.constructType(argTypes[index])) : null;
                     break;
                 case "Shib":
                     arguments[index] = shib;
                     break;
                 case "ApiData":
-                    arguments[index] = objectMapper.convertValue(objectMapper.readTree(data), objectMapper.constructType(argTypes[index]));
+                    arguments[index] = data != null ? objectMapper.convertValue(objectMapper.readTree(data), objectMapper.constructType(argTypes[index])) : null;
                     break;
                 case "ApiModel":
-                    arguments[index] = objectMapper.convertValue(objectMapper.readTree(data), objectMapper.constructType(argTypes[index]));
+                    arguments[index] = data != null ? objectMapper.convertValue(objectMapper.readTree(data), objectMapper.constructType(argTypes[index])) : null;
                     break;
                 case "ApiValidatedModel":
-                    arguments[index] = validate(objectMapper.convertValue(objectMapper.readTree(data), objectMapper.constructType(argTypes[index])), ann, argTypes[index].getCanonicalName());
+                    arguments[index] = data != null ? validate(objectMapper.convertValue(objectMapper.readTree(data), objectMapper.constructType(argTypes[index])), ann, argTypes[index].getCanonicalName()) : null;
                     break;
                 case "Parameters":
                     arguments[index] = parameters;
