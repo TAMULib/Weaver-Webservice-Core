@@ -132,21 +132,18 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
             jwt = accessor.getNativeHeader("jwt").get(0);
         }
 
+        Credentials shib;
+
         switch (command) {
-        case ABORT: {
-        }
+        case ABORT:
             break;
-        case ACK: {
-        }
+        case ACK:
             break;
-        case BEGIN: {
-        }
+        case BEGIN:
             break;
-        case COMMIT: {
-        }
+        case COMMIT:
             break;
-        case CONNECT: {
-            Credentials shib;
+        case CONNECT:
 
             if (jwt != null && !"undefined".equals(jwt)) {
 
@@ -193,29 +190,21 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 
             securityContext.setAuthentication(auth);
 
-        }
             break;
-        case CONNECTED: {
-        }
+        case CONNECTED:
             break;
-        case DISCONNECT: {
+        case DISCONNECT:
             logger.debug("Disconnecting websocket connection for " + securityContext.getAuthentication().getName() + ".");
-        }
             break;
-        case ERROR: {
-        }
+        case ERROR:
             break;
-        case MESSAGE: {
-        }
+        case MESSAGE:
             break;
-        case NACK: {
-        }
+        case NACK:
             break;
-        case RECEIPT: {
-        }
+        case RECEIPT:
             break;
-        case SEND: {
-
+        case SEND:
             WebSocketRequest request = new WebSocketRequest();
 
             List<String> matches = new ArrayList<String>();
@@ -298,12 +287,10 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 
             String requestId = accessor.getNativeHeader("id").get(0);
 
-            Credentials shib;
-
             if (jwt != null && !"undefined".equals(jwt)) {
 
                 Map<String, String> credentialMap = new HashMap<String, String>();
-                
+
                 credentialMap = jwtService.validateJWT(jwt);
 
                 logger.info(credentialMap.get("firstName") + " " + credentialMap.get("lastName") + " (" + credentialMap.get("uin") + ") requesting " + destination);
@@ -316,7 +303,7 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
                 }
 
                 String errorMessage = credentialMap.get("ERROR");
-                
+
                 if (errorMessage != null) {
                     logger.error("Security Context Name: " + securityContext.getAuthentication().getName());
                     logger.error("JWT error: " + errorMessage);
@@ -329,9 +316,9 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
                     simpMessagingTemplate.convertAndSend(destination.replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse(requestId, REFRESH));
                     return null;
                 }
-                
+
                 shib = new Credentials(credentialMap);
-                
+
                 shib = confirmCreateUser(shib);
 
             } else {
@@ -346,19 +333,14 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 
             webSocketRequestService.addRequest(request);
 
-        }
             break;
-        case STOMP: {
-        }
+        case STOMP:
             break;
-        case SUBSCRIBE: {
-        }
+        case SUBSCRIBE:
             break;
-        case UNSUBSCRIBE: {
-        }
+        case UNSUBSCRIBE:
             break;
-        default: {
-        }
+        default:
             break;
         }
 
