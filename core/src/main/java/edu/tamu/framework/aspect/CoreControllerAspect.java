@@ -189,7 +189,7 @@ public abstract class CoreControllerAspect {
      */
     private PreProcessObject preProcess(ProceedingJoinPoint joinPoint) throws Throwable {
 
-        Credentials shib = null;
+        Credentials credentials = null;
 
         Map<String, String> apiVariables = null;
 
@@ -250,7 +250,7 @@ public abstract class CoreControllerAspect {
                 apiVariables = getApiVariable(path, servletContext.getContextPath() + servletRequest.getServletPath());
             }
 
-            shib = request.getCredentials();
+            credentials = request.getCredentials();
 
             if (servletRequest.getAttribute("data") != null) {
                 data = (String) servletRequest.getAttribute("data");
@@ -287,7 +287,7 @@ public abstract class CoreControllerAspect {
 
             requestId = accessor.getNativeHeader("id").get(0);
 
-            shib = request.getCredentials();
+            credentials = request.getCredentials();
 
             if (path.contains("{")) {
                 apiVariables = getApiVariable(path, accessor.getDestination());
@@ -316,7 +316,7 @@ public abstract class CoreControllerAspect {
                     arguments[index] = apiVariables.get(argNames[index]) != null ? objectMapper.convertValue(apiVariables.get(argNames[index]), objectMapper.constructType(argTypes[index])) : null;
                     break;
                 case "ApiCredentials":
-                    arguments[index] = shib;
+                    arguments[index] = credentials;
                     break;
                 case "ApiData":
                     arguments[index] = data != null ? objectMapper.convertValue(objectMapper.readTree(data), objectMapper.constructType(argTypes[index])) : null;
@@ -338,7 +338,7 @@ public abstract class CoreControllerAspect {
             index++;
         }
 
-        return new PreProcessObject(shib, requestId, arguments, protocol, destination);
+        return new PreProcessObject(credentials, requestId, arguments, protocol, destination);
     }
 
     /**

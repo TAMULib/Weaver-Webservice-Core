@@ -88,17 +88,17 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
         pathMatcher = (PathMatcher) new AntPathMatcher();
     }
 
-    public Credentials getAnonymousShib() {
-        Credentials anonymousShib = new Credentials();
-        anonymousShib.setAffiliation("NA");
-        anonymousShib.setLastName("Anonymous");
-        anonymousShib.setFirstName("Role");
-        anonymousShib.setNetid("anonymous-" + Math.round(Math.random() * 100000));
-        anonymousShib.setUin("000000000");
-        anonymousShib.setExp("1436982214754");
-        anonymousShib.setEmail("helpdesk@library.tamu.edu");
-        anonymousShib.setRole("ROLE_ANONYMOUS");
-        return anonymousShib;
+    public Credentials getAnonymousCredentials() {
+        Credentials anonymousCredentials = new Credentials();
+        anonymousCredentials.setAffiliation("NA");
+        anonymousCredentials.setLastName("Anonymous");
+        anonymousCredentials.setFirstName("Role");
+        anonymousCredentials.setNetid("anonymous-" + Math.round(Math.random() * 100000));
+        anonymousCredentials.setUin("000000000");
+        anonymousCredentials.setExp("1436982214754");
+        anonymousCredentials.setEmail("helpdesk@library.tamu.edu");
+        anonymousCredentials.setRole("ROLE_ANONYMOUS");
+        return anonymousCredentials;
     }
 
     /**
@@ -132,7 +132,7 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
             jwt = accessor.getNativeHeader("jwt").get(0);
         }
 
-        Credentials shib;
+        Credentials credentials = null;
 
         switch (command) {
         case ABORT:
@@ -162,29 +162,29 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
                     return MessageBuilder.withPayload(errorMessage).setHeaders(accessor).build();
                 }
 
-                shib = new Credentials(credentialMap);
+                credentials = new Credentials(credentialMap);
 
-                shib = confirmCreateUser(shib);
+                credentials = confirmCreateUser(credentials);
 
-                if (shib == null) {
+                if (credentials == null) {
                     errorMessage = "Could not confirm user!";
                     logger.error(errorMessage);
                     return MessageBuilder.withPayload(errorMessage).setHeaders(accessor).build();
                 }
 
             } else {
-                shib = getAnonymousShib();
+                credentials = getAnonymousCredentials();
             }
 
             List<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
 
-            grantedAuthorities.add(new SimpleGrantedAuthority(shib.getRole()));
+            grantedAuthorities.add(new SimpleGrantedAuthority(credentials.getRole()));
 
-            if (shib.getNetid() == null) {
-                shib.setNetid(shib.getEmail());
+            if (credentials.getNetid() == null) {
+                credentials.setNetid(credentials.getEmail());
             }
 
-            Authentication auth = new AnonymousAuthenticationToken(shib.getUin(), shib.getNetid(), grantedAuthorities);
+            Authentication auth = new AnonymousAuthenticationToken(credentials.getUin(), credentials.getNetid(), grantedAuthorities);
 
             auth.setAuthenticated(true);
 
@@ -317,17 +317,17 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
                     return null;
                 }
 
-                shib = new Credentials(credentialMap);
+                credentials = new Credentials(credentialMap);
 
-                shib = confirmCreateUser(shib);
+                credentials = confirmCreateUser(credentials);
 
             } else {
-                shib = getAnonymousShib();
+                credentials = getAnonymousCredentials();
             }
 
             request.setMessage(message);
 
-            request.setCredentials(shib);
+            request.setCredentials(credentials);
 
             request.setUser(securityContext.getAuthentication().getName());
 
