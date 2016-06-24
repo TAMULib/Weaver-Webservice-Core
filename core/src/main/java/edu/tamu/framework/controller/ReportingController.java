@@ -24,7 +24,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import edu.tamu.framework.aspect.annotation.ApiData;
 import edu.tamu.framework.aspect.annotation.ApiMapping;
-import edu.tamu.framework.aspect.annotation.Shib;
+import edu.tamu.framework.aspect.annotation.ApiCredentials;
 import edu.tamu.framework.model.ApiResponse;
 import edu.tamu.framework.model.Credentials;
 import edu.tamu.framework.util.EmailSender;
@@ -61,7 +61,7 @@ public class ReportingController {
      * @throws Exception
      */
     @ApiMapping(value = "/error", method = POST)
-    public ApiResponse reportError(@Shib Credentials shib, @ApiData JsonNode errorReport) throws Exception {
+    public ApiResponse reportError(@ApiCredentials Credentials shib, @ApiData JsonNode errorReport) throws Exception {
 
         String content = "Error Report\n\n";
 
