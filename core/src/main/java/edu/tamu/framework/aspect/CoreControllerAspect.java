@@ -315,7 +315,7 @@ public abstract class CoreControllerAspect {
                 case "ApiVariable":
                     arguments[index] = apiVariables.get(argNames[index]) != null ? objectMapper.convertValue(apiVariables.get(argNames[index]), objectMapper.constructType(argTypes[index])) : null;
                     break;
-                case "Shib":
+                case "ApiCredentials":
                     arguments[index] = shib;
                     break;
                 case "ApiData":
