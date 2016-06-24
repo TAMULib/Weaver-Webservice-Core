@@ -36,61 +36,63 @@ public class HttpRequestService {
     @Autowired
     @Lazy
     private PathMatcher pathMatcher;
-    
-	protected List<HttpRequest> requests = new ArrayList<HttpRequest>();
 
-	/**
-	 * Get all current requests.
-	 * 
-	 * @return List<HttpRequest>
-	 */
-	public List<HttpRequest> getRequests() {
-		return requests;
-	}
+    protected List<HttpRequest> requests = new ArrayList<HttpRequest>();
 
-	/**
-	 * Add request.
-	 * 
-	 * @param request
-	 *            WebSocketRequest
-	 */
-	public synchronized void addRequest(HttpRequest request) {
-		if (request.getDestination() != null && request.getUser() != null) {
-			requests.add(request);
-		}
-	}
+    /**
+     * Get all current requests.
+     * 
+     * @return List<HttpRequest>
+     */
+    public List<HttpRequest> getRequests() {
+        return requests;
+    }
 
-	/**
-	 * Remove request.
-	 * 
-	 * @param request
-	 *            WebSocketRequest
-	 */
-	public synchronized void removeRequest(HttpRequest request) {
-		if (request.getDestination() != null && request.getUser() != null) {
-			requests.remove(request);
-		}
-	}
+    /**
+     * Add request.
+     * 
+     * @param request
+     *            WebSocketRequest
+     */
+    public synchronized void addRequest(HttpRequest request) {
+        if (request.getDestination() != null && request.getUser() != null) {
+            requests.add(request);
+        }
+    }
 
-	/**
-	 * Get and remove request.
-	 * 
-	 * @param pattern
-	 *            String
-	 * @param user
-	 *            String
-	 * @return WebSocketRequest
-	 */
-	public synchronized HttpRequest getAndRemoveRequestByDestinationAndUser(String pattern, String user) {
-	    if(pattern.charAt(0) != '/') pattern = "/" + pattern;
-		for (int index = 0; index < requests.size(); index++) {
-			HttpRequest request = requests.get(index);
-			if (request.getUser().equals(user) && pathMatcher.match(pattern, request.getDestination())) {
-				requests.remove(index);
-				return request;
-			}
-		}
-		return null;
-	}
+    /**
+     * Remove request.
+     * 
+     * @param request
+     *            WebSocketRequest
+     */
+    public synchronized void removeRequest(HttpRequest request) {
+        if (request.getDestination() != null && request.getUser() != null) {
+            requests.remove(request);
+        }
+    }
+
+    /**
+     * Get and remove request.
+     * 
+     * @param pattern
+     *            String
+     * @param user
+     *            String
+     * @return WebSocketRequest
+     */
+    public synchronized HttpRequest getAndRemoveRequestByDestinationAndUser(String pattern, String user) {
+        if (pattern.charAt(0) != '/') {
+            pattern = "/" + pattern;
+        }
+        for (int index = 0; index < requests.size(); index++) {
+            HttpRequest request = requests.get(index);
+            if (request.getUser().equals(user) && pathMatcher.match(pattern, request.getDestination())) {
+                requests.remove(index);
+                return request;
+            }
+        }
+        return null;
+    }
 
 }

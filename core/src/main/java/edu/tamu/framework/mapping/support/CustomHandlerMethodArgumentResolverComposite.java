@@ -29,8 +29,8 @@ import org.springframework.util.Assert;
 
 /**
  * Resolves method parameters by delegating to a list of registered
- * {@link HandlerMethodArgumentResolver}. Previously resolved method parameters are cached
- * for faster lookups.
+ * {@link HandlerMethodArgumentResolver}. Previously resolved method parameters
+ * are cached for faster lookups.
  *
  * @author Rossen Stoyanchev
  * @author Juergen Hoeller
@@ -40,9 +40,7 @@ public class CustomHandlerMethodArgumentResolverComposite implements HandlerMeth
 
     private final List<HandlerMethodArgumentResolver> argumentResolvers = new LinkedList<HandlerMethodArgumentResolver>();
 
-    private final Map<MethodParameter, HandlerMethodArgumentResolver> argumentResolverCache =
-            new ConcurrentHashMap<MethodParameter, HandlerMethodArgumentResolver>(256);
-
+    private final Map<MethodParameter, HandlerMethodArgumentResolver> argumentResolverCache = new ConcurrentHashMap<MethodParameter, HandlerMethodArgumentResolver>(256);
 
     /**
      * Add the given {@link HandlerMethodArgumentResolver}.
@@ -54,6 +52,7 @@ public class CustomHandlerMethodArgumentResolverComposite implements HandlerMeth
 
     /**
      * Add the given {@link HandlerMethodArgumentResolver}s.
+     * 
      * @since 4.3
      */
     public CustomHandlerMethodArgumentResolverComposite addResolvers(HandlerMethodArgumentResolver... resolvers) {
@@ -91,10 +90,9 @@ public class CustomHandlerMethodArgumentResolverComposite implements HandlerMeth
         this.argumentResolvers.clear();
     }
 
-
     /**
-     * Whether the given {@linkplain MethodParameter method parameter} is supported by any registered
-     * {@link HandlerMethodArgumentResolver}.
+     * Whether the given {@linkplain MethodParameter method parameter} is
+     * supported by any registered {@link HandlerMethodArgumentResolver}.
      */
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -102,8 +100,12 @@ public class CustomHandlerMethodArgumentResolverComposite implements HandlerMeth
     }
 
     /**
-     * Iterate over registered {@link HandlerMethodArgumentResolver}s and invoke the one that supports it.
-     * @exception IllegalStateException if no suitable {@link HandlerMethodArgumentResolver} is found.
+     * Iterate over registered {@link HandlerMethodArgumentResolver}s and invoke
+     * the one that supports it.
+     * 
+     * @exception IllegalStateException
+     *                if no suitable {@link HandlerMethodArgumentResolver} is
+     *                found.
      */
     @Override
     public Object resolveArgument(MethodParameter parameter, Message<?> message) throws Exception {
@@ -114,7 +116,8 @@ public class CustomHandlerMethodArgumentResolverComposite implements HandlerMeth
     }
 
     /**
-     * Find a registered {@link HandlerMethodArgumentResolver} that supports the given method parameter.
+     * Find a registered {@link HandlerMethodArgumentResolver} that supports the
+     * given method parameter.
      */
     private HandlerMethodArgumentResolver getArgumentResolver(MethodParameter parameter) {
         HandlerMethodArgumentResolver result = this.argumentResolverCache.get(parameter);

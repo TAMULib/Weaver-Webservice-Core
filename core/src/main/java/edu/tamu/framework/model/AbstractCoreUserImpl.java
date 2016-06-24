@@ -35,45 +35,45 @@ import edu.tamu.framework.enums.CoreRole;
 @Table(name = "core_users")
 public abstract class AbstractCoreUserImpl implements CoreUser {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@Column(name = "uin", nullable = true, unique = true)
-	private Long uin;
+    @Column(name = "uin", nullable = true, unique = true)
+    private Long uin;
 
-	@Column(name = "role")
-	private CoreRole role;
+    @Column(name = "role")
+    private CoreRole role;
 
-	public AbstractCoreUserImpl() {
-	}
+    public AbstractCoreUserImpl() {
+    }
 
-	public AbstractCoreUserImpl(Long uin) {
-		this.uin = uin;
-	}
+    public AbstractCoreUserImpl(Long uin) {
+        this.uin = uin;
+    }
 
-	public Long getId() {
-		return id;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	@Override
-	public void setUin(Long uin) {
-		this.uin = uin;
-	}
+    @Override
+    public void setUin(Long uin) {
+        this.uin = uin;
+    }
 
-	@Override
-	public Long getUin() {
-		return uin;
-	}
+    @Override
+    public Long getUin() {
+        return uin;
+    }
 
-	@Override
-	@JsonDeserialize(as = CoreRole.class)
-	public void setRole(IRole role) {
-		this.role = (CoreRole) role;
-	}
-	
-	@Override
-	@JsonSerialize(as = CoreRole.class)
+    @Override
+    @JsonDeserialize(as = CoreRole.class)
+    public void setRole(IRole role) {
+        this.role = (CoreRole) role;
+    }
+
+    @Override
+    @JsonSerialize(as = CoreRole.class)
     public IRole getRole() {
         return role;
     }

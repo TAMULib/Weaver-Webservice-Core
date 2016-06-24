@@ -273,9 +273,9 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
             String d = destination;
 
             if (destination.startsWith("/ws")) {
-                d = destination.substring(3);
+                d = destination.substring("/ws".length());
             } else if (destination.startsWith("/private/queue")) {
-                d = destination.substring(14);
+                d = destination.substring("/private/queue".length());
             }
 
             String[] destinationPaths = d.split("/");
@@ -316,6 +316,7 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
                 }
 
                 String errorMessage = credentialMap.get("ERROR");
+                
                 if (errorMessage != null) {
                     logger.error("Security Context Name: " + securityContext.getAuthentication().getName());
                     logger.error("JWT error: " + errorMessage);

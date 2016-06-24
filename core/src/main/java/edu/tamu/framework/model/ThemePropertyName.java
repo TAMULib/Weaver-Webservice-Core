@@ -24,7 +24,7 @@ import javax.persistence.Id;
  */
 @Entity
 public class ThemePropertyName {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;

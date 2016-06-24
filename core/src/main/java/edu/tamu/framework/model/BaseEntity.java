@@ -27,7 +27,7 @@ public abstract class BaseEntity extends ValidatingBase implements Comparable<Ba
     public Long getId() {
         return id;
     }
-    
+
     /**
      * @param id
      *            the id to set

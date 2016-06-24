@@ -111,8 +111,8 @@ public abstract class CoreControllerAspect {
         if (roleService.valueOf(preProcessObject.shib.getRole()).ordinal() < roleService.valueOf(auth.role()).ordinal()) {
             logger.info(preProcessObject.shib.getFirstName() + " " + preProcessObject.shib.getLastName() + "(" + preProcessObject.shib.getUin() + ") attempted restricted access.");
             apiresponse = new ApiResponse(preProcessObject.requestId, ERROR, "You are not authorized for this request.");
-        } else {
-
+        } 
+        else {
             apiresponse = (ApiResponse) joinPoint.proceed(preProcessObject.arguments);
 
             if (apiresponse != null) {
@@ -351,10 +351,12 @@ public abstract class CoreControllerAspect {
      * @return Map<String, String>
      */
     protected Map<String, String> getApiVariable(String mapping, String path) {
-        if (path.contains("/ws"))
+        if (path.contains("/ws")) {
             mapping = "/ws" + mapping;
-        if (path.contains("/private/queue"))
+        }
+        if (path.contains("/private/queue")) {
             mapping = "/private/queue" + mapping;
+        }
         Map<String, String> valuesMap = new HashMap<String, String>();
         String[] keys = mapping.split("/");
         String[] values = path.split("/");
