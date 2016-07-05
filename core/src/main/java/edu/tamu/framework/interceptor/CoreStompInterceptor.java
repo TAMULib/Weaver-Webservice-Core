@@ -88,18 +88,7 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
         pathMatcher = (PathMatcher) new AntPathMatcher();
     }
 
-    public Credentials getAnonymousCredentials() {
-        Credentials anonymousCredentials = new Credentials();
-        anonymousCredentials.setAffiliation("NA");
-        anonymousCredentials.setLastName("Anonymous");
-        anonymousCredentials.setFirstName("Role");
-        anonymousCredentials.setNetid("anonymous-" + Math.round(Math.random() * 100000));
-        anonymousCredentials.setUin("000000000");
-        anonymousCredentials.setExp("1436982214754");
-        anonymousCredentials.setEmail("helpdesk@library.tamu.edu");
-        anonymousCredentials.setRole("ROLE_ANONYMOUS");
-        return anonymousCredentials;
-    }
+    public abstract Credentials getAnonymousCredentials();
 
     /**
      * Override method to perform preprocessing before sending message.

@@ -64,21 +64,9 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public CoreRestInterceptor() {
-    }
+    public CoreRestInterceptor() {}
 
-    public Credentials getAnonymousCredentials() {
-        Credentials anonymousCredentials = new Credentials();
-        anonymousCredentials.setAffiliation("NA");
-        anonymousCredentials.setLastName("Anonymous");
-        anonymousCredentials.setFirstName("Role");
-        anonymousCredentials.setNetid("anonymous-" + Math.round(Math.random() * 100000));
-        anonymousCredentials.setUin("000000000");
-        anonymousCredentials.setExp("1436982214754");
-        anonymousCredentials.setEmail("helpdesk@mailinator.com");
-        anonymousCredentials.setRole("ROLE_ANONYMOUS");
-        return anonymousCredentials;
-    }
+    public abstract Credentials getAnonymousCredentials();
 
     /**
      * {@inheritDoc}
