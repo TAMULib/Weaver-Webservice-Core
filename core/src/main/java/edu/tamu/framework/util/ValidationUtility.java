@@ -388,31 +388,21 @@ public class ValidationUtility {
                 	}
             	}
             	
-            	Integer facetIndex = null;
             	String facet = null;
             	
             	if(!invalid) {   
                 	if(validator.getArgs().length > 2) {                	    
+                        
                         try {
-                            facetIndex = Integer.parseInt(validator.getParams()[2]);
+                            facet = validator.getParams()[2];
                         }
                         catch(Exception e) {
                             invalid = true;
-                            message = "Facet endpoint argument index is out of range";
+                            message = "Facet not specified";
                         }
                         
                         if(!invalid) {
-                            try {
-                                facet = validator.getParams()[3];
-                            }
-                            catch(Exception e) {
-                                invalid = true;
-                                message = "Facet not specified";
-                            }
-                        }
-                        
-                        if(!invalid) {
-                            if(queryByProperty(validator.getClazz(), facet, (String) validator.getArgs()[facetIndex]) == null) {
+                            if(recursivelyFindField(validator.getClazz(), facet) == null) {
                                 invalid = true;
                                 message = "Facet not a property of " + validator.getClazz().getSimpleName();
                             }         
@@ -875,15 +865,6 @@ public class ValidationUtility {
         CriteriaQuery<Object> query = cb.createQuery();
         Root<?> root = query.from(clazz);
         query.select(root).where(cb.equal(root.get(POSITION_COLUMN_NAME), position));
-        return entityManager.createQuery(query).getResultList();
-    }
-    
-    private static <U extends ValidatingBase> List<Object> queryByProperty(Class<?> clazz, String property, Object value) {
-        EntityManager entityManager = SpringContext.bean(EntityManager.class);
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Object> query = cb.createQuery();
-        Root<?> root = query.from(clazz);
-        query.select(root).where(cb.equal(root.get(property), value));
         return entityManager.createQuery(query).getResultList();
     }
     
