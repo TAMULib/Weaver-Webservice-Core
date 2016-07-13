@@ -248,6 +248,14 @@ public class ValidationUtility {
                 	
                 }
                 
+                if(!invalid) {
+                    Object value = getValueForProperty(model, SYSTEM_COLUMN_NAME);
+                    if(value != null && ((Boolean) value) == true) {
+                        invalid = true;
+                        message = model.getClass().getSimpleName() + " with id " + ((BaseEntity) model).getId() + " is a system default and cannot be deleted";
+                    }
+                }
+                
                 if (invalid) {
                     results.addMessage(BUSINESS_MESSAGE_KEY, validator.getType().toString(), message);
                     results.setValid(false);
