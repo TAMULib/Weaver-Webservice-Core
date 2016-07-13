@@ -68,8 +68,7 @@ public abstract class CoreWebConfigSupport extends WebMvcConfigurationSupport {
      */
     @Bean
     public WebSocketRequestMappingHandler webSocketRequestMappingHandler() {
-        WebSocketRequestMappingHandler handlerMapping = new WebSocketRequestMappingHandler(clientInboundChannel, clientOutboundChannel, brokerTemplate);
-        return handlerMapping;
+        return new WebSocketRequestMappingHandler(clientInboundChannel, clientOutboundChannel, brokerTemplate);
     }
 
 }

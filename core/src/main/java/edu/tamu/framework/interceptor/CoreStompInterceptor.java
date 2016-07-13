@@ -108,7 +108,7 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
         StompCommand command = accessor.getCommand();
 
         String destination = accessor.getDestination();
-
+        
         if (destination != null) {
             logger.debug("Accessor Destination: " + accessor.getDestination());
         }
@@ -122,7 +122,7 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
         }
 
         Credentials credentials = null;
-
+        
         switch (command) {
         case ABORT:
             break;
@@ -313,7 +313,7 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
             } else {
                 credentials = getAnonymousCredentials();
             }
-
+            
             request.setMessage(message);
 
             request.setCredentials(credentials);
