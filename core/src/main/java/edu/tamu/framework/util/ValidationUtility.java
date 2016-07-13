@@ -160,14 +160,13 @@ public class ValidationUtility {
                         
                     Boolean isSystemRequired = (Boolean) getValueForProperty(model, SYSTEM_COLUMN_NAME);
                     
-                    if(isSystemRequired != null) {
-                        setValueForProperty(model, SYSTEM_COLUMN_NAME, !isSystemRequired);
+                    if(isSystemRequired != null) {                                             
                         if(isSystemRequired) {
-                            model = createNew(model);
+                            model = createNewFromSystemDefault(model);
                         }
                     }
                     else {
-                        if(uniqueConstraintPropertyChnage(model)) {
+                        if(uniqueConstraintPropertyChange(model)) {
                             UniqueConstraintViolation uniqueConstraintViolation = validateUniqueConstraints(model);
                             invalid = uniqueConstraintViolation.invalid;
                             message = uniqueConstraintViolation.message;
@@ -633,7 +632,7 @@ public class ValidationUtility {
     }
     
     @SuppressWarnings("unchecked")
-    private static <U extends ValidatingBase> Boolean uniqueConstraintPropertyChnage(U model) {
+    private static <U extends ValidatingBase> Boolean uniqueConstraintPropertyChange(U model) {
         
         Boolean change = false;
         
@@ -868,9 +867,12 @@ public class ValidationUtility {
         return entityManager.createQuery(query).getResultList();
     }
     
-    private static <U extends ValidatingBase> U createNew(U model) {
+    private static <U extends ValidatingBase> U createNewFromSystemDefault(U model) {
         EntityManager entityManager = SpringContext.bean(EntityManager.class);
-        return entityManager.merge(model);
+        setValueForProperty(model, SYSTEM_COLUMN_NAME, false);   
+        setValueForProperty(model, ID_COLUMN_NAME, null);
+        entityManager.persist(model);
+        return model;
     }
     
     public static Field recursivelyFindField(Class<?> clazz, String property) {
