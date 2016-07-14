@@ -651,8 +651,14 @@ public class ValidationUtility {
                     Object value = getValueForProperty(model, property);
                     Object persistedValue = getValueForProperty(persistedModel, property);
                     
-                    if(!value.equals(persistedValue)) {
+                    if((value == null && persistedValue != null) || (value != null && persistedValue == null)) {
                         change = true;
+                    }
+                    
+                    if((value != null && persistedValue != null)) {                        
+                        if(!value.equals(persistedValue)) {
+                            change = true;
+                        }
                     }
                 }
             }
