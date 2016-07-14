@@ -400,7 +400,7 @@ public class ValidationUtility {
                             message = "Facet not specified";
                         }
                         
-                        if(!invalid) {
+                        if(!invalid) {                            
                             if(recursivelyFindField(validator.getClazz(), facet) == null) {
                                 invalid = true;
                                 message = "Facet not a property of " + validator.getClazz().getSimpleName();
@@ -588,6 +588,13 @@ public class ValidationUtility {
                 	}
             	}
             	
+            	if(!invalid) {   
+                    if(recursivelyFindField(validator.getClazz(), (String) validator.getArgs()[columnIndex]) == null) {
+                        invalid = true;
+                        message = (String) validator.getArgs()[0] + " is not a column of " + validator.getClazz().getSimpleName();
+                    }
+                }
+            	
             	Integer facetIndex = null;
                 
             	if(!invalid) {   
@@ -603,15 +610,15 @@ public class ValidationUtility {
                     }  
             	}
             	
-            	if(!invalid) {   
-                	if(recursivelyFindField(validator.getClazz(), (String) validator.getArgs()[columnIndex]) == null) {
-                	    invalid = true;
-                	    message = (String) validator.getArgs()[0] + " is not a column of " + validator.getClazz().getSimpleName();
-                	}
+            	if(!invalid && facetIndex != null) {
+            	    if(validator.getArgs()[facetIndex] == null) {
+            	        invalid = true;
+                        message = "Facet endpoint argument is null";
+            	    }
             	}
             	
             	if(!invalid && facetIndex != null) {
-                	if(recursivelyFindField(validator.getClazz(), (String) validator.getArgs()[facetIndex]) == null) {
+                	if(recursivelyFindField(validator.getClazz(), validator.getParams()[2]) == null) {
                         invalid = true;
                         message = "Facet not a property of " + validator.getClazz().getSimpleName();
                     }
