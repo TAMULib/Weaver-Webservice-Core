@@ -55,7 +55,7 @@ public class ValidationUtility {
         Object value = getValueForProperty(model, validator.getProperty());
 
         switch (validator.getType()) {
-            case minLength: {
+            case minlength: {
     
                 if (value != null) {
                     if (((String) value).length() < (Integer) validator.getValue()) {
@@ -65,7 +65,7 @@ public class ValidationUtility {
                 }
     
             } break;
-            case maxLength: {
+            case maxlength: {
     
                 if (value != null) {
                     if (((String) value).length() > (Integer) validator.getValue()) {
