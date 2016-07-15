@@ -1,6 +1,6 @@
 package edu.tamu.framework.controller;
 
-import static edu.tamu.framework.enums.ApiResponseType.ERROR;
+import static edu.tamu.framework.enums.ApiResponseType.INVALID;
 import static edu.tamu.framework.enums.ApiResponseType.SUCCESS;
 
 import java.lang.reflect.Field;
@@ -31,6 +31,8 @@ public class ValidationsController {
     
     @ApiMapping("/{entityName}")
     public ApiResponse validations(@ApiVariable String entityName) {
+        
+        ApiResponse response = new ApiResponse(INVALID);
         
         Class<?> clazz = null;        
         Object model = null;        
@@ -81,27 +83,30 @@ public class ValidationsController {
             
                     field.setAccessible(false);                
                 }            
-            }        
+            }  
+            
+            
+            if(validator != null) {
+            
+                Map<String, Map<String, InputValidator>> validations = new HashMap<String, Map<String, InputValidator>>();
+                
+                for (Entry<String, List<InputValidator>> entry : ((Validator) validator).getInputValidators().entrySet()) {
+                    String key = entry.getKey();            
+                    List<InputValidator> inputValidators = entry.getValue();
+                    Map<String, InputValidator> inputValidatorMap = new HashMap<String, InputValidator>();            
+                    inputValidators.forEach(inputValidator -> {
+                        inputValidatorMap.put(inputValidator.getType().toString(), inputValidator);
+                    });            
+                    validations.put(key, inputValidatorMap);
+                }
+                
+                response = new ApiResponse(SUCCESS, validations);
+            
+            }
+            
         }
         
-        if(validator == null) {
-            new ApiResponse(ERROR);
-        }
-        
-        Map<String, Map<String, InputValidator>> validations = new HashMap<String, Map<String, InputValidator>>();
-        
-        for (Entry<String, List<InputValidator>> entry : ((Validator) validator).getInputValidators().entrySet()) {
-            String key = entry.getKey();            
-            List<InputValidator> inputValidators = entry.getValue();
-            Map<String, InputValidator> inputValidatorMap = new HashMap<String, InputValidator>();            
-            inputValidators.forEach(inputValidator -> {
-                inputValidatorMap.put(inputValidator.getType().toString(), inputValidator);
-            });            
-            validations.put(key, inputValidatorMap);
-        }
-        
-        
-        return new ApiResponse(SUCCESS, validations);
+        return response;
     }
     
 }
