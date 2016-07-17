@@ -26,6 +26,8 @@ public @interface ApiValidation {
 		
 		BusinessValidationType value();
 		
+		Class<?>[] joins() default {};
+		
 		String[] params() default {};
 	}
 	

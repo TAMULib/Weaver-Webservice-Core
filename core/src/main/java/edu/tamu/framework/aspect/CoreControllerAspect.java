@@ -102,7 +102,7 @@ public abstract class CoreControllerAspect {
         for(Annotation validationAnnotation : method.getAnnotations()) {
             if(validationAnnotation instanceof ApiValidation) {
                 for(ApiValidation.Business businessAnnotation : ((ApiValidation) validationAnnotation).business()) {
-                    ((BaseModelValidator) ((ValidatingBase) model).getModelValidator()).addBusinessValidator(new BusinessValidator(businessAnnotation.value(), businessAnnotation.params()));
+                    ((BaseModelValidator) ((ValidatingBase) model).getModelValidator()).addBusinessValidator(new BusinessValidator(businessAnnotation.value(), businessAnnotation.joins(), businessAnnotation.params()));
                 }
             }
         }

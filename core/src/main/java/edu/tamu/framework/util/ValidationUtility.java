@@ -245,6 +245,36 @@ public class ValidationUtility {
                 		
                 	}
                 	
+                	if(!invalid) {
+                	
+	                	// check if relationships from joins(owners) will cause foreign key constraints!!
+                		
+                		// TODO: make message aggregate of all owning entities
+                		
+	                	for(Class<?> join : validator.getJoins()) {
+	                		
+	                		if(!invalid) {
+	                			
+	                			for(Field field : join.getDeclaredFields()) {
+		                			
+		                			if(field.getType().equals(modelToDelete.getClass())) {
+		                				
+		                				List<Object> queryByPropertyResults = queryByProperty(join, field.getName(), modelToDelete);
+		                				
+	                        			if(queryByPropertyResults.size() > 0) {
+	                        				invalid = true;
+	                        				
+	                        				U owningModel = (U) queryByPropertyResults.get(0);
+	                        				
+                        				    message = "Could not delete " + modelToDelete.getClass().getSimpleName() + " with id " + ((BaseEntity) modelToDelete).getId() + " due to being used by " + owningModel.getClass().getSimpleName() + " with id " + ((BaseEntity) owningModel).getId();
+	                        				
+	                        			}
+		                        				                				
+		                			}
+		                		}
+	                		}	                		
+	                	}                	
+                	}                	
                 }
                 
                 if(!invalid) {
@@ -706,8 +736,6 @@ public class ValidationUtility {
                 
             	// TODO: check if nullable
             	
-            	//invalid = true;
-                //uniqueConstraintViolation.message += property + ", ";
             }
         }
         
@@ -817,9 +845,11 @@ public class ValidationUtility {
     }
     
     private static <U extends ValidatingBase> Object getValueForProperty(U model, String property) {
-        Field field = getFieldForProperty(model, property);
-
-        Object value = null;
+        return getValueForField(model, getFieldForProperty(model, property));
+    }
+    
+    private static <U extends ValidatingBase>  Object getValueForField(U model, Field field) {
+    	Object value = null;
         
         if(field != null) {
 	        field.setAccessible(true);
@@ -877,6 +907,15 @@ public class ValidationUtility {
         CriteriaQuery<Object> query = cb.createQuery();
         Root<?> root = query.from(clazz);
         query.select(root).where(cb.equal(root.get(POSITION_COLUMN_NAME), position));
+        return entityManager.createQuery(query).getResultList();
+    }
+    
+    private static <U extends ValidatingBase> List<Object> queryByProperty(Class<?> clazz, String property, Object value) {
+        EntityManager entityManager = SpringContext.bean(EntityManager.class);
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Object> query = cb.createQuery();
+        Root<?> root = query.from(clazz);
+        query.select(root).where(cb.equal(root.get(property), value));
         return entityManager.createQuery(query).getResultList();
     }
     
