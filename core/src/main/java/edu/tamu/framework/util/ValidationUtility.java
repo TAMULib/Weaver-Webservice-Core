@@ -41,6 +41,7 @@ public class ValidationUtility {
     
     private static final String ID_COLUMN_NAME = "id";
     private static final String NAME_COLUMN_NAME = "name";
+    private static final String PASSWORD_COLUMN_NAME = "password";
     private static final String POSITION_COLUMN_NAME = "position";    
     private static final String SYSTEM_COLUMN_NAME = "isSystemRequired";
     
@@ -76,8 +77,8 @@ public class ValidationUtility {
     
             } break;
             case required: {
-            	
-                if (value == null) {
+                // TODO: improve how to ignore JsonIgnored properties
+                if (value == null && !validator.getProperty().equals(PASSWORD_COLUMN_NAME)) {
                     results.addMessage(validator.getProperty(), validator.getType().toString(), validator.getMessage());
                     results.setValid(false);
                 }
