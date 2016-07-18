@@ -45,8 +45,8 @@ public class ValidationUtility {
     private static final String POSITION_COLUMN_NAME = "position";    
     private static final String SYSTEM_COLUMN_NAME = "isSystemRequired";
     
-    private static final String BUSINESS_MESSAGE_KEY = "business";
-    private static final String METHOD_MESSAGE_KEY = "method";
+    public static final String BUSINESS_MESSAGE_KEY = "business";
+    public static final String METHOD_MESSAGE_KEY = "method";
     
     
 
