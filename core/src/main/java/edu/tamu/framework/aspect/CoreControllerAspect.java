@@ -15,6 +15,8 @@ import static edu.tamu.framework.enums.ApiResponseType.WARNING;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -248,14 +250,19 @@ public abstract class CoreControllerAspect {
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
 
         Object[] arguments = joinPoint.getArgs();
+        
+        Class<?> clazz = methodSignature.getDeclaringType();
 
         String[] argNames = methodSignature.getParameterNames();
 
-        Class<?>[] argTypes = methodSignature.getParameterTypes();
-
-        Class<?> clazz = methodSignature.getDeclaringType();
-
-        Method method = clazz.getDeclaredMethod(methodSignature.getName(), methodSignature.getParameterTypes());
+        Type[] argTypes = new Type[argNames.length];
+        
+        Method method = methodSignature.getMethod();
+        
+        int i = 0; for(Parameter parameter : method.getParameters()) {
+            argTypes[i++] = parameter.getParameterizedType();
+        }
+        
 
         Protocol protocol;
 
