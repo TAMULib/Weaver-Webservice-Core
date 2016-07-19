@@ -17,7 +17,11 @@ package edu.tamu.framework.mapping.support;
  */
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -106,7 +110,7 @@ public class CustomPayloadArgumentResolver implements HandlerMethodArgumentResol
             payload = message.getPayload();
         }
 
-        Class<?> targetClass = parameter.getParameterType();
+        Class<?> targetClass = parameter.getParameterType();        
         Class<?> payloadClass = payload.getClass();
         if (ClassUtils.isAssignable(targetClass, payloadClass)) {
             validate(message, parameter, payload);
@@ -116,12 +120,18 @@ public class CustomPayloadArgumentResolver implements HandlerMethodArgumentResol
                 SmartMessageConverter smartConverter = (SmartMessageConverter) this.converter;
 
                 Message<?> partialMessage = null;
-
+                
                 if (targetClass.equals(String.class)) {
                     partialMessage = MessageBuilder.withPayload(true).setHeaders(accessor).build();
                 } else if (Number.class.isAssignableFrom(targetClass)) {
                     partialMessage = MessageBuilder.withPayload(1).setHeaders(accessor).build();
-                } else {
+                } else if(targetClass.equals(List.class)) {
+                    partialMessage = MessageBuilder.withPayload(new ArrayList<Object>()).setHeaders(accessor).build();
+                }
+                else if(targetClass.equals(Set.class)) {
+                    partialMessage = MessageBuilder.withPayload(new HashSet<Object>()).setHeaders(accessor).build();
+                }
+                else {
                     partialMessage = MessageBuilder.withPayload(new HashMap<String, Object>()).setHeaders(accessor).build();
                 }
 
