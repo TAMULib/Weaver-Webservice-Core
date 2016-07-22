@@ -218,7 +218,7 @@ public class ValidationUtility {
                 				String name = (String) getValueForProperty(model, NAME_COLUMN_NAME);
                 				
                 				if(name != null) {
-                				    message = "Could not delete " + model.getClass().getSimpleName() + " " + name + "(" + ((BaseEntity) model).getId() + ") due to having " + param; 
+                				    message = "Could not delete " + model.getClass().getSimpleName() + " " + name + " with id " + ((BaseEntity) model).getId() + " due to having " + param; 
                 				}
                 				else {
                 				    message = "Could not delete " + model.getClass().getSimpleName() + " with id " + ((BaseEntity) model).getId() + " due to having " + param; 
