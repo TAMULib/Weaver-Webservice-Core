@@ -50,10 +50,10 @@ public class ThemeManagerService {
 	@Value("${theme.manager:false}")
 	private Boolean useThemeManager;
 	
-	@Value("${theme.default.css:}")
+	@Value("${theme.default.css:''}")
 	private String[] defaultCssGroup;
 
-	@Value("${theme.defaults.location:}")
+	@Value("${theme.defaults.location:''}")
 	private String themeDefaultsFile;
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
