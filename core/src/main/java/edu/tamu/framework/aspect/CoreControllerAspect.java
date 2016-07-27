@@ -164,6 +164,7 @@ public abstract class CoreControllerAspect {
     private TransactionTemplate createTransactionTemplate() {
         TransactionTemplate transactionTemplate = new TransactionTemplate(platformTransactionManager);
         transactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+        transactionTemplate.setIsolationLevel(TransactionDefinition.ISOLATION_DEFAULT);
         return transactionTemplate;
     }
 
