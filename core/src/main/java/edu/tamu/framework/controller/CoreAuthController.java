@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.tamu.framework.aspect.annotation.ApiData;
-import edu.tamu.framework.aspect.annotation.Parameters;
+import edu.tamu.framework.aspect.annotation.ApiParameters;
 import edu.tamu.framework.model.ApiResponse;
 import edu.tamu.framework.util.AuthUtility;
 import edu.tamu.framework.util.EmailSender;
@@ -33,7 +33,7 @@ public abstract class CoreAuthController {
 
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public abstract ApiResponse registration(@ApiData Map<String, String> dataMap, @Parameters Map<String, String[]> parameters);
+    public abstract ApiResponse registration(@ApiData Map<String, String> dataMap, @ApiParameters Map<String, String[]> parameters);
 
     public abstract ApiResponse login(@ApiData Map<String, String> dataMap);
 

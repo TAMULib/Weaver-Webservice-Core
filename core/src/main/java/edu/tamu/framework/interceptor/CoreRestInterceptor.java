@@ -157,9 +157,11 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
                 throw new JWTException("INVALID_USER", errorMessage);
             }
         }
-
-        request.setAttribute("data", request.getHeader("data"));
-
+        
+        if(request.getHeader("data") != null) {
+            request.setAttribute("data", request.getHeader("data"));
+        }
+        
         List<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
 
         grantedAuthorities.add(new SimpleGrantedAuthority(credentials.getRole()));
