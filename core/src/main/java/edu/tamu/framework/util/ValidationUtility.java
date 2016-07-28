@@ -689,7 +689,7 @@ public class ValidationUtility {
                     Object value = getValueForProperty(model, property);
                     Object persistedValue = getValueForProperty(persistedModel, property);
                     
-                    if((value == null && persistedValue != null) || (value != null && persistedValue == null)) {
+                    if((value != null && persistedValue == null)) {
                         change = true;
                     }
                     
@@ -728,7 +728,7 @@ public class ValidationUtility {
             if (value != null) {
             	if(!(value instanceof BaseEntity) || ((value instanceof BaseEntity) && ((BaseEntity) value).getId() != null)) {
             		                    
-            	    if(!((value instanceof String) && ((String) value).length() == 0)) {            	        
+            	    if(!((value instanceof String) && ((String) value).length() == 0)) {
             	        predicates.add(cb.equal(root.get(property), value));
             	    }
             	   
@@ -787,6 +787,17 @@ public class ValidationUtility {
         return uniqueColumns;
     }
     
+    private static String snakeToCamelWithoutId(String value) {
+        int l = 0;
+        if(value.endsWith("_id")) {
+            value = value.substring(0, value.length() - 3);
+        }
+        while ((l = value.indexOf("_")) >= 0) {
+            value = value.substring(0, l) + String.valueOf(value.charAt(l+1)).toUpperCase() + value.substring(l+2, value.length());
+        }
+        return value;
+    }
+    
     public static List<String> recursivelyFindTableAnnotation(Class<?> clazz) {
     	List<String> uniqueColumns = new ArrayList<String>();
     	
@@ -795,10 +806,7 @@ public class ValidationUtility {
             if (classAnnotation instanceof Table) {
                 for (UniqueConstraint uniqueConstraints : ((Table) classAnnotation).uniqueConstraints()) {
                     for (String uniqueColumn : uniqueConstraints.columnNames()) {
-                        // is this safe enough?
-                    	if(uniqueColumn.endsWith("_id")) {
-                            uniqueColumn = uniqueColumn.substring(0, uniqueColumn.length() - 3);
-                        }
+                    	uniqueColumn = snakeToCamelWithoutId(uniqueColumn);
                         uniqueColumns.add(uniqueColumn);
                     }
                 }
