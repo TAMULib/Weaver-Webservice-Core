@@ -29,6 +29,10 @@ public @interface ApiValidation {
 		Class<?>[] joins() default {};
 		
 		String[] params() default {};
+		
+		String[] path() default {};
+		
+		String restrict() default "";
 	}
 	
 	@Target({ METHOD })

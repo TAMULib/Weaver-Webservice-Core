@@ -3,6 +3,7 @@ package edu.tamu.framework.util;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -123,14 +124,41 @@ public class ValidationUtility {
         switch (validator.getType()) {
             case CREATE: {
     
+                boolean invalid = false;
+                
+                String message = null;
+                
                 // check if unique constraints will be violated!!
                 
                 UniqueConstraintViolation uniqueConstraintViolation = validateUniqueConstraints(model);
                 
                 if (uniqueConstraintViolation.invalid) {
-                    results.addMessage(BUSINESS_MESSAGE_KEY, validator.getType().toString(), uniqueConstraintViolation.message);
+                    message = uniqueConstraintViolation.message;
+                    invalid = uniqueConstraintViolation.invalid;
+                }
+                
+                if(!invalid) {
+                    
+                    // check if path value matches restrict value
+                    
+                    if(validator.getPath().length > 0) {
+                                                
+                        Object value = getValueFromPath(model, validator.getPath());
+                        
+                        if(value.toString().equals(validator.getRestrict())) {
+                            message = "Unable to create due to restrictions! " + model.getClass().getSimpleName() + " " + String.join(".", validator.getPath()) + " cannot be " + validator.getRestrict() + "!";
+                            invalid = true;
+                        }
+                    }
+                    
+                }
+                
+                
+                if (invalid) {
+                    results.addMessage(BUSINESS_MESSAGE_KEY, validator.getType().toString(), message);
                     results.setValid(false);
                 }
+                
     
             } break;
             case READ: {
@@ -173,6 +201,22 @@ public class ValidationUtility {
                             message = uniqueConstraintViolation.message;
                         }
                     }
+                }
+                
+                if(!invalid) {
+                    
+                    // check if path value matches restrict value
+                    
+                    if(validator.getPath().length > 0) {
+                                                
+                        Object value = getValueFromPath(model, validator.getPath());
+                        
+                        if(value.toString().equals(validator.getRestrict())) {
+                            message = "Unable to update due to restrictions! " + model.getClass().getSimpleName() + " " + String.join(".", validator.getPath()) + " cannot be " + validator.getRestrict() + "!";
+                            invalid = true;
+                        }
+                    }
+                    
                 }
                 
                 if (invalid) {
@@ -849,17 +893,29 @@ public class ValidationUtility {
         return uniqueColumns;
     }
     
-    private static <U extends ValidatingBase> Field getFieldForProperty(U model, String property) {        
+    private static Object getValueFromPath(Object model, String[] path) {        
+        return recursivelyTraversePath(model, path);
+    }
+    
+    private static Object recursivelyTraversePath(Object object, String[] path) {
+        String property = path[0]; 
+        if(path.length > 1) {
+            path = Arrays.copyOfRange(path, 1, path.length);
+            return recursivelyTraversePath(getValueForProperty(object, property), path);
+        }        
+        return getValueForProperty(object, property);
+    }    
+    
+    private static Field getFieldForProperty(Object model, String property) {        
         return recursivelyFindField(model.getClass(), property);
     }
     
-    private static <U extends ValidatingBase> Object getValueForProperty(U model, String property) {
+    private static Object getValueForProperty(Object model, String property) {
         return getValueForField(model, getFieldForProperty(model, property));
     }
-    
-    private static <U extends ValidatingBase>  Object getValueForField(U model, Field field) {
-    	Object value = null;
         
+    private static Object getValueForField(Object model, Field field) {
+    	Object value = null;
         if(field != null) {
 	        field.setAccessible(true);
 	
@@ -876,9 +932,8 @@ public class ValidationUtility {
         return value;
     }
     
-    private static <U extends ValidatingBase> void setValueForProperty(U model, String property, Object value) {
+    private static void setValueForProperty(Object model, String property, Object value) {
         Field field = getFieldForProperty(model, property);
-
         if(field != null) {
 	        field.setAccessible(true);
 	        

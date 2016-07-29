@@ -122,13 +122,11 @@ public abstract class CoreControllerAspect {
                 try {
                     apiresponses.add(authorizaeAndProceed(joinPoint, auth));
                 } catch (Throwable e) {
+                    apiresponses.add(new ApiResponse( ERROR, "Failed to process request!"));
                     e.printStackTrace();
                 }
             }
         });
-        if(apiresponses.size() == 0) {
-            apiresponses.add(new ApiResponse( ERROR, "Transaction failed!"));
-        }
         return apiresponses.get(0);
     }
 
@@ -146,13 +144,11 @@ public abstract class CoreControllerAspect {
                 try {
                     apiresponses.add(proceed(joinPoint));
                 } catch (Throwable e) {
+                    apiresponses.add(new ApiResponse( ERROR, "Failed to process request!"));
                     e.printStackTrace();
                 }
             }
         });
-        if(apiresponses.size() == 0) {
-            apiresponses.add(new ApiResponse( ERROR, "Transaction failed!"));
-        }
         return apiresponses.get(0);
     }
 
@@ -164,7 +160,7 @@ public abstract class CoreControllerAspect {
     private TransactionTemplate createTransactionTemplate() {
         TransactionTemplate transactionTemplate = new TransactionTemplate(platformTransactionManager);
         transactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-        transactionTemplate.setIsolationLevel(TransactionDefinition.ISOLATION_DEFAULT);
+        transactionTemplate.setIsolationLevel(TransactionDefinition.ISOLATION_SERIALIZABLE);
         return transactionTemplate;
     }
 
@@ -406,7 +402,7 @@ public abstract class CoreControllerAspect {
         for (Annotation validationAnnotation : method.getAnnotations()) {
             if (validationAnnotation instanceof ApiValidation) {
                 for (ApiValidation.Business businessAnnotation : ((ApiValidation) validationAnnotation).business()) {
-                    ((BaseModelValidator) ((ValidatingBase) model).getModelValidator()).addBusinessValidator(new BusinessValidator(businessAnnotation.value(), businessAnnotation.joins(), businessAnnotation.params()));
+                    ((BaseModelValidator) ((ValidatingBase) model).getModelValidator()).addBusinessValidator(new BusinessValidator(businessAnnotation.value(), businessAnnotation.joins(), businessAnnotation.params(), businessAnnotation.path(), businessAnnotation.restrict()));
                 }
             }
         }
