@@ -57,6 +57,7 @@ import edu.tamu.framework.aspect.annotation.ApiValidation;
 import edu.tamu.framework.aspect.annotation.Auth;
 import edu.tamu.framework.enums.ApiResponseType;
 import edu.tamu.framework.model.ApiResponse;
+import edu.tamu.framework.model.BaseEntity;
 import edu.tamu.framework.model.Credentials;
 import edu.tamu.framework.model.HttpRequest;
 import edu.tamu.framework.model.ValidatingBase;
@@ -372,11 +373,11 @@ public abstract class CoreControllerAspect {
                     } break;
                     case "ApiModel": {
                         String pData = headerData != null ? headerData : data;
-                        arguments[index] = pData != null ? objectMapper.convertValue(objectMapper.readTree(pData), objectMapper.constructType(argTypes[index])) : null;
+                        arguments[index] = ensureCompleteModel(pData != null ? objectMapper.convertValue(objectMapper.readTree(pData), objectMapper.constructType(argTypes[index])) : null);
                     } break;
                     case "ApiValidatedModel": {
                         String pData = headerData != null ? headerData : data;
-                        arguments[index] = pData != null ? objectMapper.convertValue(objectMapper.readTree(pData), objectMapper.constructType(argTypes[index])) : null;
+                        arguments[index] = ensureCompleteModel(pData != null ? objectMapper.convertValue(objectMapper.readTree(pData), objectMapper.constructType(argTypes[index])) : null);
                         preProcessObject.validation = validateModel((ValidatingBase) arguments[index], method);
                     } break;
                     case "ApiParameters": {
@@ -395,6 +396,19 @@ public abstract class CoreControllerAspect {
         preProcessObject.valid = preProcessObject.validation.isValid();
 
         return preProcessObject;
+    }
+    
+    public Object ensureCompleteModel(Object model) {
+        if(model != null) {
+            // TODO: move some non-validation methods into seperate utility
+            if(ValidationUtility.recursivelyFindJsonIdentityReference(model.getClass()).size() > 0) {
+                List<Object> response = ValidationUtility.queryWithClassById(model.getClass(), ((BaseEntity) model).getId());
+                if(response.size() > 0) {
+                    model = response.get(0);
+                }
+            }
+        }
+        return model;
     }
 
     public <U extends ValidatingBase> ValidationResults validateModel(U model, Method method) {

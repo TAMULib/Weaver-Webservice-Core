@@ -22,6 +22,8 @@ import javax.persistence.criteria.Root;
 
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+
 import edu.tamu.framework.SpringContext;
 import edu.tamu.framework.model.BaseEntity;
 import edu.tamu.framework.model.ValidatingBase;
@@ -34,6 +36,8 @@ import edu.tamu.framework.validation.ValidationResults;
 public class ValidationUtility {
     
     // TODO: improve regex accordingly
+    
+    // TODO: add logging!!!
     
     public static final String EMAIL_REGEX = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
     public static final String URL_REGEX = "^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
@@ -226,7 +230,7 @@ public class ValidationUtility {
     
             } break;
             case DELETE: {
-            	
+                
             	boolean invalid = false;
                 
             	String message = null;
@@ -236,6 +240,8 @@ public class ValidationUtility {
             	Long id = ((BaseEntity) model).getId();
                 
                 List<Object> queryResults = new ArrayList<Object>();
+                
+                System.out.println("Model id to delete: " + id);
     
                 if (id != null) {
                 	queryResults = queryById(model, id);
@@ -952,11 +958,11 @@ public class ValidationUtility {
         }
     }
     
-    private static <U extends ValidatingBase> List<Object> queryById(U model, Long id) {        
+    public static <U extends ValidatingBase> List<Object> queryById(U model, Long id) {        
         return queryWithClassById(model.getClass(), id);
     }
     
-    private static <U extends ValidatingBase> List<Object> queryWithClassById(Class<?> clazz, Long id) {
+    public static <U extends ValidatingBase> List<Object> queryWithClassById(Class<?> clazz, Long id) {
         EntityManager entityManager = SpringContext.bean(EntityManager.class);
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Object> query = cb.createQuery();
@@ -1010,6 +1016,29 @@ public class ValidationUtility {
         }
             
         return field;        
+    }
+    
+    public static List<String> recursivelyFindJsonIdentityReference(Class<?> clazz) {
+        List<String> jsonIdentityReferences = new ArrayList<String>();
+        
+        // find JsonIdentityReference on fields
+        for (Field field : clazz.getDeclaredFields()) {
+            for (Annotation memberAnnotation : field.getAnnotations()) {
+                if (memberAnnotation instanceof JsonIdentityReference) {
+                    jsonIdentityReferences.add(field.getName());
+                }
+            }
+        }
+        
+        if(clazz.getSuperclass() != null) {
+            Class<?> superClazz = clazz.getSuperclass();
+            if(superClazz != null) {
+                jsonIdentityReferences.addAll(recursivelyFindJsonIdentityReference(superClazz));
+                return jsonIdentityReferences;
+            }
+        }
+            
+        return jsonIdentityReferences;
     }
 
     public static void aggregateValidationResults(ValidationResults into, ValidationResults from) {
