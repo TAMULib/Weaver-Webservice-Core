@@ -12,6 +12,10 @@ package edu.tamu.framework.aspect;
 import static edu.tamu.framework.enums.ApiResponseType.ERROR;
 import static edu.tamu.framework.enums.ApiResponseType.INVALID;
 import static edu.tamu.framework.enums.ApiResponseType.WARNING;
+import static edu.tamu.framework.util.EntityUtility.getValueForProperty;
+import static edu.tamu.framework.util.EntityUtility.queryWithClassById;
+import static edu.tamu.framework.util.EntityUtility.recursivelyFindJsonIdentityReference;
+import static edu.tamu.framework.util.EntityUtility.setValueForProperty;
 
 import java.io.ByteArrayInputStream;
 import java.lang.annotation.Annotation;
@@ -402,15 +406,15 @@ public abstract class CoreControllerAspect {
         if(model != null) {
             // TODO: move some non-validation methods into seperate utility
             
-            List<String> serializedProperties = ValidationUtility.recursivelyFindJsonIdentityReference(model.getClass());
+            List<String> serializedProperties = recursivelyFindJsonIdentityReference(model.getClass());
             
             if(serializedProperties.size() > 0) {
-                List<Object> response = ValidationUtility.queryWithClassById(model.getClass(), ((BaseEntity) model).getId());
+                List<Object> response = queryWithClassById(model.getClass(), ((BaseEntity) model).getId());
                 if(response.size() > 0) {
                     Object fullModel = response.get(0);
                     
                     serializedProperties.forEach(serializedProperty -> {
-                        ValidationUtility.setValueForProperty(model, serializedProperty, ValidationUtility.getValueForProperty(fullModel, serializedProperty));
+                        setValueForProperty(model, serializedProperty, getValueForProperty(fullModel, serializedProperty));
                     });
                 }
             }

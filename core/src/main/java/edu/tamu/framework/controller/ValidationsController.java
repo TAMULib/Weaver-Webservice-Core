@@ -2,6 +2,7 @@ package edu.tamu.framework.controller;
 
 import static edu.tamu.framework.enums.ApiResponseType.INVALID;
 import static edu.tamu.framework.enums.ApiResponseType.SUCCESS;
+import static edu.tamu.framework.util.EntityUtility.recursivelyFindField;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -16,7 +17,6 @@ import org.springframework.stereotype.Controller;
 import edu.tamu.framework.aspect.annotation.ApiMapping;
 import edu.tamu.framework.aspect.annotation.ApiVariable;
 import edu.tamu.framework.model.ApiResponse;
-import edu.tamu.framework.util.ValidationUtility;
 import edu.tamu.framework.validation.InputValidator;
 import edu.tamu.framework.validation.Validator;
 
@@ -67,7 +67,7 @@ public class ValidationsController {
             
             if(model != null) {
                 
-                Field field = ValidationUtility.recursivelyFindField(model.getClass(), MODEL_VALIDATOR_FIELD);
+                Field field = recursivelyFindField(model.getClass(), MODEL_VALIDATOR_FIELD);
                 
                 if(field != null) {
                     
