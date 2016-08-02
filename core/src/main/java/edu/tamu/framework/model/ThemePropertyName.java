@@ -37,7 +37,21 @@ public class ThemePropertyName {
 		this.name = name;
 	}
 
-	public String getName() {
+	/**
+     * @return the id
+     */
+    public long getId() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getName() {
 		return this.name;
 	}
 	

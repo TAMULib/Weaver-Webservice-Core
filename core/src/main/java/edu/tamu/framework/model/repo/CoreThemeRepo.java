@@ -9,11 +9,12 @@
  */
 package edu.tamu.framework.model.repo;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import edu.tamu.framework.model.CoreTheme;
-import edu.tamu.framework.model.ThemeProperty;
 
 /**
  * Application User repository.
@@ -30,10 +31,9 @@ public interface CoreThemeRepo extends JpaRepository<CoreTheme, Long>, CoreTheme
 	
 	public CoreTheme findByActiveTrue();
 
-	public void updateActiveTheme(CoreTheme theme);
+	public List<CoreTheme> findByPropertiesId(Long propertiesId);
 	
-	public void addThemeProperty(CoreTheme theme,ThemeProperty themeProperty);
-
-	public void updateThemeProperty(Long themeId,Long themePropertyId,String value);
+	@Override
+    public void delete(CoreTheme theme);
 
 }

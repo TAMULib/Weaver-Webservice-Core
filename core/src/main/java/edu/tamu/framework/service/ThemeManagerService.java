@@ -133,13 +133,13 @@ public class ThemeManagerService {
 	public void refreshCurrentTheme() {
 		logger.debug("The properties were:");
 		currentTheme.getProperties().forEach(tp -> {
-			logger.debug(tp.getPropertyName().getName()+": "+tp.getValue());
+			logger.debug(tp.getThemePropertyName().getName()+": "+tp.getValue());
 		});
 		currentTheme = coreThemeRepo.getById(currentTheme.getId());
 		
 		logger.debug("The properties are now:");
 		currentTheme.getProperties().forEach(tp -> {
-			logger.debug(tp.getPropertyName().getName()+": "+tp.getValue());
+			logger.debug(tp.getThemePropertyName().getName()+": "+tp.getValue());
 		});
 		this.reloadCache();
 	}
@@ -162,8 +162,8 @@ public class ThemeManagerService {
 		formattedComments.append("/* The ThemeManagerService added the following SASS vars:\n\n");
 		if (this.getCurrentTheme() != null) {
 			for (ThemeProperty p : this.getCurrentTheme().getProperties()) {
-				formattedProperties.append("$"+p.getPropertyName().getName()+": "+p.getValue()+";\n");
-				formattedComments.append("* $"+p.getPropertyName().getName()+": "+p.getValue()+";\n");
+				formattedProperties.append("$"+p.getThemePropertyName().getName()+": "+p.getValue()+";\n");
+				formattedComments.append("* $"+p.getThemePropertyName().getName()+": "+p.getValue()+";\n");
 			}
 			formattedComments.append("*/\n\n");
 			return formattedComments+formattedProperties.toString();

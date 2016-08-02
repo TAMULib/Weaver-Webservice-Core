@@ -1,18 +1,34 @@
 package edu.tamu.framework.model.repo.impl;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import edu.tamu.framework.model.CoreTheme;
 import edu.tamu.framework.model.ThemeProperty;
+import edu.tamu.framework.model.ThemePropertyName;
 import edu.tamu.framework.model.repo.CoreThemeRepo;
 import edu.tamu.framework.model.repo.CoreThemeRepoCustom;
 import edu.tamu.framework.model.repo.ThemePropertyNameRepo;
 import edu.tamu.framework.model.repo.ThemePropertyRepo;
 
 public class CoreThemeRepoImpl implements CoreThemeRepoCustom {
-	
+    
+    @PersistenceContext
+    private EntityManager em;
+    
+    // TODO: improve this
+    // Potential problems:
+    // 1) Can not create theme with default properties.
+    // 2) Deletion of theme is to complex, use cascades to reduce logic required.
+    // 3) Theme property name is normalized but over encapsulated. Using Join to replace a column of names with a column of ids.
+        
 	@Autowired
 	private CoreThemeRepo coreThemeRepo;
 
@@ -20,24 +36,30 @@ public class CoreThemeRepoImpl implements CoreThemeRepoCustom {
 	private ThemePropertyRepo themePropertyRepo;
 	
 	@Autowired 
-	ThemePropertyNameRepo themePropertyNameRepo;
+	private ThemePropertyNameRepo themePropertyNameRepo;
 
 	@Override
 	public CoreTheme create(String name) {
 		CoreTheme theme = coreThemeRepo.getByName(name);
 		if(theme == null) {
 			CoreTheme newTheme = new CoreTheme(name);
-			coreThemeRepo.save(newTheme);
-			themePropertyNameRepo.findAll().forEach(tp -> {
-				ThemeProperty newProperty = themePropertyRepo.create(tp,null);
-				this.addThemeProperty(newTheme, newProperty);
+			newTheme = coreThemeRepo.save(newTheme);
+			for(ThemePropertyName themePropertyName : themePropertyNameRepo.findAll()) {
+				ThemeProperty newProperty = themePropertyRepo.create(themePropertyName, null);
+				
+				newTheme.addThemeProperty(newProperty);
+				newProperty.setTheme(newTheme);
+		        themePropertyRepo.save(newProperty);
+		        coreThemeRepo.save(newTheme);
+				
 				themePropertyRepo.save(newProperty);
-			});
+			}
 			return coreThemeRepo.save(newTheme);
 		}
 		return theme;
 	}
 	
+	@Override
 	public void updateActiveTheme(CoreTheme theme) {
 		CoreTheme activeTheme = coreThemeRepo.findByActiveTrue();
 		if (activeTheme != null) {
@@ -47,14 +69,8 @@ public class CoreThemeRepoImpl implements CoreThemeRepoCustom {
 		theme.setActive(true);
 		coreThemeRepo.save(theme);
 	}
-
-	public void addThemeProperty(CoreTheme theme,ThemeProperty themeProperty) {
-		theme.addProperty(themeProperty);
-		themeProperty.setTheme(theme);
-		themePropertyRepo.save(themeProperty);
-    	coreThemeRepo.save(theme);
-	}
 	
+	@Override
 	public void updateThemeProperty(Long themeId,Long themePropertyId,String value) {
 		CoreTheme theme = coreThemeRepo.getById(themeId);
 		ThemeProperty themeProperty = themePropertyRepo.getThemePropertyById(themePropertyId);
@@ -66,5 +82,49 @@ public class CoreThemeRepoImpl implements CoreThemeRepoCustom {
 		themePropertyRepo.save(themeProperty);
 		coreThemeRepo.save(theme);
 	}
+	
+	@Override
+	@Transactional
+    public void delete(CoreTheme theme) {
+	    
+        if(theme != null) {
+            
+            List<ThemePropertyName> themPropertyNamesToDelete = new ArrayList<ThemePropertyName>();
+            List<ThemeProperty> themPropertiesToDelete = new ArrayList<ThemeProperty>();
+            
+            theme.getProperties().forEach(themeProperty -> {
+                Long themePropertyId = themeProperty.getThemePropertyName().getId();
+                themeProperty.setThemePropertyName(null);
+                
+                themePropertyRepo.save(themeProperty);
+                
+                ThemePropertyName themePropertyName = themePropertyNameRepo.findOne(themePropertyId);
+                if(themePropertyRepo.findThemePropertyByThemePropertyName(themePropertyName).isEmpty()) {
+                    themPropertyNamesToDelete.add(themePropertyName);
+                }
+                
+                themeProperty.setTheme(null);
+                themePropertyRepo.save(themeProperty);
+                 
+                if(coreThemeRepo.findByPropertiesId(themeProperty.getId()).isEmpty()) {
+                    themPropertiesToDelete.add(themeProperty);
+                }
+                
+            });
+            
+            theme.clearProperties();
+            coreThemeRepo.save(theme);
+            
+            themPropertyNamesToDelete.forEach(themPropertyName -> {
+                themePropertyNameRepo.delete(themPropertyName);
+            });
+            
+            themPropertiesToDelete.forEach(themeProperty -> {
+                themePropertyRepo.delete(themeProperty);
+            });
+            
+            em.remove(em.contains(theme) ? theme : em.merge(theme));
+        }
+    }
 	
 }
