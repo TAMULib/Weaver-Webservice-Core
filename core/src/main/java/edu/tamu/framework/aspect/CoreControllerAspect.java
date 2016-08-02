@@ -401,10 +401,17 @@ public abstract class CoreControllerAspect {
     public Object ensureCompleteModel(Object model) {
         if(model != null) {
             // TODO: move some non-validation methods into seperate utility
-            if(ValidationUtility.recursivelyFindJsonIdentityReference(model.getClass()).size() > 0) {
+            
+            List<String> serializedProperties = ValidationUtility.recursivelyFindJsonIdentityReference(model.getClass());
+            
+            if(serializedProperties.size() > 0) {
                 List<Object> response = ValidationUtility.queryWithClassById(model.getClass(), ((BaseEntity) model).getId());
                 if(response.size() > 0) {
-                    model = response.get(0);
+                    Object fullModel = response.get(0);
+                    
+                    serializedProperties.forEach(serializedProperty -> {
+                        ValidationUtility.setValueForProperty(model, serializedProperty, ValidationUtility.getValueForProperty(fullModel, serializedProperty));
+                    });
                 }
             }
         }

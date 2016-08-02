@@ -916,7 +916,7 @@ public class ValidationUtility {
         return recursivelyFindField(model.getClass(), property);
     }
     
-    private static Object getValueForProperty(Object model, String property) {
+    public static Object getValueForProperty(Object model, String property) {
         return getValueForField(model, getFieldForProperty(model, property));
     }
         
@@ -938,7 +938,7 @@ public class ValidationUtility {
         return value;
     }
     
-    private static void setValueForProperty(Object model, String property, Object value) {
+    public static void setValueForProperty(Object model, String property, Object value) {
         Field field = getFieldForProperty(model, property);
         if(field != null) {
 	        field.setAccessible(true);
