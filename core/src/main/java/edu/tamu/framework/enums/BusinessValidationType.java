@@ -8,7 +8,7 @@ public enum BusinessValidationType {
     DELETE("Unable to delete model"),
     RESET("Unable to reset model"),
     EXISTS("Model already exists"),
-    NONEXISTS("Model does not exists");
+    NONEXISTS("Model does not exist");
 
     String message;
 
