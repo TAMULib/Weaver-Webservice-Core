@@ -36,58 +36,58 @@ import org.springframework.stereotype.Component;
 @Component
 public class CoreCorsFilter implements Filter {
 
-	@Value("${app.security.allow-access}")
-	private String[] hosts;
+    @Value("${app.security.allow-access}")
+    private String[] hosts;
 
-	/**
-	 * Filter to add appropriate access control.
-	 *
-	 * @param req
-	 *            ServletRequest
-	 * @param res
-	 *            ServletResponse
-	 * @param chain
-	 *            FilterChain
-	 * 
-	 * @exception IOException
-	 * @exception ServletException
-	 * 
-	 */
-	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
-		HttpServletResponse response = (HttpServletResponse) res;
-		HttpServletRequest request = (HttpServletRequest) req;
+    /**
+     * Filter to add appropriate access control.
+     *
+     * @param req
+     *            ServletRequest
+     * @param res
+     *            ServletResponse
+     * @param chain
+     *            FilterChain
+     * 
+     * @exception IOException
+     * @exception ServletException
+     * 
+     */
+    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
+        HttpServletResponse response = (HttpServletResponse) res;
+        HttpServletRequest request = (HttpServletRequest) req;
 
-		for (String host : hosts) {
-			if (host.equals(request.getHeader("Origin"))) {
-				response.setHeader("Access-Control-Allow-Origin", host);
-			}
-		}
+        for (String host : hosts) {
+            if (host.equals(request.getHeader("Origin"))) {
+                response.setHeader("Access-Control-Allow-Origin", host);
+            }
+        }
 
-		response.setHeader("Access-Control-Allow-Credentials", "true");
-		response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
-		response.setHeader("Access-Control-Max-Age", "3600");
-		response.setHeader("Access-Control-Allow-Headers", "Content-Type, x-requested-with, jwt, data, x-forwarded-for");
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+        response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
+        response.setHeader("Access-Control-Max-Age", "3600");
+        response.setHeader("Access-Control-Allow-Headers", "Content-Type, x-requested-with, jwt, data, x-forwarded-for");
 
-		chain.doFilter(req, res);
-	}
+        chain.doFilter(req, res);
+    }
 
-	/**
-	 * Initialize CORS filter.
-	 *
-	 * @param filterConfig
-	 *            FilterConfig
-	 *
-	 */
-	public void init(FilterConfig filterConfig) {
+    /**
+     * Initialize CORS filter.
+     *
+     * @param filterConfig
+     *            FilterConfig
+     *
+     */
+    public void init(FilterConfig filterConfig) {
 
-	}
+    }
 
-	/**
-	 * Destroy method.
-	 *
-	 */
-	public void destroy() {
+    /**
+     * Destroy method.
+     *
+     */
+    public void destroy() {
 
-	}
+    }
 
 }

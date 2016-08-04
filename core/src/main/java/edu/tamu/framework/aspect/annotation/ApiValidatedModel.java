@@ -1,5 +1,5 @@
 /* 
- * Data.java 
+ * ApiValidatedModel.java 
  * 
  * Version: 
  *     $Id$ 
@@ -9,13 +9,14 @@
  */
 package edu.tamu.framework.aspect.annotation;
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation to have aspect inject request id.
+ * Annotation for combined RequestMapping and MessageMapping.
  * 
  * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
  * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>
@@ -24,8 +25,11 @@ import java.lang.annotation.Target;
  * @author <a href="mailto:wwelling@library.tamu.edu">William Welling</a>
  *
  */
-@Target(ElementType.PARAMETER)
+@Target({ ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Data {
+@Documented
+public @interface ApiValidatedModel {
+
+    String value() default "";
 
 }

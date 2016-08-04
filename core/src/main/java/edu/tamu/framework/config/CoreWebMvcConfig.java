@@ -36,41 +36,41 @@ import org.springframework.web.servlet.resource.VersionResourceResolver;
 @AutoConfigureAfter(DispatcherServletAutoConfiguration.class)
 public class CoreWebMvcConfig extends WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter {
 
-	@Autowired
-	private Environment env;
+    @Autowired
+    private Environment env;
 
-	/**
-	 * Resource url encoding filter bean.
-	 * 
-	 * @return ResourceUrlEncodingFilter
-	 */
-	@Bean
-	public ResourceUrlEncodingFilter resourceUrlEncodingFilter() {
-		return new ResourceUrlEncodingFilter();
-	}
+    /**
+     * Resource url encoding filter bean.
+     * 
+     * @return ResourceUrlEncodingFilter
+     */
+    @Bean
+    public ResourceUrlEncodingFilter resourceUrlEncodingFilter() {
+        return new ResourceUrlEncodingFilter();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
-		configurer.enable();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
+        configurer.enable();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		boolean devMode = this.env.acceptsProfiles("dev");
-		boolean useResourceCache = !devMode;
-		Integer cachePeriod = devMode ? 0 : null;
-		registry.addResourceHandler("/static/**")
-				.addResourceLocations("classpath:/static/")
-				.setCachePeriod(cachePeriod)
-				.resourceChain(useResourceCache)
-				.addResolver(new VersionResourceResolver().addContentVersionStrategy("/**"))
-				.addTransformer(new AppCacheManifestTransformer());
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        boolean devMode = this.env.acceptsProfiles("dev");
+        boolean useResourceCache = !devMode;
+        Integer cachePeriod = devMode ? 0 : null;
+        registry.addResourceHandler("/static/**")
+                .addResourceLocations("classpath:/static/")
+                .setCachePeriod(cachePeriod)
+                .resourceChain(useResourceCache)
+                .addResolver(new VersionResourceResolver().addContentVersionStrategy("/**"))
+                .addTransformer(new AppCacheManifestTransformer());
+    }
 
 }

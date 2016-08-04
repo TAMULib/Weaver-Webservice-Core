@@ -30,22 +30,22 @@ import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 @EnableScheduling
 public class CoreScheduleConfig implements SchedulingConfigurer {
 
-	/**
-	 * Thread pool task scheduler bean.
-	 * 
-	 * @return ThreadPoolTaskScheduler
-	 */
-	@Bean()
-	public ThreadPoolTaskScheduler taskScheduler() {
-		return new ThreadPoolTaskScheduler();
-	}
+    /**
+     * Thread pool task scheduler bean.
+     * 
+     * @return ThreadPoolTaskScheduler
+     */
+    @Bean()
+    public ThreadPoolTaskScheduler taskScheduler() {
+        return new ThreadPoolTaskScheduler();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
-		taskRegistrar.setTaskScheduler(taskScheduler());
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
+        taskRegistrar.setTaskScheduler(taskScheduler());
+    }
 
 }

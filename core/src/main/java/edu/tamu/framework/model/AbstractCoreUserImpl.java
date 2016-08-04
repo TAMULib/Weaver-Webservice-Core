@@ -16,6 +16,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import edu.tamu.framework.enums.CoreRole;
+
 /**
  * Abstract Core User Implementation.
  * 
@@ -30,45 +35,47 @@ import javax.persistence.Table;
 @Table(name = "core_users")
 public abstract class AbstractCoreUserImpl implements CoreUser {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@Column(name = "uin", nullable = true, unique = true)
-	private Long uin;
+    @Column(name = "uin", nullable = true, unique = true)
+    private Long uin;
 
-	@Column(name = "role")
-	private String role;
+    @Column(name = "role")
+    private CoreRole role;
 
-	public AbstractCoreUserImpl() {
-	}
+    public AbstractCoreUserImpl() {
+    }
 
-	public AbstractCoreUserImpl(Long uin) {
-		this.uin = uin;
-	}
+    public AbstractCoreUserImpl(Long uin) {
+        this.uin = uin;
+    }
 
-	public Long getId() {
-		return id;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	@Override
-	public void setUin(Long uin) {
-		this.uin = uin;
-	}
+    @Override
+    public void setUin(Long uin) {
+        this.uin = uin;
+    }
 
-	@Override
-	public Long getUin() {
-		return uin;
-	}
+    @Override
+    public Long getUin() {
+        return uin;
+    }
 
-	@Override
-	public void setRole(String role) {
-		this.role = role;
-	}
+    @Override
+    @JsonDeserialize(as = CoreRole.class)
+    public void setRole(IRole role) {
+        this.role = (CoreRole) role;
+    }
 
-	@Override
-	public String getRole() {
-		return role;
-	}
+    @Override
+    @JsonSerialize(as = CoreRole.class)
+    public IRole getRole() {
+        return role;
+    }
 
 }

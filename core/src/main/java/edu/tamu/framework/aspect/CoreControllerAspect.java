@@ -10,44 +10,70 @@
 package edu.tamu.framework.aspect;
 
 import static edu.tamu.framework.enums.ApiResponseType.ERROR;
+import static edu.tamu.framework.enums.ApiResponseType.INVALID;
 import static edu.tamu.framework.enums.ApiResponseType.WARNING;
+import static edu.tamu.framework.util.EntityUtility.getValueForProperty;
+import static edu.tamu.framework.util.EntityUtility.queryWithClassById;
+import static edu.tamu.framework.util.EntityUtility.recursivelyFindJsonIdentityReference;
+import static edu.tamu.framework.util.EntityUtility.setValueForProperty;
 
+import java.io.ByteArrayInputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.RequestContextHolder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.tamu.framework.aspect.annotation.ApiMapping;
+import edu.tamu.framework.aspect.annotation.ApiValidation;
 import edu.tamu.framework.aspect.annotation.Auth;
 import edu.tamu.framework.enums.ApiResponseType;
-import edu.tamu.framework.enums.CoreRoles;
 import edu.tamu.framework.model.ApiResponse;
+import edu.tamu.framework.model.BaseEntity;
 import edu.tamu.framework.model.Credentials;
 import edu.tamu.framework.model.HttpRequest;
+import edu.tamu.framework.model.ValidatingBase;
 import edu.tamu.framework.model.WebSocketRequest;
 import edu.tamu.framework.service.HttpRequestService;
+import edu.tamu.framework.service.RoleService;
 import edu.tamu.framework.service.WebSocketRequestService;
+import edu.tamu.framework.util.ValidationUtility;
+import edu.tamu.framework.validation.BaseModelValidator;
+import edu.tamu.framework.validation.BusinessValidator;
+import edu.tamu.framework.validation.MethodValidator;
+import edu.tamu.framework.validation.ValidationResults;
 
 /**
  * Core Controller Aspect
@@ -63,336 +89,427 @@ import edu.tamu.framework.service.WebSocketRequestService;
 @Aspect
 public abstract class CoreControllerAspect {
 
-	// TODO: put in application.properties of each app
-	private final static int NUMBER_OF_RETRY_ATTEMPTS = 2;
+    @Value("${app.aspect.retry}")
+    private int NUMBER_OF_RETRY_ATTEMPTS;
+    
+    @Autowired
+    private PlatformTransactionManager platformTransactionManager;
 
-	@Autowired
-	public ObjectMapper objectMapper;
+    @Autowired
+    public ObjectMapper objectMapper;
 
-	@Autowired
-	private WebSocketRequestService webSocketRequestService;
+    @Autowired
+    private WebSocketRequestService webSocketRequestService;
 
-	@Autowired
-	private HttpRequestService httpRequestService;
+    @Autowired
+    private HttpRequestService httpRequestService;
 
-	@Autowired
-	private SecurityContext securityContext;
-	
-	@Autowired
+    @Autowired
+    private SecurityContext securityContext;
+
+    @Autowired
     private ServletContext servletContext;
 
-	@Autowired
-	private SimpMessagingTemplate simpMessagingTemplate;
+    @Autowired
+    private RoleService roleService;
 
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
 
-	/**
-	 * JoinPoint in which populates credentials and authorizes request.
-	 * 
-	 * @param joinPoint
-	 *            ProceedingJoinPoint
-	 * @param auth
-	 *            Auth
-	 * @return ApiResponse
-	 * @throws Throwable
-	 */
-	@Around("execution(* *.*.*.controller.*.*(..)) && !@annotation(edu.tamu.framework.aspect.annotation.SkipAop) && @annotation(auth)")
-	public ApiResponse polpulateCredentialsAndAuthorize(ProceedingJoinPoint joinPoint, Auth auth) throws Throwable {
-
-		PreProcessObject preProcessObject = preProcess(joinPoint);
-		
-		ApiResponse apiresponse = null;
-
-		if (CoreRoles.valueOf(preProcessObject.shib.getRole()).ordinal() < CoreRoles.valueOf(auth.role()).ordinal()) {
-			logger.info(preProcessObject.shib.getFirstName() + " " + preProcessObject.shib.getLastName() + "(" + preProcessObject.shib.getUin() + ") attempted restricted access.");
-			apiresponse = new ApiResponse(preProcessObject.requestId, ERROR, "You are not authorized for this request.");
-		}
-		else {
-
-		    apiresponse = (ApiResponse) joinPoint.proceed(preProcessObject.arguments);
-
-    		if (apiresponse != null) {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     
-    			// retry endpoint if error response type
-    			int attempt = 0;
-    			while (attempt < NUMBER_OF_RETRY_ATTEMPTS && apiresponse.getMeta().getType() == ApiResponseType.ERROR) {
-    				attempt++;
-    				logger.debug("Retry attempt " + attempt);
-    				apiresponse = (ApiResponse) joinPoint.proceed(preProcessObject.arguments);
-    			}
+    @Around("execution(* *.*.*.controller.*.*(..)) && !@annotation(edu.tamu.framework.aspect.annotation.SkipAop) && @annotation(edu.tamu.framework.aspect.annotation.ApiValidation) && @annotation(auth)")
+    public ApiResponse transactionallyPolpulateCredentialsAndAuthorize(ProceedingJoinPoint joinPoint, Auth auth) throws Throwable {
+        List<ApiResponse> apiresponses = new ArrayList<ApiResponse>();        
+        createTransactionTemplate().execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+                try {
+                    apiresponses.add(authorizeAndProceed(joinPoint, auth));
+                } catch (Throwable e) {
+                    apiresponses.add(new ApiResponse( ERROR, "Failed to process request!"));
+                    e.printStackTrace();
+                }
+            }
+        });
+        return apiresponses.get(0);
+    }
+
+    @Around("execution(* *.*.*.controller.*.*(..)) && !@annotation(edu.tamu.framework.aspect.annotation.SkipAop) && !@annotation(edu.tamu.framework.aspect.annotation.ApiValidation) && @annotation(auth)")
+    public ApiResponse polpulateCredentialsAndAuthorize(ProceedingJoinPoint joinPoint, Auth auth) throws Throwable {
+        return authorizeAndProceed(joinPoint, auth);
+    }
     
-    			apiresponse.getMeta().setId(preProcessObject.requestId);
-    		} else {
-    			apiresponse = new ApiResponse(WARNING, "Endpoint returns void!");
-    		}
-		}
+    @Around("execution(* *.*.*.controller.*.*(..)) && !@annotation(edu.tamu.framework.aspect.annotation.SkipAop) && @annotation(edu.tamu.framework.aspect.annotation.ApiValidation) && !@annotation(edu.tamu.framework.aspect.annotation.Auth)")
+    public ApiResponse transactionallyPopulateCredentials(ProceedingJoinPoint joinPoint) throws Throwable {
+        List<ApiResponse> apiresponses = new ArrayList<ApiResponse>();
+        createTransactionTemplate().execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+                try {
+                    apiresponses.add(proceed(joinPoint));
+                } catch (Throwable e) {
+                    apiresponses.add(new ApiResponse( ERROR, "Failed to process request!"));
+                    e.printStackTrace();
+                }
+            }
+        });
+        return apiresponses.get(0);
+    }
 
-		// if using combined ApiMapping annotation send message as similar to
-		// SendToUser annotation
-		if (preProcessObject.protocol == Protocol.WEBSOCKET) {
-			simpMessagingTemplate.convertAndSend(preProcessObject.destination, apiresponse);
-		}
+    @Around("execution(* *.*.*.controller.*.*(..)) && !@annotation(edu.tamu.framework.aspect.annotation.SkipAop) && !@annotation(edu.tamu.framework.aspect.annotation.ApiValidation) && !@annotation(edu.tamu.framework.aspect.annotation.Auth)")
+    public ApiResponse populateCredentials(ProceedingJoinPoint joinPoint) throws Throwable {
+        return proceed(joinPoint);
+    }
+    
+    private TransactionTemplate createTransactionTemplate() {
+        TransactionTemplate transactionTemplate = new TransactionTemplate(platformTransactionManager);
+        transactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+        transactionTemplate.setIsolationLevel(TransactionDefinition.ISOLATION_SERIALIZABLE);
+        return transactionTemplate;
+    }
 
-		return apiresponse;
-	}
+    private ApiResponse authorize(PreProcessObject preProcessObject, Auth auth) {
+        ApiResponse apiresponse = null;
+        if (roleService.valueOf(preProcessObject.shib.getRole()).ordinal() < roleService.valueOf(auth.role()).ordinal()) {
+            logger.info(preProcessObject.shib.getFirstName() + " " + preProcessObject.shib.getLastName() + "(" + preProcessObject.shib.getUin() + ") attempted restricted access.");
+            apiresponse = new ApiResponse(preProcessObject.requestId, ERROR, "You are not authorized for this request.");
+        }
+        return apiresponse;
+    }
 
-	/**
-	 * JoinPoint in which populates credentials.
-	 * 
-	 * @param joinPoint
-	 *            ProceedingJoinPoint
-	 * @return ApiResponse
-	 * @throws Throwable
-	 */
-	@Around("execution(* *.*.*.controller.*.*(..)) && !@annotation(edu.tamu.framework.aspect.annotation.SkipAop) && !@annotation(edu.tamu.framework.aspect.annotation.Auth)")
-	public ApiResponse populateCredentials(ProceedingJoinPoint joinPoint) throws Throwable {
+    private ApiResponse proceed(ProceedingJoinPoint joinPoint, PreProcessObject preProcessObject) throws Throwable {
+        ApiResponse apiresponse = (ApiResponse) joinPoint.proceed(preProcessObject.arguments);
+        if (apiresponse != null) {
+            // retry endpoint if error response type
+            int attempt = 0;
+            while (attempt <= NUMBER_OF_RETRY_ATTEMPTS && apiresponse.getMeta().getType() == ApiResponseType.ERROR) {
+                attempt++;
+                logger.debug("Retry attempt " + attempt);
+                apiresponse = (ApiResponse) joinPoint.proceed(preProcessObject.arguments);
+            }
+        } else {
+            apiresponse = new ApiResponse(WARNING, "Endpoint returns void!");
+        }
+        return apiresponse;
+    }
 
-		PreProcessObject preProcessObject = preProcess(joinPoint);
+    private void broadcast(PreProcessObject preProcessObject, ApiResponse apiresponse) {
+        // if using combined ApiMapping annotation send message as similar to SendToUser annotation
+        if (preProcessObject.protocol == Protocol.WEBSOCKET) {
+            apiresponse.getMeta().setId(preProcessObject.requestId);
+            simpMessagingTemplate.convertAndSend(preProcessObject.destination, apiresponse);
+        }
+    }
 
-		ApiResponse apiresponse = (ApiResponse) joinPoint.proceed(preProcessObject.arguments);
+    private ApiResponse authorizeAndProceed(ProceedingJoinPoint joinPoint, Auth auth) throws Throwable {
+        PreProcessObject preProcessObject = preProcess(joinPoint);
+        ApiResponse apiresponse = null;
+        if (preProcessObject.valid) {
+            apiresponse = authorize(preProcessObject, auth);
+            if (apiresponse == null) {
+                apiresponse = proceed(joinPoint, preProcessObject);
+            }
+        } else {
+            apiresponse = new ApiResponse(INVALID, preProcessObject.validation);
+        }
+        broadcast(preProcessObject, apiresponse);
+        return apiresponse;
+    }
 
-		if (apiresponse != null) {
+    private ApiResponse proceed(ProceedingJoinPoint joinPoint) throws Throwable {
+        PreProcessObject preProcessObject = preProcess(joinPoint);
+        ApiResponse apiresponse = null;
+        if (preProcessObject.valid) {
+            apiresponse = proceed(joinPoint, preProcessObject);
+        } else {
+            apiresponse = new ApiResponse(INVALID, preProcessObject.validation);
+        }
+        broadcast(preProcessObject, apiresponse);
+        return apiresponse;
+    }
 
-			// retry endpoint if error response type
-			int attempt = 0;
-			while (attempt < NUMBER_OF_RETRY_ATTEMPTS && apiresponse.getMeta().getType() == ApiResponseType.ERROR) {
-				attempt++;
-				logger.debug("Retry attempt " + attempt);
-				apiresponse = (ApiResponse) joinPoint.proceed(preProcessObject.arguments);
-			}
+    private PreProcessObject preProcess(ProceedingJoinPoint joinPoint) throws Throwable {
 
-			apiresponse.getMeta().setId(preProcessObject.requestId);
-		} else {
-			apiresponse = new ApiResponse(WARNING, "Endpoint returns void!");
-		}
+        Credentials credentials = null;
 
-		// if using combined ApiMapping annotation send message as similar to
-		// SendToUser annotation
-		if (preProcessObject.protocol == Protocol.WEBSOCKET) {
-			simpMessagingTemplate.convertAndSend(preProcessObject.destination, apiresponse);
-		}
+        Map<String, String> apiVariables = null;
 
-		return apiresponse;
-	}
+        String requestId = null;
 
-	/**
-	 * Pre process method.
-	 * 
-	 * @param joinPoint
-	 *            ProceedingJoinPoint
-	 * @return PreProcessObject
-	 * @throws Throwable
-	 */
-	private PreProcessObject preProcess(ProceedingJoinPoint joinPoint) throws Throwable {
+        String data = null;
+        
+        String headerData = null;
 
-		Credentials shib = null;
+        Map<String, String[]> parameters = new HashMap<String, String[]>();
 
-		Map<String, String> apiVariables = null;
+        MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
 
-		String requestId = null;
+        Object[] arguments = joinPoint.getArgs();
 
-		String data = null;
+        Class<?> clazz = methodSignature.getDeclaringType();
 
-		Map<String, String[]> parameters = new HashMap<String, String[]>();
+        String[] argNames = methodSignature.getParameterNames();
 
-		MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
+        Type[] argTypes = new Type[argNames.length];
 
-		Object[] arguments = joinPoint.getArgs();
+        Method method = methodSignature.getMethod();
 
-		String[] argNames = methodSignature.getParameterNames();
+        int i = 0;
+        for (Parameter parameter : method.getParameters()) {
+            argTypes[i++] = parameter.getParameterizedType();
+        }
 
-		Class<?> clazz = methodSignature.getDeclaringType();
+        Protocol protocol;
 
-		Method method = clazz.getDeclaredMethod(methodSignature.getName(), methodSignature.getParameterTypes());
+        String destination = "";
 
-		Protocol protocol;
+        Message<?> message = null;
 
-		String destination = "";
+        HttpServletRequest servletRequest = null;
 
-		Message<?> message = null;
+        if (RequestContextHolder.getRequestAttributes() != null) {
 
-		HttpServletRequest servletRequest = null;
+            protocol = Protocol.HTTP;
 
-		if (RequestContextHolder.getRequestAttributes() != null) {
+            // determine endpoint path either from ApiMapping or RequestMapping annotation
+            String path = servletContext.getContextPath();
 
-			protocol = Protocol.HTTP;
+            if (clazz.getAnnotationsByType(RequestMapping.class).length > 0) {
+                path += clazz.getAnnotationsByType(RequestMapping.class)[0].value()[0];
+            } else {
+                path += clazz.getAnnotationsByType(ApiMapping.class)[0].value()[0];
+            }
 
-			// determine endpoint path either from ApiMapping or RequestMapping annotation
-			String path = servletContext.getContextPath();
+            if (method.getAnnotation(RequestMapping.class) != null) {
+                path += method.getAnnotation(RequestMapping.class).value()[0];
+            } else {
+                path += method.getAnnotation(ApiMapping.class).value()[0];
+            }
 
-			if (clazz.getAnnotationsByType(RequestMapping.class).length > 0) {
-				path += clazz.getAnnotationsByType(RequestMapping.class)[0].value()[0];
-			} else {
-				path += clazz.getAnnotationsByType(ApiMapping.class)[0].value()[0];
-			}
+            HttpRequest request = httpRequestService.getAndRemoveRequestByDestinationAndUser(path, securityContext.getAuthentication().getName());
 
-			if (method.getAnnotation(RequestMapping.class) != null) {
-				path += method.getAnnotation(RequestMapping.class).value()[0];
-			} else {
-				path += method.getAnnotation(ApiMapping.class).value()[0];
-			}
-			
-			HttpRequest request = httpRequestService.getAndRemoveRequestByDestinationAndUser(path, securityContext.getAuthentication().getName());
-			
-			servletRequest = request.getRequest();
-			
-			parameters = servletRequest.getParameterMap();
+            servletRequest = request.getRequest();
 
-			logger.debug("The request: " + servletRequest);
-			
-			if (path.contains("{")) {
-				apiVariables = getApiVariable(path, servletContext.getContextPath() + servletRequest.getServletPath());
-			}
+            parameters = servletRequest.getParameterMap();
 
-			if (servletRequest.getAttribute("shib") != null) {
-				shib = (Credentials) servletRequest.getAttribute("shib");
-			}
+            logger.debug("The request: " + servletRequest);
 
-			if (servletRequest.getAttribute("data") != null) {
-				data = (String) servletRequest.getAttribute("data");
-			}
+            if (path.contains("{")) {
+                apiVariables = getApiVariable(path, servletContext.getContextPath() + servletRequest.getServletPath());
+            }
 
-		} else {
+            credentials = request.getCredentials();
 
-			// determine endpoint path either from ApiMapping or MessageMapping annotation
-			String path = "";
+            if (servletRequest.getMethod().equals("POST")) {
+                data = StreamUtils.copyToString(servletRequest.getInputStream(), StandardCharsets.UTF_8);
+            }
 
-			if (clazz.getAnnotationsByType(MessageMapping.class).length > 0) {
-				path += clazz.getAnnotationsByType(MessageMapping.class)[0].value()[0];
-			} else {
-				path += clazz.getAnnotationsByType(ApiMapping.class)[0].value()[0];
-			}
+            if (servletRequest.getAttribute("data") != null) {
+                headerData = (String) servletRequest.getAttribute("data");
+            }
+            
+        } else {
 
-			if (method.getAnnotation(MessageMapping.class) != null) {
-				path += method.getAnnotation(MessageMapping.class).value()[0];
-				protocol = Protocol.DEFAULT;
-			} else {
-				path += method.getAnnotation(ApiMapping.class).value()[0];
-				protocol = Protocol.WEBSOCKET;
-			}
+            // determine endpoint path either from ApiMapping or MessageMapping annotation
+            String path = "";
 
-			WebSocketRequest request = webSocketRequestService.getAndRemoveMessageByDestinationAndUser(path, securityContext.getAuthentication().getName());
+            if (clazz.getAnnotationsByType(MessageMapping.class).length > 0) {
+                path += clazz.getAnnotationsByType(MessageMapping.class)[0].value()[0];
+            } else {
+                path += clazz.getAnnotationsByType(ApiMapping.class)[0].value()[0];
+            }
 
-			message = request.getMessage();
+            if (method.getAnnotation(MessageMapping.class) != null) {
+                path += method.getAnnotation(MessageMapping.class).value()[0];
+                protocol = Protocol.DEFAULT;
+            } else {
+                path += method.getAnnotation(ApiMapping.class).value()[0];
+                protocol = Protocol.WEBSOCKET;
+            }
 
-			logger.debug("The message: " + message);
+            WebSocketRequest request = webSocketRequestService.getAndRemoveMessageByDestinationAndUser(path, securityContext.getAuthentication().getName());
 
-			StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+            message = request.getMessage();
 
-			destination = accessor.getDestination().replace("ws", "queue") + "-user" + accessor.getSessionId();
+            logger.debug("The message: " + message);
 
-			requestId = accessor.getNativeHeader("id").get(0);
+            StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 
-			shib = (Credentials) accessor.getSessionAttributes().get("shib");
+            destination = accessor.getDestination().replace("ws", "queue") + "-user" + accessor.getSessionId();
 
-			if (path.contains("{")) {
-				apiVariables = getApiVariable(path, accessor.getDestination());
-			}
+            requestId = accessor.getNativeHeader("id").get(0);
 
-			if (accessor.getNativeHeader("data") != null) {
-				data = accessor.getNativeHeader("data").get(0).toString();
-			}
-		}
+            credentials = request.getCredentials();
 
-		int index = 0;
-		for (Annotation[] annotations : method.getParameterAnnotations()) {
+            if (path.contains("{")) {
+                apiVariables = getApiVariable(path, accessor.getDestination());
+            }
 
-			String annotationString = null;
+            if (accessor.getNativeHeader("data") != null) {
+                data = accessor.getNativeHeader("data").get(0).toString();
+            }
+        }
 
-			for (Annotation annotation : annotations) {
-				annotationString = annotation.toString();
-				annotationString = annotationString.substring(annotationString.lastIndexOf('.') + 1, annotationString.indexOf("("));
-			}
+        PreProcessObject preProcessObject = new PreProcessObject(credentials, requestId, arguments, protocol, destination, true);
 
-			if (annotationString != null) {
-				switch (annotationString) {
-					case "ApiVariable": {
-						arguments[index] = apiVariables.get(argNames[index]);
-					} break;
-					case "Shib": {
-						arguments[index] = shib;
-					} break;
-					case "Data": {
-						arguments[index] = data;
-					} break;
-					case "Parameters": {
-						arguments[index] = parameters;
-					} break;
-					case "InputStream": {
-						arguments[index] = servletRequest.getInputStream();
-					} break;
-				}
-			}
-			index++;
-		}
+        int index = 0;
+        for (Annotation[] annotations : method.getParameterAnnotations()) {
 
-		return new PreProcessObject(shib, requestId, arguments, protocol, destination);
-	}
+            String annotationString = null;
 
-	/**
-	 * Get API variable
-	 * 
-	 * @param mapping
-	 *            String
-	 * @param path
-	 *            String
-	 * @return Map<String, String>
-	 */
-	protected Map<String, String> getApiVariable(String mapping, String path) {
-		if (path.contains("/ws")) mapping = "/ws" + mapping;
-		if (path.contains("/private/queue")) mapping = "/private/queue" + mapping;
-		Map<String, String> valuesMap = new HashMap<String, String>();
-		String[] keys = mapping.split("/");
-		String[] values = path.split("/");
-		for (int i = 0; i < keys.length; i++) {
-			if (keys[i].contains("{") && keys[i].contains("}")) {
-				valuesMap.put(keys[i].substring(1, keys[i].length() - 1), values[i]);
-			}
-		}
-		return valuesMap;
-	}
+            for (Annotation annotation : annotations) {
+                annotationString = annotation.toString();
+                annotationString = annotationString.substring(annotationString.lastIndexOf('.') + 1, annotationString.indexOf("("));
+            }
 
-	/**
-	 * Inner pre process object class.
-	 */
-	protected class PreProcessObject {
+            if (annotationString != null) {
+                switch (annotationString) {
+                    case "ApiVariable": {
+                        arguments[index] = apiVariables.get(argNames[index]) != null ? objectMapper.convertValue(apiVariables.get(argNames[index]), objectMapper.constructType(argTypes[index])) : null;
+                    } break;
+                    case "ApiCredentials": {
+                        arguments[index] = credentials;
+                    } break;
+                    case "ApiData": {
+                        String pData = headerData != null ? headerData : data;
+                        arguments[index] = pData != null ? objectMapper.convertValue(objectMapper.readTree(pData), objectMapper.constructType(argTypes[index])) : null;
+                    } break;
+                    case "ApiModel": {
+                        String pData = headerData != null ? headerData : data;
+                        arguments[index] = ensureCompleteModel(pData != null ? objectMapper.convertValue(objectMapper.readTree(pData), objectMapper.constructType(argTypes[index])) : null);
+                    } break;
+                    case "ApiValidatedModel": {
+                        String pData = headerData != null ? headerData : data;
+                        arguments[index] = ensureCompleteModel(pData != null ? objectMapper.convertValue(objectMapper.readTree(pData), objectMapper.constructType(argTypes[index])) : null);
+                        preProcessObject.validation = validateModel((ValidatingBase) arguments[index], method);
+                    } break;
+                    case "ApiParameters": {
+                        arguments[index] = parameters;
+                    } break;
+                    case "ApiInputStream": {
+                        arguments[index] = new ByteArrayInputStream(data.getBytes(StandardCharsets.UTF_8));
+                    } break;
+                }
+            }
+            index++;
+        }
 
-		Credentials shib;
-		String requestId;
-		Object[] arguments;
-		Protocol protocol;
-		String destination;
+        ValidationUtility.aggregateValidationResults(preProcessObject.validation, validateMethod(method, arguments));
 
-		public PreProcessObject(Credentials shib, Object[] arguments) {
-			this.shib = shib;
-			this.arguments = arguments;
-		}
+        preProcessObject.valid = preProcessObject.validation.isValid();
 
-		public PreProcessObject(Credentials shib, String requestId, Object[] arguments) {
-			this.shib = shib;
-			this.requestId = requestId;
-			this.arguments = arguments;
-		}
+        return preProcessObject;
+    }
+    
+    public Object ensureCompleteModel(Object model) {
+        if(model != null) {
+            // TODO: move some non-validation methods into seperate utility
+            
+            List<String> serializedProperties = recursivelyFindJsonIdentityReference(model.getClass());
+            
+            if(serializedProperties.size() > 0) {
+                List<Object> response = queryWithClassById(model.getClass(), ((BaseEntity) model).getId());
+                if(response.size() > 0) {
+                    Object fullModel = response.get(0);
+                    
+                    serializedProperties.forEach(serializedProperty -> {
+                        setValueForProperty(model, serializedProperty, getValueForProperty(fullModel, serializedProperty));
+                    });
+                }
+            }
+        }
+        return model;
+    }
 
-		public PreProcessObject(Credentials shib, String requestId, Object[] arguments, Protocol protocol) {
-			this.shib = shib;
-			this.requestId = requestId;
-			this.arguments = arguments;
-			this.protocol = protocol;
-		}
+    public <U extends ValidatingBase> ValidationResults validateModel(U model, Method method) {
 
-		public PreProcessObject(Credentials shib, String requestId, Object[] arguments, Protocol protocol, String destination) {
-			this.shib = shib;
-			this.requestId = requestId;
-			this.arguments = arguments;
-			this.protocol = protocol;
-			this.destination = destination;
-		}
+        for (Annotation validationAnnotation : method.getAnnotations()) {
+            if (validationAnnotation instanceof ApiValidation) {
+                for (ApiValidation.Business businessAnnotation : ((ApiValidation) validationAnnotation).business()) {
+                    ((BaseModelValidator) ((ValidatingBase) model).getModelValidator()).addBusinessValidator(new BusinessValidator(businessAnnotation.value(), businessAnnotation.joins(), businessAnnotation.params(), businessAnnotation.path(), businessAnnotation.restrict()));
+                }
+            }
+        }
 
-	}
+        return ((ValidatingBase) model).validate((ValidatingBase) model);
+    }
 
-	private enum Protocol {
-		WEBSOCKET, HTTP, DEFAULT
-	}
+    public ValidationResults validateMethod(Method method, Object[] args) {
+
+        ValidationResults validationResults = new ValidationResults();
+
+        for (Annotation validationAnnotation : method.getAnnotations()) {
+            if (validationAnnotation instanceof ApiValidation) {
+                for (ApiValidation.Method methodAnnotation : ((ApiValidation) validationAnnotation).method()) {
+                    ValidationUtility.aggregateValidationResults(validationResults, ValidationUtility.validateMethod(new MethodValidator(methodAnnotation.value(), methodAnnotation.model(), methodAnnotation.params(), args)));
+                }
+            }
+        }
+
+        return validationResults;
+    }
+
+    protected Map<String, String> getApiVariable(String mapping, String path) {
+        if (path.contains("/ws")) {
+            mapping = "/ws" + mapping;
+        }
+        if (path.contains("/private/queue")) {
+            mapping = "/private/queue" + mapping;
+        }
+        Map<String, String> valuesMap = new HashMap<String, String>();
+        String[] keys = mapping.split("/");
+        String[] values = path.split("/");
+        for (int i = 0; i < keys.length; i++) {
+            if (keys[i].contains("{") && keys[i].contains("}")) {
+                valuesMap.put(keys[i].substring(1, keys[i].length() - 1), values[i]);
+            }
+        }
+        return valuesMap;
+    }
+
+    protected class PreProcessObject {
+
+        Credentials shib;
+        String requestId;
+        Object[] arguments;
+        Protocol protocol;
+        String destination;
+
+        Boolean valid;
+
+        ValidationResults validation;
+
+        public PreProcessObject(Credentials shib, Object[] arguments) {
+            this.shib = shib;
+            this.arguments = arguments;
+        }
+
+        public PreProcessObject(Credentials shib, String requestId, Object[] arguments) {
+            this(shib, arguments);
+            this.requestId = requestId;
+        }
+
+        public PreProcessObject(Credentials shib, String requestId, Object[] arguments, Protocol protocol) {
+            this(shib, requestId, arguments);
+            this.protocol = protocol;
+        }
+
+        public PreProcessObject(Credentials shib, String requestId, Object[] arguments, Protocol protocol, String destination) {
+            this(shib, requestId, arguments, protocol);
+            this.destination = destination;
+        }
+
+        public PreProcessObject(Credentials shib, String requestId, Object[] arguments, Protocol protocol, String destination, Boolean valid) {
+            this(shib, requestId, arguments, protocol, destination);
+            this.valid = valid;
+            validation = new ValidationResults();
+        }
+
+    }
+
+    private enum Protocol {
+        WEBSOCKET, HTTP, DEFAULT
+    }
 
 }

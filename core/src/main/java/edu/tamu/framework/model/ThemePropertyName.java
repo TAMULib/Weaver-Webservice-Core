@@ -19,29 +19,31 @@ import javax.persistence.Id;
 /**
  * 
  * 
- * @author 
+ * @author
  *
  */
 @Entity
 public class ThemePropertyName {
-	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
-	private long id;
 
-	@Column
-	private String name;
-	
-	public ThemePropertyName() { }
-	
-	public ThemePropertyName(String name) {
-		this.name = name;
-	}
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private long id;
 
-	public String getName() {
-		return this.name;
-	}
-	
-	public void setName(String name) {
-		this.name = name;
-	}
+    @Column
+    private String name;
+
+    public ThemePropertyName() {
+    }
+
+    public ThemePropertyName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

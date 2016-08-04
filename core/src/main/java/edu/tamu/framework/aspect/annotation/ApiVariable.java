@@ -29,7 +29,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface ApiVariable {
-	
-	String value() default "";
-	
+
+    String value() default "";
+
 }

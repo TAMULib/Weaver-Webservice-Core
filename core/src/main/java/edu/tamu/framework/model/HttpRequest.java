@@ -26,95 +26,113 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class HttpRequest {
 
-	private HttpServletRequest request;
+    private HttpServletRequest request;
 
-	private HttpServletResponse response;
+    private HttpServletResponse response;
 
-	private String user;
+    private String user;
 
-	private String destination;
+    private String destination;
 
-	public HttpRequest(HttpServletRequest request, HttpServletResponse response, String user, String destination) {
-		this.request = request;
-		this.response = response;
-		this.user = user;
-		this.destination = destination;
-	}
+    private Credentials credentials;
 
-	/**
-	 * Gets request.
-	 * 
-	 * @return HttpServletRequest
-	 */
-	public HttpServletRequest getRequest() {
-		return request;
-	}
+    public HttpRequest(HttpServletRequest request, HttpServletResponse response, String user, String destination, Credentials credentials) {
+        this.request = request;
+        this.response = response;
+        this.user = user;
+        this.destination = destination;
+        this.credentials = credentials;
+    }
 
-	/**
-	 * Sets request.
-	 * 
-	 * @param request
-	 *            HttpServletRequest
-	 */
-	public void setRequest(HttpServletRequest request) {
-		this.request = request;
-	}
+    /**
+     * Gets request.
+     * 
+     * @return HttpServletRequest
+     */
+    public HttpServletRequest getRequest() {
+        return request;
+    }
 
-	/**
-	 * Gets response.
-	 * 
-	 * @return HttpServletResponse
-	 */
-	public HttpServletResponse getResponse() {
-		return response;
-	}
+    /**
+     * Sets request.
+     * 
+     * @param request
+     *            HttpServletRequest
+     */
+    public void setRequest(HttpServletRequest request) {
+        this.request = request;
+    }
 
-	/**
-	 * Sets response.
-	 * 
-	 * @param response
-	 *            HttpServletResponse
-	 */
-	public void setResponse(HttpServletResponse response) {
-		this.response = response;
-	}
+    /**
+     * Gets response.
+     * 
+     * @return HttpServletResponse
+     */
+    public HttpServletResponse getResponse() {
+        return response;
+    }
 
-	/**
-	 * Gets user.
-	 * 
-	 * @return String
-	 */
-	public String getUser() {
-		return user;
-	}
+    /**
+     * Sets response.
+     * 
+     * @param response
+     *            HttpServletResponse
+     */
+    public void setResponse(HttpServletResponse response) {
+        this.response = response;
+    }
 
-	/**
-	 * Sets user.
-	 * 
-	 * @param user
-	 *            String
-	 */
-	public void setUser(String user) {
-		this.user = user;
-	}
+    /**
+     * Gets user.
+     * 
+     * @return String
+     */
+    public String getUser() {
+        return user;
+    }
 
-	/**
-	 * Gets destination.
-	 * 
-	 * @return String
-	 */
-	public String getDestination() {
-		return destination;
-	}
+    /**
+     * Sets user.
+     * 
+     * @param user
+     *            String
+     */
+    public void setUser(String user) {
+        this.user = user;
+    }
 
-	/**
-	 * Sets destination.
-	 * 
-	 * @param destination
-	 *            String
-	 */
-	public void setDestination(String destination) {
-		this.destination = destination;
-	}
+    /**
+     * Gets destination.
+     * 
+     * @return String
+     */
+    public String getDestination() {
+        return destination;
+    }
+
+    /**
+     * Sets destination.
+     * 
+     * @param destination
+     *            String
+     */
+    public void setDestination(String destination) {
+        this.destination = destination;
+    }
+
+    /**
+     * @return the credentials
+     */
+    public Credentials getCredentials() {
+        return credentials;
+    }
+
+    /**
+     * @param credentials
+     *            the credentials to set
+     */
+    public void setCredentials(Credentials credentials) {
+        this.credentials = credentials;
+    }
 
 }

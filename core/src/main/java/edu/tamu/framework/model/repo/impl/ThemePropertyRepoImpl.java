@@ -1,6 +1,5 @@
 package edu.tamu.framework.model.repo.impl;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import edu.tamu.framework.model.ThemeProperty;
@@ -9,13 +8,13 @@ import edu.tamu.framework.model.repo.ThemePropertyRepo;
 import edu.tamu.framework.model.repo.ThemePropertyRepoCustom;
 
 public class ThemePropertyRepoImpl implements ThemePropertyRepoCustom {
-	
-	@Autowired
-	private ThemePropertyRepo themePropertyRepo;
-	
-	@Override
-	public ThemeProperty create(ThemePropertyName propertyName, String value) {
-		return themePropertyRepo.save(new ThemeProperty(propertyName,value));
-	}
+
+    @Autowired
+    private ThemePropertyRepo themePropertyRepo;
+
+    @Override
+    public ThemeProperty create(ThemePropertyName propertyName, String value) {
+        return themePropertyRepo.save(new ThemeProperty(propertyName, value));
+    }
 
 }

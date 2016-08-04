@@ -31,47 +31,39 @@ import org.springframework.web.socket.config.annotation.WebSocketTransportRegist
 @EnableWebSocketMessageBroker
 public abstract class CoreWebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void configureMessageBroker(MessageBrokerRegistry registry) {
-		registry.enableSimpleBroker("/queue", "/channel");
-		registry.setApplicationDestinationPrefixes("/ws");
-		registry.setUserDestinationPrefix("/private");
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void configureMessageBroker(MessageBrokerRegistry registry) {
+        registry.enableSimpleBroker("/queue", "/channel");
+        registry.setApplicationDestinationPrefixes("/ws");
+        registry.setUserDestinationPrefix("/private");
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void registerStompEndpoints(StompEndpointRegistry registry) {
-		registry.addEndpoint("/connect").setAllowedOrigins("*").withSockJS();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void registerStompEndpoints(StompEndpointRegistry registry) {
+        registry.addEndpoint("/connect").setAllowedOrigins("*").withSockJS();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void configureWebSocketTransport(WebSocketTransportRegistration registration) {
-		registration.setSendBufferSizeLimit(2 * 512 * 1024);
-		registration.setSendTimeLimit(2 * 10 * 10000);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void configureWebSocketTransport(WebSocketTransportRegistration registration) {
+        registration.setMessageSizeLimit(Integer.MAX_VALUE);
+        registration.setSendBufferSizeLimit(Integer.MAX_VALUE);
+        registration.setSendTimeLimit(2 * 10 * 10000);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void configureClientInboundChannel(ChannelRegistration registration) {
-		registration.taskExecutor().corePoolSize(8).maxPoolSize(Integer.MAX_VALUE);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void configureClientOutboundChannel(ChannelRegistration registration) {
-		registration.taskExecutor().corePoolSize(8).maxPoolSize(Integer.MAX_VALUE);
-	}
-
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void configureClientInboundChannel(ChannelRegistration registration) {
+        registration.taskExecutor().corePoolSize(8).maxPoolSize(Integer.MAX_VALUE);
+    }
 }
