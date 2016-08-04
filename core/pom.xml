@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>edu.tamu.weaverframework</groupId>
 		<artifactId>weaver-webservice-parent</artifactId>
-		<version>1.1.0-RC3-SNAPSHOT</version>
+		<version>1.1.x-SNAPSHOT</version>
 	</parent>
 	
 	<build>
@@ -45,6 +45,6 @@
 			<groupId>ro.isdc.wro4j</groupId>
 			<artifactId>wro4j-extensions</artifactId>
 			<version>1.7.9</version>
-		</dependency> 		 		
+		</dependency>
  	</dependencies>
 </project>

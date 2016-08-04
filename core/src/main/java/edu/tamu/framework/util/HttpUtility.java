@@ -30,37 +30,37 @@ import org.springframework.stereotype.Service;
 @Service
 public class HttpUtility {
 
-	/**
-	 * Makes http request and returns response.
-	 * 
-	 * @param urlString
-	 *            String
-	 * @param method
-	 *            String
-	 * @return String
-	 * @throws IOException
-	 */
-	public String makeHttpRequest(String urlString, String method) throws IOException {
+    /**
+     * Makes http request and returns response.
+     * 
+     * @param urlString
+     *            String
+     * @param method
+     *            String
+     * @return String
+     * @throws IOException
+     */
+    public String makeHttpRequest(String urlString, String method) throws IOException {
 
-		URL url = new URL(urlString);
+        URL url = new URL(urlString);
 
-		HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
 
-		con.setRequestMethod(method);
+        con.setRequestMethod(method);
 
-		BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 
-		String inputLine;
+        String inputLine;
 
-		StringBuffer strBufRes = new StringBuffer();
+        StringBuffer strBufRes = new StringBuffer();
 
-		while ((inputLine = in.readLine()) != null) {
-			strBufRes.append(inputLine);
-		}
+        while ((inputLine = in.readLine()) != null) {
+            strBufRes.append(inputLine);
+        }
 
-		in.close();
+        in.close();
 
-		return strBufRes.toString();
-	}
+        return strBufRes.toString();
+    }
 
 }

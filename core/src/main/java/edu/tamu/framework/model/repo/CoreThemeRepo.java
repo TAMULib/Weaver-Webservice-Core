@@ -23,17 +23,17 @@ import edu.tamu.framework.model.ThemeProperty;
  */
 @Repository
 public interface CoreThemeRepo extends JpaRepository<CoreTheme, Long>, CoreThemeRepoCustom {
-	
-	public CoreTheme getByName(String name);
-	
-	public CoreTheme getById(Long id);
-	
-	public CoreTheme findByActiveTrue();
 
-	public void updateActiveTheme(CoreTheme theme);
-	
-	public void addThemeProperty(CoreTheme theme,ThemeProperty themeProperty);
+    public CoreTheme getByName(String name);
 
-	public void updateThemeProperty(Long themeId,Long themePropertyId,String value);
+    public CoreTheme getById(Long id);
+
+    public CoreTheme findByActiveTrue();
+
+    public void updateActiveTheme(CoreTheme theme);
+
+    public void addThemeProperty(CoreTheme theme, ThemeProperty themeProperty);
+
+    public void updateThemeProperty(Long themeId, Long themePropertyId, String value);
 
 }

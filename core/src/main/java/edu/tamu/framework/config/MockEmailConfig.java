@@ -16,5 +16,5 @@ public class MockEmailConfig extends CoreEmailConfig {
     public EmailSender emailSender() {
         return new MockEmailUtility();
     }
-    
+
 }

@@ -31,25 +31,25 @@ import edu.tamu.framework.model.Symlink;
 @ConfigurationProperties("app")
 public class SymlinkRepo {
 
-	private Map<String, Symlink> symlinks;
+    private Map<String, Symlink> symlinks;
 
-	public SymlinkRepo() {
-		symlinks = new HashMap<String, Symlink>();
-	}
+    public SymlinkRepo() {
+        symlinks = new HashMap<String, Symlink>();
+    }
 
-	/**
-	 * @return the symlinks
-	 */
-	public Map<String, Symlink> getSymlinks() {
-		return symlinks;
-	}
+    /**
+     * @return the symlinks
+     */
+    public Map<String, Symlink> getSymlinks() {
+        return symlinks;
+    }
 
-	/**
-	 * @param symlinks
-	 *            the symlinks to set
-	 */
-	public void setSymlinks(Map<String, Symlink> symlinks) {
-		this.symlinks = symlinks;
-	}
+    /**
+     * @param symlinks
+     *            the symlinks to set
+     */
+    public void setSymlinks(Map<String, Symlink> symlinks) {
+        this.symlinks = symlinks;
+    }
 
 }

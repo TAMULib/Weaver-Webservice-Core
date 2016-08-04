@@ -32,65 +32,67 @@ import edu.tamu.framework.model.WebSocketRequest;
  */
 @Service
 public class WebSocketRequestService {
-    
+
     @Autowired
     @Lazy
     private PathMatcher pathMatcher;
 
-	protected List<WebSocketRequest> requests = new ArrayList<WebSocketRequest>();
+    protected List<WebSocketRequest> requests = new ArrayList<WebSocketRequest>();
 
-	/**
-	 * Get all current requests.
-	 * 
-	 * @return List<WebSocketRequest>
-	 */
-	public List<WebSocketRequest> getRequests() {
-		return requests;
-	}
+    /**
+     * Get all current requests.
+     * 
+     * @return List<WebSocketRequest>
+     */
+    public List<WebSocketRequest> getRequests() {
+        return requests;
+    }
 
-	/**
-	 * Add request.
-	 * 
-	 * @param request
-	 *            WebSocketRequest
-	 */
-	public synchronized void addRequest(WebSocketRequest request) {
-		if (request.getDestination() != null && request.getUser() != null) {
-			requests.add(request);
-		}
-	}
+    /**
+     * Add request.
+     * 
+     * @param request
+     *            WebSocketRequest
+     */
+    public synchronized void addRequest(WebSocketRequest request) {
+        if (request.getDestination() != null && request.getUser() != null) {
+            requests.add(request);
+        }
+    }
 
-	/**
-	 * Remove request.
-	 * 
-	 * @param request
-	 *            WebSocketRequest
-	 */
-	public synchronized void removeRequest(WebSocketRequest request) {
-		if (request.getDestination() != null && request.getUser() != null) {
-			requests.remove(request);
-		}
-	}
+    /**
+     * Remove request.
+     * 
+     * @param request
+     *            WebSocketRequest
+     */
+    public synchronized void removeRequest(WebSocketRequest request) {
+        if (request.getDestination() != null && request.getUser() != null) {
+            requests.remove(request);
+        }
+    }
 
-	/**
-	 * Get and remove request.
-	 * 
-	 * @param pattern
-	 *            String
-	 * @param user
-	 *            String
-	 * @return WebSocketRequest
-	 */
-	public synchronized WebSocketRequest getAndRemoveMessageByDestinationAndUser(String pattern, String user) {
-	    if(pattern.charAt(0) != '/') pattern = "/" + pattern;
-		for (int index = 0; index < requests.size(); index++) {
-			WebSocketRequest request = requests.get(index);
-			if (request.getUser().equals(user) && pathMatcher.match(pattern, request.getDestination())) {
-				requests.remove(index);
-				return request;
-			}
-		}
-		return null;
-	}
+    /**
+     * Get and remove request.
+     * 
+     * @param pattern
+     *            String
+     * @param user
+     *            String
+     * @return WebSocketRequest
+     */
+    public synchronized WebSocketRequest getAndRemoveMessageByDestinationAndUser(String pattern, String user) {
+        if (pattern.charAt(0) != '/') {
+            pattern = "/" + pattern;
+        }
+        for (int index = 0; index < requests.size(); index++) {
+            WebSocketRequest request = requests.get(index);
+            if (request.getUser().equals(user) && pathMatcher.match(pattern, request.getDestination())) {
+                requests.remove(index);
+                return request;
+            }
+        }
+        return null;
+    }
 
 }

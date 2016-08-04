@@ -64,21 +64,9 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public CoreRestInterceptor() {
-    }
+    public CoreRestInterceptor() {}
 
-    public Credentials getAnonymousShib() {
-        Credentials anonymousShib = new Credentials();
-        anonymousShib.setAffiliation("NA");
-        anonymousShib.setLastName("Anonymous");
-        anonymousShib.setFirstName("Role");
-        anonymousShib.setNetid("anonymous-" + Math.round(Math.random() * 100000));
-        anonymousShib.setUin("000000000");
-        anonymousShib.setExp("1436982214754");
-        anonymousShib.setEmail("helpdesk@mailinator.com");
-        anonymousShib.setRole("ROLE_ANONYMOUS");
-        return anonymousShib;
-    }
+    public abstract Credentials getAnonymousCredentials();
 
     /**
      * {@inheritDoc}
@@ -89,7 +77,7 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 
         String jwt = request.getHeader("jwt");
 
-        Credentials shib = null;
+        Credentials credentials = null;
 
         if (jwt == null) {
 
@@ -126,13 +114,13 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
                     credentialMap.put("email", "helpdesk@mailinator.com");
                     credentialMap.put("role", "ROLE_ADMIN");
                     accepted = true;
-                    shib = new Credentials(credentialMap);
+                    credentials = new Credentials(credentialMap);
                     break;
                 }
             }
 
             if (!accepted) {
-                shib = getAnonymousShib();
+                credentials = getAnonymousCredentials();
             }
         } else {
             credentialMap = jwtService.validateJWT(request.getHeader("jwt"));
@@ -161,34 +149,34 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
                 throw new JWTException("EXPIRED_JWT", "JWT is expired!");
             }
 
-            shib = confirmCreateUser(new Credentials(credentialMap));
+            credentials = confirmCreateUser(new Credentials(credentialMap));
 
-            if (shib == null) {
+            if (credentials == null) {
                 errorMessage = "Could not confirm user!";
                 logger.error(errorMessage);
                 throw new JWTException("INVALID_USER", errorMessage);
             }
         }
-
-        request.setAttribute("shib", shib);
-
-        request.setAttribute("data", request.getHeader("data"));
-
+        
+        if(request.getHeader("data") != null) {
+            request.setAttribute("data", request.getHeader("data"));
+        }
+        
         List<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
 
-        grantedAuthorities.add(new SimpleGrantedAuthority(shib.getRole()));
+        grantedAuthorities.add(new SimpleGrantedAuthority(credentials.getRole()));
 
-        if (shib.getNetid() == null) {
-            shib.setNetid(shib.getEmail());
+        if (credentials.getNetid() == null) {
+            credentials.setNetid(credentials.getEmail());
         }
 
-        Authentication auth = new AnonymousAuthenticationToken(shib.getUin(), shib.getNetid(), grantedAuthorities);
+        Authentication auth = new AnonymousAuthenticationToken(credentials.getUin(), credentials.getNetid(), grantedAuthorities);
 
         auth.setAuthenticated(true);
 
         securityContext.setAuthentication(auth);
 
-        httpRequestService.addRequest(new HttpRequest(request, response, shib.getNetid(), request.getRequestURI()));
+        httpRequestService.addRequest(new HttpRequest(request, response, credentials.getNetid(), request.getRequestURI(), credentials));
 
         return true;
     }

@@ -25,75 +25,92 @@ import org.springframework.messaging.Message;
  */
 public class WebSocketRequest {
 
-	private Message<?> message;
+    private Message<?> message;
 
-	private String user;
+    private String user;
 
-	private String destination;
+    private String destination;
 
-	public WebSocketRequest() {}
+    private Credentials credentials;
 
-	public WebSocketRequest(Message<?> message, String user, String destination) {
-		this.message = message;
-		this.user = user;
-		this.destination = destination;
-	}
+    public WebSocketRequest() { }
 
-	/**
-	 * Gets message.
-	 * 
-	 * @return Message<?>
-	 */
-	public Message<?> getMessage() {
-		return message;
-	}
+    public WebSocketRequest(Message<?> message, String user, String destination) {
+        this.message = message;
+        this.user = user;
+        this.destination = destination;
+    }
 
-	/**
-	 * Sets message.
-	 * 
-	 * @param message
-	 *            Message<?>
-	 */
-	public void setMessage(Message<?> message) {
-		this.message = message;
-	}
+    /**
+     * Gets message.
+     * 
+     * @return Message<?>
+     */
+    public Message<?> getMessage() {
+        return message;
+    }
 
-	/**
-	 * Gets user.
-	 * 
-	 * @return String
-	 */
-	public String getUser() {
-		return user;
-	}
+    /**
+     * Sets message.
+     * 
+     * @param message
+     *            Message<?>
+     */
+    public void setMessage(Message<?> message) {
+        this.message = message;
+    }
 
-	/**
-	 * Sets user.
-	 * 
-	 * @param user
-	 *            String
-	 */
-	public void setUser(String user) {
-		this.user = user;
-	}
+    /**
+     * Gets user.
+     * 
+     * @return String
+     */
+    public String getUser() {
+        return user;
+    }
 
-	/**
-	 * Gets destination.
-	 * 
-	 * @return String
-	 */
-	public String getDestination() {
-		return destination;
-	}
+    /**
+     * Sets user.
+     * 
+     * @param user
+     *            String
+     */
+    public void setUser(String user) {
+        this.user = user;
+    }
 
-	/**
-	 * Sets destination.
-	 * 
-	 * @param destination
-	 *            String
-	 */
-	public void setDestination(String destination) {
-		this.destination = destination;
-	}
+    /**
+     * Gets destination.
+     * 
+     * @return String
+     */
+    public String getDestination() {
+        return destination;
+    }
+
+    /**
+     * Sets destination.
+     * 
+     * @param destination
+     *            String
+     */
+    public void setDestination(String destination) {
+        this.destination = destination;
+    }
+
+    /**
+     * @return the credentials
+     */
+    public Credentials getCredentials() {
+        return credentials;
+    }
+
+    /**
+     * @param credentials
+     *            the credentials to set
+     */
+    public void setCredentials(Credentials credentials) {
+        this.credentials = credentials;
+    }
 
 }

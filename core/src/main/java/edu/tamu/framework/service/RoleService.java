@@ -6,7 +6,7 @@ import edu.tamu.framework.model.IRole;
 
 @Service
 public interface RoleService {
-    
+
     IRole valueOf(String role);
 
 }
