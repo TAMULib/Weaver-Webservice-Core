@@ -23,12 +23,6 @@ public class CoreThemeRepoImpl implements CoreThemeRepoCustom {
     @PersistenceContext
     private EntityManager em;
     
-    // TODO: improve this
-    // Potential problems:
-    // 1) Can not create theme with default properties.
-    // 2) Deletion of theme is to complex, use cascades to reduce logic required.
-    // 3) Theme property name is normalized but over encapsulated. Using Join to replace a column of names with a column of ids.
-        
 	@Autowired
 	private CoreThemeRepo coreThemeRepo;
 
@@ -42,21 +36,20 @@ public class CoreThemeRepoImpl implements CoreThemeRepoCustom {
 	public CoreTheme create(String name) {
 		CoreTheme theme = coreThemeRepo.getByName(name);
 		if(theme == null) {
-			CoreTheme newTheme = new CoreTheme(name);
-			newTheme = coreThemeRepo.save(newTheme);
+			CoreTheme newTheme = coreThemeRepo.save(new CoreTheme(name));
 			for(ThemePropertyName themePropertyName : themePropertyNameRepo.findAll()) {
-				ThemeProperty newProperty = themePropertyRepo.create(themePropertyName, null);
-				
-				newTheme.addThemeProperty(newProperty);
-				newProperty.setTheme(newTheme);
-		        themePropertyRepo.save(newProperty);
-		        coreThemeRepo.save(newTheme);
-				
-				themePropertyRepo.save(newProperty);
+			    newTheme = addThemeProperty(newTheme, themePropertyRepo.create(themePropertyName, null));
 			}
-			return coreThemeRepo.save(newTheme);
+			return newTheme;
 		}
 		return theme;
+	}
+	
+	public CoreTheme addThemeProperty(CoreTheme theme,ThemeProperty themeProperty) {
+	    theme.addThemeProperty(themeProperty);
+	    themeProperty.setTheme(theme);
+        themePropertyRepo.save(themeProperty);
+        return coreThemeRepo.save(theme);
 	}
 	
 	@Override
