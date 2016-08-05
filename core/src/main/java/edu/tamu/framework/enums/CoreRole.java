@@ -22,11 +22,10 @@ import edu.tamu.framework.model.IRole;
  */
 public enum CoreRole implements IRole {
 
-    ROLE_NONE(0), 
-    ROLE_ANONYMOUS(1), 
-    ROLE_USER(2),
-    ROLE_MANAGER(3),
-    ROLE_ADMIN(4);
+    ROLE_ANONYMOUS(0), 
+    ROLE_USER(1),
+    ROLE_MANAGER(2),
+    ROLE_ADMIN(3);
 
     private int value;
 
