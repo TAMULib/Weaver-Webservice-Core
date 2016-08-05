@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>edu.tamu.weaverframework</groupId>
   <artifactId>weaver-webservice-parent</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.2-RC1-SNAPSHOT</version>
   <name>weaver-webservice-parent</name>
   <url>http://maven.apache.org</url>
   
@@ -105,11 +105,6 @@
 		<dependency>
 		    <groupId>com.h2database</groupId>
 		    <artifactId>h2</artifactId>
-		</dependency>
-		<dependency>
-		    <groupId>org.logback-extensions</groupId>
-		    <artifactId>logback-ext-spring</artifactId>
-		    <version>0.1.4</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
