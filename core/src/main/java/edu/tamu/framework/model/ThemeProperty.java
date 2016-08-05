@@ -12,9 +12,6 @@ package edu.tamu.framework.model;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
@@ -29,11 +26,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
  *
  */
 @Entity
-public class ThemeProperty {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+public class ThemeProperty extends BaseEntity {
 
     @Column
     private String value;
@@ -44,47 +37,59 @@ public class ThemeProperty {
     private CoreTheme theme;
 
     @OneToOne(fetch = FetchType.EAGER)
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, scope = ThemePropertyName.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = false)
     private ThemePropertyName themePropertyName;
 
-    public ThemeProperty() {
-    }
+    public ThemeProperty() {}
 
     public ThemeProperty(ThemePropertyName themePropertyName, String value) {
+        this();
         this.themePropertyName = themePropertyName;
         this.value = value;
     }
 
-    public long getId() {
-        return this.id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
+    /**
+     * @return the value
+     */
     public String getValue() {
-        return this.value;
+        return value;
     }
 
+    /**
+     * @param value
+     *            the value to set
+     */
     public void setValue(String value) {
         this.value = value;
     }
 
-    public void setThemePropertyName(ThemePropertyName propertyName) {
-        this.themePropertyName = propertyName;
+    /**
+     * @return the theme
+     */
+    public CoreTheme getTheme() {
+        return theme;
     }
 
-    public ThemePropertyName getPropertyName() {
-        return this.themePropertyName;
-    }
-
+    /**
+     * @param theme
+     *            the theme to set
+     */
     public void setTheme(CoreTheme theme) {
         this.theme = theme;
     }
 
-    public CoreTheme getTheme() {
-        return this.theme;
+    /**
+     * @return the themePropertyName
+     */
+    public ThemePropertyName getThemePropertyName() {
+        return themePropertyName;
     }
+
+    /**
+     * @param themePropertyName
+     *            the themePropertyName to set
+     */
+    public void setThemePropertyName(ThemePropertyName themePropertyName) {
+        this.themePropertyName = themePropertyName;
+    }
+
 }

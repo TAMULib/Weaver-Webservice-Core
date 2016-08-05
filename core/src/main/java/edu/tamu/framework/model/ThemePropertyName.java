@@ -11,39 +11,40 @@ package edu.tamu.framework.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 
-import javax.persistence.Id;
 
 /**
- * 
+ * Application ThemePropertyName entity.
  * 
  * @author
  *
  */
 @Entity
-public class ThemePropertyName {
+public class ThemePropertyName extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
-
-    @Column
+    @Column(unique = true)
     private String name;
 
-    public ThemePropertyName() {
-    }
+    public ThemePropertyName() {}
 
     public ThemePropertyName(String name) {
+        this();
         this.name = name;
     }
 
+    /**
+     * @return the name
+     */
     public String getName() {
-        return this.name;
+        return name;
     }
 
+    /**
+     * @param name
+     *            the name to set
+     */
     public void setName(String name) {
         this.name = name;
     }
+
 }

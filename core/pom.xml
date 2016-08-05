@@ -1,16 +1,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <artifactId>weaver-webservice-core</artifactId>
-  <name>weaver-webservice-core</name>
-  <url>http://maven.apache.org</url>
-  
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>weaver-webservice-core</artifactId>
+	<name>weaver-webservice-core</name>
+	<url>http://maven.apache.org</url>
+
 	<parent>
 		<groupId>edu.tamu.weaverframework</groupId>
 		<artifactId>weaver-webservice-parent</artifactId>
 		<version>1.1.x-SNAPSHOT</version>
 	</parent>
-	
+
 	<build>
 		<plugins>
 			<plugin>
@@ -23,19 +23,19 @@
 			</plugin>
 		</plugins>
 	</build>
-	
- 	<distributionManagement>
+
+	<distributionManagement>
 		<repository>
 			<id>tamu-releases</id>
 			<url>https://maven.library.tamu.edu/content/repositories/releases</url>
-	  	</repository>
-	  	<snapshotRepository>
-	     	<id>tamu-snapshots</id>
-	     	<url>https://maven.library.tamu.edu/content/repositories/snapshots/</url>
-	  	</snapshotRepository>
+		</repository>
+		<snapshotRepository>
+			<id>tamu-snapshots</id>
+			<url>https://maven.library.tamu.edu/content/repositories/snapshots/</url>
+		</snapshotRepository>
 	</distributionManagement>
- 
- 	<dependencies>
+
+	<dependencies>
 		<dependency>
 			<groupId>ro.isdc.wro4j</groupId>
 			<artifactId>wro4j-core</artifactId>
@@ -46,5 +46,5 @@
 			<artifactId>wro4j-extensions</artifactId>
 			<version>1.7.9</version>
 		</dependency>
- 	</dependencies>
+	</dependencies>
 </project>

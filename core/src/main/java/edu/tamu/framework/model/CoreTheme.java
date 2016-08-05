@@ -16,17 +16,10 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 /**
  * Core Theme entity.
@@ -35,11 +28,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
  *
  */
 @Entity
-public class CoreTheme {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+public class CoreTheme extends BaseEntity {
 
     @Column
     private String name;
@@ -49,29 +38,17 @@ public class CoreTheme {
 
     @OneToMany(mappedBy = "theme", fetch = FetchType.EAGER, cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH })
     @Fetch(FetchMode.SELECT)
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, scope = ThemeProperty.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = false)
-    private Set<ThemeProperty> properties = new HashSet<ThemeProperty>();
+    private Set<ThemeProperty> themeProperties = new HashSet<ThemeProperty>();
 
-    public CoreTheme() {
-    }
+    public CoreTheme() {}
 
     public CoreTheme(String name) {
+        this();
         this.name = name;
     }
 
-    public long getId() {
-        return this.id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
     /**
-     * 
-     * @return name
-     * 
+     * @return the name
      */
     public String getName() {
         return name;
@@ -79,39 +56,52 @@ public class CoreTheme {
 
     /**
      * @param name
-     *            String
-     * 
+     *            the name to set
      */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * @return the active
+     */
     public Boolean getActive() {
-        return this.active;
+        return active;
     }
 
-    public void setActive(Boolean isActive) {
-        this.active = isActive;
+    /**
+     * @param active
+     *            the active to set
+     */
+    public void setActive(Boolean active) {
+        this.active = active;
     }
 
-    public Set<ThemeProperty> getProperties() {
-        return this.properties;
+    /**
+     * @return the themeProperties
+     */
+    public Set<ThemeProperty> getThemeProperties() {
+        return themeProperties;
     }
 
-    public void setProperties(Set<ThemeProperty> properties) {
-        this.properties = properties;
+    /**
+     * @param themeProperties
+     *            the themeProperties to set
+     */
+    public void setThemeProperties(Set<ThemeProperty> themeProperties) {
+        this.themeProperties = themeProperties;
     }
 
-    public void addProperty(ThemeProperty property) {
-        this.properties.add(property);
+    public void addThemeProperty(ThemeProperty themeProperty) {
+        themeProperties.add(themeProperty);
+    }
+    
+    public void removeThemeProperty(ThemeProperty themeProperty) {
+        themeProperties.remove(themeProperty);
     }
 
-    public void removeProperty(ThemeProperty property) {
-        this.properties.remove(property);
-    }
-
-    public void clearProperties() {
-        this.properties = new HashSet<ThemeProperty>();
+    public void clearThemeProperties() {
+        themeProperties.clear();
     }
 
 }
