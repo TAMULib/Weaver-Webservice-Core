@@ -11,15 +11,7 @@ package edu.tamu.framework.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.Table;
-
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
-import edu.tamu.framework.enums.CoreRole;
 
 /**
  * Abstract Core User Implementation.
@@ -33,22 +25,15 @@ import edu.tamu.framework.enums.CoreRole;
  */
 @Entity
 @Table(name = "core_users")
-public abstract class AbstractCoreUserImpl implements CoreUser {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public abstract class AbstractCoreUserImpl extends BaseEntity implements CoreUser {
 
     @Column(name = "uin", nullable = true, unique = true)
     private Long uin;
 
-    @Column(name = "role")
-    private CoreRole role;
-
-    public AbstractCoreUserImpl() {
-    }
+    public AbstractCoreUserImpl() {}
 
     public AbstractCoreUserImpl(Long uin) {
+        this();
         this.uin = uin;
     }
 
@@ -67,15 +52,9 @@ public abstract class AbstractCoreUserImpl implements CoreUser {
     }
 
     @Override
-    @JsonDeserialize(as = CoreRole.class)
-    public void setRole(IRole role) {
-        this.role = (CoreRole) role;
-    }
+    public abstract void setRole(IRole role);
 
     @Override
-    @JsonSerialize(as = CoreRole.class)
-    public IRole getRole() {
-        return role;
-    }
+    public abstract IRole getRole();
 
 }
