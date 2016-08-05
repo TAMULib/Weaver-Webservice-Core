@@ -125,7 +125,7 @@ public abstract class CoreControllerAspect {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus arg0) {
                 try {
-                    apiresponses.add(authorizaeAndProceed(joinPoint, auth));
+                    apiresponses.add(authorizeAndProceed(joinPoint, auth));
                 } catch (Throwable e) {
                     apiresponses.add(new ApiResponse( ERROR, "Failed to process request!"));
                     e.printStackTrace();
@@ -137,7 +137,7 @@ public abstract class CoreControllerAspect {
 
     @Around("execution(* *.*.*.controller.*.*(..)) && !@annotation(edu.tamu.framework.aspect.annotation.SkipAop) && !@annotation(edu.tamu.framework.aspect.annotation.ApiValidation) && @annotation(auth)")
     public ApiResponse polpulateCredentialsAndAuthorize(ProceedingJoinPoint joinPoint, Auth auth) throws Throwable {
-        return authorizaeAndProceed(joinPoint, auth);
+        return authorizeAndProceed(joinPoint, auth);
     }
     
     @Around("execution(* *.*.*.controller.*.*(..)) && !@annotation(edu.tamu.framework.aspect.annotation.SkipAop) && @annotation(edu.tamu.framework.aspect.annotation.ApiValidation) && !@annotation(edu.tamu.framework.aspect.annotation.Auth)")
@@ -202,7 +202,7 @@ public abstract class CoreControllerAspect {
         }
     }
 
-    private ApiResponse authorizaeAndProceed(ProceedingJoinPoint joinPoint, Auth auth) throws Throwable {
+    private ApiResponse authorizeAndProceed(ProceedingJoinPoint joinPoint, Auth auth) throws Throwable {
         PreProcessObject preProcessObject = preProcess(joinPoint);
         ApiResponse apiresponse = null;
         if (preProcessObject.valid) {
