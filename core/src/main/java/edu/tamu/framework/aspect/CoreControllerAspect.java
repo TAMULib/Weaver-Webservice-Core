@@ -279,7 +279,8 @@ public abstract class CoreControllerAspect {
 
 			StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 
-			destination = accessor.getDestination().replace("ws", "queue") + "-user" + accessor.getSessionId();
+			//TODO: improve
+			destination = "/queue" + accessor.getDestination().substring("/ws".length(), accessor.getDestination().length()) + "-user" + accessor.getSessionId();
 
 			requestId = accessor.getNativeHeader("id").get(0);
 
