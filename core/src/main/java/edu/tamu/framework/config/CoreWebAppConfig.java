@@ -12,11 +12,14 @@ package edu.tamu.framework.config;
 import java.util.List;
 import java.util.Properties;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.xml.transform.Source;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.boot.orm.jpa.EntityScan;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -28,6 +31,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.ResourceHttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.json.SpringHandlerInstantiator;
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
 import org.springframework.http.converter.xml.SourceHttpMessageConverter;
 import org.springframework.security.core.context.SecurityContext;
@@ -35,14 +39,18 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
+import com.fasterxml.jackson.annotation.ObjectIdResolver;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.cfg.MapperConfig;
+import com.fasterxml.jackson.databind.introspect.Annotated;
 
 import edu.tamu.framework.events.StompConnectEvent;
 import edu.tamu.framework.events.StompDisconnectEvent;
+import edu.tamu.framework.resolver.BaseEntityIdResolver;
 import edu.tamu.framework.service.StompConnectionService;
 import edu.tamu.framework.service.ThemeManagerService;
 import edu.tamu.framework.wro4j.manager.factory.CustomConfigurableWroManagerFactory;
@@ -67,6 +75,12 @@ import wro4j.http.handler.CustomRequestHandler;
 @EnableJpaRepositories(basePackages = { "edu.tamu.framework.model.repo" })
 @EntityScan(basePackages = { "edu.tamu.framework.model" })
 public class CoreWebAppConfig extends WebMvcConfigurerAdapter {
+	
+	@PersistenceContext
+	private EntityManager entityManager;
+	
+	@Autowired
+	private ApplicationContext applicationContext;
 
     /**
      * {@inheritDoc}
@@ -110,6 +124,15 @@ public class CoreWebAppConfig extends WebMvcConfigurerAdapter {
         objectMapper.configure(JsonParser.Feature.ALLOW_BACKSLASH_ESCAPING_ANY_CHARACTER, true);
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         objectMapper.configure(MapperFeature.DEFAULT_VIEW_INCLUSION, true);
+        objectMapper.setHandlerInstantiator(new SpringHandlerInstantiator(applicationContext.getAutowireCapableBeanFactory()) {
+			@Override
+			public ObjectIdResolver resolverIdGeneratorInstance(final MapperConfig<?> config, final Annotated annotated, final Class<?> implClass) {
+				if (implClass == BaseEntityIdResolver.class) {
+					return new BaseEntityIdResolver(entityManager);
+				}
+				return null;
+			}
+		});
         return objectMapper;
     }
 

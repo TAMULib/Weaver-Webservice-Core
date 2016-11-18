@@ -123,7 +123,7 @@ public abstract class CoreControllerAspect {
         List<ApiResponse> apiresponses = new ArrayList<ApiResponse>();        
         createTransactionTemplate().execute(new TransactionCallbackWithoutResult() {
             @Override
-            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+            protected void doInTransactionWithoutResult(TransactionStatus ts) {
                 try {
                     apiresponses.add(authorizeAndProceed(joinPoint, auth));
                 } catch (Throwable e) {
@@ -145,7 +145,7 @@ public abstract class CoreControllerAspect {
         List<ApiResponse> apiresponses = new ArrayList<ApiResponse>();
         createTransactionTemplate().execute(new TransactionCallbackWithoutResult() {
             @Override
-            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+            protected void doInTransactionWithoutResult(TransactionStatus ts) {
                 try {
                     apiresponses.add(proceed(joinPoint));
                 } catch (Throwable e) {
