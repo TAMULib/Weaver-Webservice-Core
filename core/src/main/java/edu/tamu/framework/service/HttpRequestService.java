@@ -52,7 +52,7 @@ public class HttpRequestService {
      * Add request.
      * 
      * @param request
-     *            WebSocketRequest
+     *            HttpRequest
      */
     public synchronized void addRequest(HttpRequest request) {
         if (request.getDestination() != null && request.getUser() != null) {
@@ -64,7 +64,7 @@ public class HttpRequestService {
      * Remove request.
      * 
      * @param request
-     *            WebSocketRequest
+     *            HttpRequest
      */
     public synchronized void removeRequest(HttpRequest request) {
         if (request.getDestination() != null && request.getUser() != null) {
@@ -77,17 +77,17 @@ public class HttpRequestService {
      * 
      * @param pattern
      *            String
-     * @param user
-     *            String
-     * @return WebSocketRequest
+     * @param uin
+     *            Long
+     * @return HttpRequest
      */
-    public synchronized HttpRequest getAndRemoveRequestByDestinationAndUser(String pattern, String user) {
+    public synchronized HttpRequest getAndRemoveRequestByDestinationAndUin(String pattern, String uin) {
         if (pattern.charAt(0) != '/') {
             pattern = "/" + pattern;
         }
         for (int index = 0; index < requests.size(); index++) {
             HttpRequest request = requests.get(index);
-            if (request.getUser().equals(user) && pathMatcher.match(pattern, request.getDestination())) {
+            if (request.getUser().getUin().equals(uin) && pathMatcher.match(pattern, request.getDestination())) {
                 requests.remove(index);
                 return request;
             }

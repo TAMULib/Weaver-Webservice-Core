@@ -25,18 +25,18 @@ public interface CoreUser {
      * Sets UIN.
      * 
      * @param uin
-     *            Long
+     *            String
      * 
      */
-    public void setUin(Long uin);
+    public void setUin(String uin);
 
     /**
      * Gets UIN.
      * 
-     * @return Long
+     * @return String
      * 
      */
-    public Long getUin();
+    public String getUin();
 
     /**
      * Sets role.

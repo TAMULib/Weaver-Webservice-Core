@@ -77,17 +77,17 @@ public class WebSocketRequestService {
      * 
      * @param pattern
      *            String
-     * @param user
-     *            String
+     * @param uin
+     *            Long
      * @return WebSocketRequest
      */
-    public synchronized WebSocketRequest getAndRemoveMessageByDestinationAndUser(String pattern, String user) {
+    public synchronized WebSocketRequest getAndRemoveMessageByDestinationAndUin(String pattern, String uin) {
         if (pattern.charAt(0) != '/') {
             pattern = "/" + pattern;
         }
         for (int index = 0; index < requests.size(); index++) {
             WebSocketRequest request = requests.get(index);
-            if (request.getUser().equals(user) && pathMatcher.match(pattern, request.getDestination())) {
+            if (request.getUser().getUin().equals(uin) && pathMatcher.match(pattern, request.getDestination())) {
                 requests.remove(index);
                 return request;
             }

@@ -12,6 +12,8 @@ package edu.tamu.framework.model;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import edu.tamu.framework.model.AbstractCoreUserImpl;
+
 /**
  * Http request. Created and stored in memory when a new request goes through
  * the interceptor. Is retrieved and removed when the aspect point cuts an
@@ -24,19 +26,19 @@ import javax.servlet.http.HttpServletResponse;
  * @author <a href="mailto:wwelling@library.tamu.edu">William Welling</a>
  *
  */
-public class HttpRequest {
+public class HttpRequest<U extends AbstractCoreUserImpl> {
 
     private HttpServletRequest request;
 
     private HttpServletResponse response;
 
-    private String user;
+    private U user;
 
     private String destination;
 
     private Credentials credentials;
 
-    public HttpRequest(HttpServletRequest request, HttpServletResponse response, String user, String destination, Credentials credentials) {
+    public HttpRequest(HttpServletRequest request, HttpServletResponse response, U user, String destination, Credentials credentials) {
         this.request = request;
         this.response = response;
         this.user = user;
@@ -87,7 +89,7 @@ public class HttpRequest {
      * 
      * @return String
      */
-    public String getUser() {
+    public U getUser() {
         return user;
     }
 
@@ -97,7 +99,7 @@ public class HttpRequest {
      * @param user
      *            String
      */
-    public void setUser(String user) {
+    public void setUser(U user) {
         this.user = user;
     }
 

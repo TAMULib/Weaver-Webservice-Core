@@ -28,11 +28,11 @@ import javax.persistence.Table;
 public abstract class AbstractCoreUserImpl extends BaseEntity implements CoreUser {
 
     @Column(name = "uin", nullable = true, unique = true)
-    private Long uin;
+    private String uin;
 
     public AbstractCoreUserImpl() {}
 
-    public AbstractCoreUserImpl(Long uin) {
+    public AbstractCoreUserImpl(String uin) {
         this();
         this.uin = uin;
     }
@@ -42,12 +42,12 @@ public abstract class AbstractCoreUserImpl extends BaseEntity implements CoreUse
     }
 
     @Override
-    public void setUin(Long uin) {
+    public void setUin(String uin) {
         this.uin = uin;
     }
 
     @Override
-    public Long getUin() {
+    public String getUin() {
         return uin;
     }
 

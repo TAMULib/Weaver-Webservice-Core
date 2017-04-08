@@ -62,6 +62,7 @@ import edu.tamu.framework.aspect.annotation.Auth;
 import edu.tamu.framework.enums.ApiResponseType;
 import edu.tamu.framework.model.ApiResponse;
 import edu.tamu.framework.model.BaseEntity;
+import edu.tamu.framework.model.AbstractCoreUserImpl;
 import edu.tamu.framework.model.Credentials;
 import edu.tamu.framework.model.HttpRequest;
 import edu.tamu.framework.model.ValidatingBase;
@@ -87,7 +88,7 @@ import edu.tamu.framework.validation.ValidationResults;
  */
 @Component
 @Aspect
-public abstract class CoreControllerAspect {
+public abstract class CoreControllerAspect<U extends AbstractCoreUserImpl> {
 
     @Value("${app.aspect.retry}")
     private int NUMBER_OF_RETRY_ATTEMPTS;
@@ -231,7 +232,9 @@ public abstract class CoreControllerAspect {
 
     private PreProcessObject preProcess(ProceedingJoinPoint joinPoint) throws Throwable {
 
-        Credentials credentials = null;
+        U user = null;
+    	
+    	Credentials credentials = null;
 
         Map<String, String> apiVariables = null;
 
@@ -287,7 +290,7 @@ public abstract class CoreControllerAspect {
                 path += method.getAnnotation(ApiMapping.class).value()[0];
             }
 
-            HttpRequest request = httpRequestService.getAndRemoveRequestByDestinationAndUser(path, securityContext.getAuthentication().getName());
+            HttpRequest request = httpRequestService.getAndRemoveRequestByDestinationAndUin(path, securityContext.getAuthentication().getName());
 
             servletRequest = request.getRequest();
 
@@ -300,6 +303,8 @@ public abstract class CoreControllerAspect {
             }
 
             credentials = request.getCredentials();
+            
+            user = (U) request.getUser();
 
             if (servletRequest.getMethod().equals("POST")) {
                 data = StreamUtils.copyToString(servletRequest.getInputStream(), StandardCharsets.UTF_8);
@@ -328,7 +333,7 @@ public abstract class CoreControllerAspect {
                 protocol = Protocol.WEBSOCKET;
             }
 
-            WebSocketRequest request = webSocketRequestService.getAndRemoveMessageByDestinationAndUser(path, securityContext.getAuthentication().getName());
+            WebSocketRequest request = webSocketRequestService.getAndRemoveMessageByDestinationAndUin(path, securityContext.getAuthentication().getName());
 
             message = request.getMessage();
 
@@ -341,6 +346,8 @@ public abstract class CoreControllerAspect {
             requestId = accessor.getNativeHeader("id").get(0);
 
             credentials = request.getCredentials();
+            
+            user = (U) request.getUser();
 
             if (path.contains("{")) {
                 apiVariables = getApiVariable(path, accessor.getDestination());
@@ -370,6 +377,9 @@ public abstract class CoreControllerAspect {
                     } break;
                     case "ApiCredentials": {
                         arguments[index] = credentials;
+                    } break;
+                    case "ApiUser": {
+                        arguments[index] = user;
                     } break;
                     case "ApiData": {
                         String pData = headerData != null ? headerData : data;

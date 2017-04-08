@@ -1,5 +1,5 @@
 /* 
- * ApiCredentials.java 
+ * ApiUser.java 
  * 
  * Version: 
  *     $Id$ 
@@ -26,6 +26,6 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ApiCredentials {
+public @interface ApiUser {
 
 }

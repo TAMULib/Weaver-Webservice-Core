@@ -11,6 +11,8 @@ package edu.tamu.framework.model;
 
 import org.springframework.messaging.Message;
 
+import edu.tamu.framework.model.AbstractCoreUserImpl;
+
 /**
  * Websocket request. Created and stored in memory when a new request goes
  * through the interceptor. Is retrieved and removed when the aspect point cuts
@@ -23,22 +25,21 @@ import org.springframework.messaging.Message;
  * @author <a href="mailto:wwelling@library.tamu.edu">William Welling</a>
  *
  */
-public class WebSocketRequest {
+public class WebSocketRequest<U extends AbstractCoreUserImpl> {
 
     private Message<?> message;
 
-    private String user;
+    private U user;
 
     private String destination;
 
     private Credentials credentials;
 
-    public WebSocketRequest() { }
-
-    public WebSocketRequest(Message<?> message, String user, String destination) {
+    public WebSocketRequest(Message<?> message, U user, String destination, Credentials credentials) {
         this.message = message;
         this.user = user;
         this.destination = destination;
+        this.credentials = credentials;
     }
 
     /**
@@ -65,7 +66,7 @@ public class WebSocketRequest {
      * 
      * @return String
      */
-    public String getUser() {
+    public U getUser() {
         return user;
     }
 
@@ -75,7 +76,7 @@ public class WebSocketRequest {
      * @param user
      *            String
      */
-    public void setUser(String user) {
+    public void setUser(U user) {
         this.user = user;
     }
 
@@ -112,5 +113,4 @@ public class WebSocketRequest {
     public void setCredentials(Credentials credentials) {
         this.credentials = credentials;
     }
-
 }

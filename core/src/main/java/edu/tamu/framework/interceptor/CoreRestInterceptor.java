@@ -31,6 +31,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import edu.tamu.framework.exception.JWTException;
+import edu.tamu.framework.model.AbstractCoreUserImpl;
 import edu.tamu.framework.model.Credentials;
 import edu.tamu.framework.model.HttpRequest;
 import edu.tamu.framework.service.HttpRequestService;
@@ -48,7 +49,7 @@ import edu.tamu.framework.util.JwtUtility;
  *
  */
 @Component
-public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
+public abstract class CoreRestInterceptor<U extends AbstractCoreUserImpl> extends HandlerInterceptorAdapter {
 
     @Value("${app.whitelist}")
     private String[] whitelist;
@@ -78,6 +79,8 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
         String jwt = request.getHeader("jwt");
 
         Credentials credentials = null;
+        
+        U user = null;
 
         if (jwt == null) {
 
@@ -149,7 +152,9 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
                 throw new JWTException("EXPIRED_JWT", "JWT is expired!");
             }
 
-            credentials = confirmCreateUser(new Credentials(credentialMap));
+            credentials = new Credentials(credentialMap);
+            
+            user = confirmCreateUser(credentials);
 
             if (credentials == null) {
                 errorMessage = "Could not confirm user!";
@@ -170,13 +175,13 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
             credentials.setNetid(credentials.getEmail());
         }
 
-        Authentication auth = new AnonymousAuthenticationToken(credentials.getUin(), credentials.getNetid(), grantedAuthorities);
+        Authentication auth = new AnonymousAuthenticationToken(credentials.getNetid(), credentials.getUin(), grantedAuthorities);
 
         auth.setAuthenticated(true);
 
         securityContext.setAuthentication(auth);
 
-        httpRequestService.addRequest(new HttpRequest(request, response, credentials.getNetid(), request.getRequestURI(), credentials));
+        httpRequestService.addRequest(new HttpRequest<U>(request, response, user, request.getRequestURI(), credentials));
 
         return true;
     }
@@ -185,5 +190,5 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 
     }
 
-    public abstract Credentials confirmCreateUser(Credentials shib);
+    public abstract U confirmCreateUser(Credentials credentials);
 }

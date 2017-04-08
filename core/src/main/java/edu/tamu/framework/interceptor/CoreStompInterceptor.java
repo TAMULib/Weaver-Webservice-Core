@@ -41,6 +41,7 @@ import org.springframework.util.PathMatcher;
 import edu.tamu.framework.mapping.WebSocketRequestMappingHandler;
 import edu.tamu.framework.mapping.condition.WebSocketRequestCondition;
 import edu.tamu.framework.model.ApiResponse;
+import edu.tamu.framework.model.AbstractCoreUserImpl;
 import edu.tamu.framework.model.Credentials;
 import edu.tamu.framework.model.WebSocketRequest;
 import edu.tamu.framework.service.WebSocketRequestService;
@@ -57,7 +58,7 @@ import edu.tamu.framework.util.JwtUtility;
  * @author <a href="mailto:wwelling@library.tamu.edu">William Welling</a>
  *
  */
-public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
+public abstract class CoreStompInterceptor<U extends AbstractCoreUserImpl> extends ChannelInterceptorAdapter {
 
     @Autowired
     private JwtUtility jwtService;
@@ -107,10 +108,10 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
         final StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
         StompCommand command = accessor.getCommand();
 
-        String destination = accessor.getDestination();
+        String accessorDestination = accessor.getDestination();
         
-        if (destination != null) {
-            logger.debug("Accessor Destination: " + accessor.getDestination());
+        if (accessorDestination != null) {
+            logger.debug("Accessor destination: " + accessorDestination);
         }
 
         logger.debug(command.name());
@@ -122,6 +123,8 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
         }
 
         Credentials credentials = null;
+        
+        U user = null;
         
         switch (command) {
         case ABORT:
@@ -153,7 +156,7 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 
                 credentials = new Credentials(credentialMap);
 
-                credentials = confirmCreateUser(credentials);
+                user = confirmCreateUser(credentials);
 
                 if (credentials == null) {
                     errorMessage = "Could not confirm user!";
@@ -169,11 +172,15 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 
             grantedAuthorities.add(new SimpleGrantedAuthority(credentials.getRole()));
 
+            // TODO: probably should ensure uin is available to be safe
+            
             if (credentials.getNetid() == null) {
                 credentials.setNetid(credentials.getEmail());
             }
 
-            Authentication auth = new AnonymousAuthenticationToken(credentials.getUin(), credentials.getNetid(), grantedAuthorities);
+            // TODO: extend CoreUser with UserDetails and implement required methods
+            // pass <U extends CoreUser> in as Object principal, second argument
+            Authentication auth = new AnonymousAuthenticationToken(credentials.getNetid(), credentials.getUin(), grantedAuthorities);
 
             auth.setAuthenticated(true);
 
@@ -194,69 +201,64 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
         case RECEIPT:
             break;
         case SEND:
-            WebSocketRequest request = new WebSocketRequest();
+        	
+        	String destination = null;
 
             List<String> matches = new ArrayList<String>();
 
             // get path from ApiMapping annotation
             webSocketRequestMappingHandler.getHandlerMethods().entrySet().stream().forEach(info -> {
-                if (request.getDestination() == null) {
-                    WebSocketRequestCondition mappingCondition = info.getKey().getDestinationConditions();
-                    mappingCondition.getPatterns().stream().forEach(pattern -> {
+                WebSocketRequestCondition mappingCondition = info.getKey().getDestinationConditions();
+                mappingCondition.getPatterns().stream().forEach(pattern -> {
 
-                        if (pattern.contains("{")) {
-                            if (((AntPathMatcher) this.pathMatcher).match(("/ws" + pattern), destination)) {
-                                matches.add(pattern);
-                            } else if (((AntPathMatcher) this.pathMatcher).match(("/private/queue" + pattern), destination)) {
-                                matches.add(pattern);
-                            }
-                        } else {
-                            if (("/ws" + pattern).equals(destination)) {
-                                matches.add(pattern);
-                            } else if (("/private/queue" + pattern).equals(destination)) {
-                                matches.add(pattern);
-                            }
+                    if (pattern.contains("{")) {
+                        if (((AntPathMatcher) this.pathMatcher).match(("/ws" + pattern), accessorDestination)) {
+                            matches.add(pattern);
+                        } else if (((AntPathMatcher) this.pathMatcher).match(("/private/queue" + pattern), accessorDestination)) {
+                            matches.add(pattern);
                         }
+                    } else {
+                        if (("/ws" + pattern).equals(accessorDestination)) {
+                            matches.add(pattern);
+                        } else if (("/private/queue" + pattern).equals(accessorDestination)) {
+                            matches.add(pattern);
+                        }
+                    }
 
-                    });
-                }
+                });
             });
 
             // if no path yet, get from MessageMapping annotation
-            if (request.getDestination() == null) {
-                simpAnnotationMethodMessageHandler.getHandlerMethods().entrySet().stream().forEach(info -> {
-                    if (request.getDestination() == null) {
-                        DestinationPatternsMessageCondition mappingCondition = info.getKey().getDestinationConditions();
-                        mappingCondition.getPatterns().stream().forEach(pattern -> {
+            simpAnnotationMethodMessageHandler.getHandlerMethods().entrySet().stream().forEach(info -> {
+                DestinationPatternsMessageCondition mappingCondition = info.getKey().getDestinationConditions();
+                mappingCondition.getPatterns().stream().forEach(pattern -> {
 
-                            if (pattern.contains("{")) {
-                                if (((AntPathMatcher) this.pathMatcher).match(("/ws" + pattern), destination)) {
-                                    matches.add(pattern);
-                                } else if (((AntPathMatcher) this.pathMatcher).match(("/private/queue" + pattern), destination)) {
-                                    matches.add(pattern);
-                                }
-                            } else {
-                                if (("/ws" + pattern).equals(destination)) {
-                                    matches.add(pattern);
-                                } else if (("/private/queue" + pattern).equals(destination)) {
-                                    matches.add(pattern);
-                                }
-                            }
-
-                        });
+                    if (pattern.contains("{")) {
+                        if (((AntPathMatcher) this.pathMatcher).match(("/ws" + pattern), accessorDestination)) {
+                            matches.add(pattern);
+                        } else if (((AntPathMatcher) this.pathMatcher).match(("/private/queue" + pattern), accessorDestination)) {
+                            matches.add(pattern);
+                        }
+                    } else {
+                        if (("/ws" + pattern).equals(accessorDestination)) {
+                            matches.add(pattern);
+                        } else if (("/private/queue" + pattern).equals(accessorDestination)) {
+                            matches.add(pattern);
+                        }
                     }
+
                 });
+            });
+
+            String enhancedAccessorDestination = accessorDestination;
+
+            if (accessorDestination.startsWith("/ws")) {
+            	enhancedAccessorDestination = accessorDestination.substring("/ws".length());
+            } else if (accessorDestination.startsWith("/private/queue")) {
+            	enhancedAccessorDestination = accessorDestination.substring("/private/queue".length());
             }
 
-            String d = destination;
-
-            if (destination.startsWith("/ws")) {
-                d = destination.substring("/ws".length());
-            } else if (destination.startsWith("/private/queue")) {
-                d = destination.substring("/private/queue".length());
-            }
-
-            String[] destinationPaths = d.split("/");
+            String[] destinationPaths = enhancedAccessorDestination.split("/");
             int m = 0;
             for (String pattern : matches) {
                 String[] patternPaths = pattern.split("/");
@@ -269,7 +271,7 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
                     }
                     if (n > m) {
                         m = n;
-                        request.setDestination(pattern);
+                        destination = pattern;
                     }
                 }
             }
@@ -282,7 +284,7 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
 
                 credentialMap = jwtService.validateJWT(jwt);
 
-                logger.info(credentialMap.get("firstName") + " " + credentialMap.get("lastName") + " (" + credentialMap.get("uin") + ") requesting " + destination);
+                logger.info(credentialMap.get("firstName") + " " + credentialMap.get("lastName") + " (" + credentialMap.get("uin") + ") requesting " + accessorDestination);
 
                 if (logger.isDebugEnabled()) {
                     logger.debug("Credential Map");
@@ -296,31 +298,25 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
                 if (errorMessage != null) {
                     logger.error("Security Context Name: " + securityContext.getAuthentication().getName());
                     logger.error("JWT error: " + errorMessage);
-                    simpMessagingTemplate.convertAndSend(destination.replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse(requestId, ERROR, errorMessage));
+                    simpMessagingTemplate.convertAndSend(accessorDestination.replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse(requestId, ERROR, errorMessage));
                     return null;
                 }
 
                 if (jwtService.isExpired(credentialMap)) {
                     logger.info("The token for " + credentialMap.get("firstName") + " " + credentialMap.get("lastName") + " (" + credentialMap.get("uin") + ") has expired. Attempting to get new token.");
-                    simpMessagingTemplate.convertAndSend(destination.replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse(requestId, REFRESH));
+                    simpMessagingTemplate.convertAndSend(accessorDestination.replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse(requestId, REFRESH));
                     return null;
                 }
 
                 credentials = new Credentials(credentialMap);
 
-                credentials = confirmCreateUser(credentials);
+                user = confirmCreateUser(credentials);
 
             } else {
                 credentials = getAnonymousCredentials();
             }
             
-            request.setMessage(message);
-
-            request.setCredentials(credentials);
-
-            request.setUser(securityContext.getAuthentication().getName());
-
-            webSocketRequestService.addRequest(request);
+            webSocketRequestService.addRequest(new WebSocketRequest<U>(message, user, destination, credentials));
 
             break;
         case STOMP:
@@ -336,6 +332,6 @@ public abstract class CoreStompInterceptor extends ChannelInterceptorAdapter {
         return message;
     }
 
-    public abstract Credentials confirmCreateUser(Credentials shib);
+    public abstract U confirmCreateUser(Credentials credentials);
 
 }
