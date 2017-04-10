@@ -11,7 +11,7 @@ package edu.tamu.framework.model;
 
 import org.springframework.messaging.Message;
 
-import edu.tamu.framework.model.AbstractCoreUserImpl;
+import edu.tamu.framework.model.AbstractCoreUser;
 
 /**
  * Websocket request. Created and stored in memory when a new request goes
@@ -25,7 +25,7 @@ import edu.tamu.framework.model.AbstractCoreUserImpl;
  * @author <a href="mailto:wwelling@library.tamu.edu">William Welling</a>
  *
  */
-public class WebSocketRequest<U extends AbstractCoreUserImpl> {
+public class WebSocketRequest<U extends AbstractCoreUser> {
 
     private Message<?> message;
 

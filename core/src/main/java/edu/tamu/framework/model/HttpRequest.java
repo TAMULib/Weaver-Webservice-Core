@@ -12,7 +12,7 @@ package edu.tamu.framework.model;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import edu.tamu.framework.model.AbstractCoreUserImpl;
+import edu.tamu.framework.model.AbstractCoreUser;
 
 /**
  * Http request. Created and stored in memory when a new request goes through
@@ -26,7 +26,7 @@ import edu.tamu.framework.model.AbstractCoreUserImpl;
  * @author <a href="mailto:wwelling@library.tamu.edu">William Welling</a>
  *
  */
-public class HttpRequest<U extends AbstractCoreUserImpl> {
+public class HttpRequest<U extends AbstractCoreUser> {
 
     private HttpServletRequest request;
 

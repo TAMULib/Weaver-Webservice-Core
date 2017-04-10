@@ -41,7 +41,7 @@ import org.springframework.util.PathMatcher;
 import edu.tamu.framework.mapping.WebSocketRequestMappingHandler;
 import edu.tamu.framework.mapping.condition.WebSocketRequestCondition;
 import edu.tamu.framework.model.ApiResponse;
-import edu.tamu.framework.model.AbstractCoreUserImpl;
+import edu.tamu.framework.model.AbstractCoreUser;
 import edu.tamu.framework.model.Credentials;
 import edu.tamu.framework.model.WebSocketRequest;
 import edu.tamu.framework.service.WebSocketRequestService;
@@ -58,13 +58,13 @@ import edu.tamu.framework.util.JwtUtility;
  * @author <a href="mailto:wwelling@library.tamu.edu">William Welling</a>
  *
  */
-public abstract class CoreStompInterceptor<U extends AbstractCoreUserImpl> extends ChannelInterceptorAdapter {
+public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends ChannelInterceptorAdapter {
 
     @Autowired
     private JwtUtility jwtService;
 
     @Autowired
-    private WebSocketRequestService webSocketRequestService;
+    private WebSocketRequestService<U> webSocketRequestService;
 
     @Autowired
     private SecurityContext securityContext;
@@ -158,7 +158,7 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUserImpl> exten
 
                 user = confirmCreateUser(credentials);
 
-                if (credentials == null) {
+                if (user == null) {
                     errorMessage = "Could not confirm user!";
                     logger.error(errorMessage);
                     return MessageBuilder.withPayload(errorMessage).setHeaders(accessor).build();
@@ -171,11 +171,13 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUserImpl> exten
             List<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
 
             grantedAuthorities.add(new SimpleGrantedAuthority(credentials.getRole()));
-
-            // TODO: probably should ensure uin is available to be safe
             
             if (credentials.getNetid() == null) {
                 credentials.setNetid(credentials.getEmail());
+            }
+            
+            if (credentials.getUin() == null) {
+                credentials.setUin(credentials.getEmail());
             }
 
             // TODO: extend CoreUser with UserDetails and implement required methods
@@ -206,7 +208,7 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUserImpl> exten
 
             List<String> matches = new ArrayList<String>();
 
-            // get path from ApiMapping annotation
+            // get pattern matches from ApiMapping annotation
             webSocketRequestMappingHandler.getHandlerMethods().entrySet().stream().forEach(info -> {
                 WebSocketRequestCondition mappingCondition = info.getKey().getDestinationConditions();
                 mappingCondition.getPatterns().stream().forEach(pattern -> {
@@ -228,7 +230,7 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUserImpl> exten
                 });
             });
 
-            // if no path yet, get from MessageMapping annotation
+            // get pattern matches from MessageMapping annotation
             simpAnnotationMethodMessageHandler.getHandlerMethods().entrySet().stream().forEach(info -> {
                 DestinationPatternsMessageCondition mappingCondition = info.getKey().getDestinationConditions();
                 mappingCondition.getPatterns().stream().forEach(pattern -> {

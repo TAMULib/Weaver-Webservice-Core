@@ -1,5 +1,5 @@
 /* 
- * HttpRequestService.java 
+ * HttpRequest<U>Service.java 
  * 
  * Version: 
  *     $Id$ 
@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.PathMatcher;
 
+import edu.tamu.framework.model.AbstractCoreUser;
 import edu.tamu.framework.model.HttpRequest;
 
 /**
@@ -31,20 +32,20 @@ import edu.tamu.framework.model.HttpRequest;
  *
  */
 @Service
-public class HttpRequestService {
+public class HttpRequestService<U extends AbstractCoreUser> {
 
     @Autowired
     @Lazy
     private PathMatcher pathMatcher;
 
-    protected List<HttpRequest> requests = new ArrayList<HttpRequest>();
+    protected List<HttpRequest<U>> requests = new ArrayList<HttpRequest<U>>();
 
     /**
      * Get all current requests.
      * 
-     * @return List<HttpRequest>
+     * @return List<HttpRequest<U>>
      */
-    public List<HttpRequest> getRequests() {
+    public List<HttpRequest<U>> getRequests() {
         return requests;
     }
 
@@ -52,9 +53,9 @@ public class HttpRequestService {
      * Add request.
      * 
      * @param request
-     *            HttpRequest
+     *            HttpRequest<U>
      */
-    public synchronized void addRequest(HttpRequest request) {
+    public synchronized void addRequest(HttpRequest<U> request) {
         if (request.getDestination() != null && request.getUser() != null) {
             requests.add(request);
         }
@@ -64,9 +65,9 @@ public class HttpRequestService {
      * Remove request.
      * 
      * @param request
-     *            HttpRequest
+     *            HttpRequest<U>
      */
-    public synchronized void removeRequest(HttpRequest request) {
+    public synchronized void removeRequest(HttpRequest<U> request) {
         if (request.getDestination() != null && request.getUser() != null) {
             requests.remove(request);
         }
@@ -79,14 +80,14 @@ public class HttpRequestService {
      *            String
      * @param uin
      *            Long
-     * @return HttpRequest
+     * @return HttpRequest<U>
      */
-    public synchronized HttpRequest getAndRemoveRequestByDestinationAndUin(String pattern, String uin) {
+    public synchronized HttpRequest<U> getAndRemoveRequestByDestinationAndUin(String pattern, String uin) {
         if (pattern.charAt(0) != '/') {
             pattern = "/" + pattern;
         }
         for (int index = 0; index < requests.size(); index++) {
-            HttpRequest request = requests.get(index);
+            HttpRequest<U> request = requests.get(index);
             if (request.getUser().getUin().equals(uin) && pathMatcher.match(pattern, request.getDestination())) {
                 requests.remove(index);
                 return request;

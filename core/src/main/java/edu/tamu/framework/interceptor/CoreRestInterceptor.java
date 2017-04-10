@@ -31,7 +31,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import edu.tamu.framework.exception.JWTException;
-import edu.tamu.framework.model.AbstractCoreUserImpl;
+import edu.tamu.framework.model.AbstractCoreUser;
 import edu.tamu.framework.model.Credentials;
 import edu.tamu.framework.model.HttpRequest;
 import edu.tamu.framework.service.HttpRequestService;
@@ -49,7 +49,7 @@ import edu.tamu.framework.util.JwtUtility;
  *
  */
 @Component
-public abstract class CoreRestInterceptor<U extends AbstractCoreUserImpl> extends HandlerInterceptorAdapter {
+public abstract class CoreRestInterceptor<U extends AbstractCoreUser> extends HandlerInterceptorAdapter {
 
     @Value("${app.whitelist}")
     private String[] whitelist;
@@ -58,7 +58,7 @@ public abstract class CoreRestInterceptor<U extends AbstractCoreUserImpl> extend
     private JwtUtility jwtService;
 
     @Autowired
-    private HttpRequestService httpRequestService;
+    private HttpRequestService<U> httpRequestService;
 
     @Autowired
     private SecurityContext securityContext;
@@ -156,7 +156,7 @@ public abstract class CoreRestInterceptor<U extends AbstractCoreUserImpl> extend
             
             user = confirmCreateUser(credentials);
 
-            if (credentials == null) {
+            if (user == null) {
                 errorMessage = "Could not confirm user!";
                 logger.error(errorMessage);
                 throw new JWTException("INVALID_USER", errorMessage);
@@ -173,6 +173,10 @@ public abstract class CoreRestInterceptor<U extends AbstractCoreUserImpl> extend
 
         if (credentials.getNetid() == null) {
             credentials.setNetid(credentials.getEmail());
+        }
+        
+        if (credentials.getUin() == null) {
+            credentials.setUin(credentials.getEmail());
         }
 
         Authentication auth = new AnonymousAuthenticationToken(credentials.getNetid(), credentials.getUin(), grantedAuthorities);

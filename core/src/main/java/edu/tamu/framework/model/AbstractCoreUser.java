@@ -1,5 +1,5 @@
 /* 
- * AbstractCoreUserImpl.java 
+ * AbstractCoreUser.java 
  * 
  * Version: 
  *     $Id$ 
@@ -25,14 +25,15 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "core_users")
-public abstract class AbstractCoreUserImpl extends BaseEntity implements CoreUser {
+public abstract class AbstractCoreUser extends BaseEntity implements CoreUser {
 
     @Column(name = "uin", nullable = true, unique = true)
     private String uin;
 
-    public AbstractCoreUserImpl() {}
+    public AbstractCoreUser() {
+    }
 
-    public AbstractCoreUserImpl(String uin) {
+    public AbstractCoreUser(String uin) {
         this();
         this.uin = uin;
     }
