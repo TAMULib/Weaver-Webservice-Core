@@ -1,5 +1,5 @@
 /* 
- * JWTheader.java 
+ * JwtHeader.java 
  * 
  * Version: 
  *     $Id$ 

@@ -1,3 +1,12 @@
+/* 
+ * BaseModelValidator.java 
+ * 
+ * Version: 
+ *     $Id$ 
+ * 
+ * Revisions: 
+ *     $Log$ 
+ */
 package edu.tamu.framework.validation;
 
 import java.util.ArrayList;
@@ -10,34 +19,34 @@ import edu.tamu.framework.model.ValidatingBase;
 import edu.tamu.framework.util.ValidationUtility;
 
 public abstract class BaseModelValidator implements Validator {
-    
-    private Map<String, List<InputValidator>> inputValidators = new HashMap<String, List<InputValidator>>(); 
-    
-    private List<BusinessValidator> businessValidators = new ArrayList<BusinessValidator>(); 
-    
+
+    private Map<String, List<InputValidator>> inputValidators = new HashMap<String, List<InputValidator>>();
+
+    private List<BusinessValidator> businessValidators = new ArrayList<BusinessValidator>();
+
     @Override
     public <U extends ValidatingBase> ValidationResults validate(U model) {
-        
+
         ValidationResults validationResults = new ValidationResults();
 
         // input validators
-        
+
         for (Entry<String, List<InputValidator>> entry : inputValidators.entrySet()) {
             List<InputValidator> inputValidators = entry.getValue();
             inputValidators.forEach(inputValidator -> {
                 ValidationUtility.aggregateValidationResults(validationResults, ValidationUtility.validateInputs(inputValidator, model));
             });
         }
-        
+
         // business validators
-        
-        businessValidators.forEach(businessValidator -> {            
+
+        businessValidators.forEach(businessValidator -> {
             ValidationUtility.aggregateValidationResults(validationResults, ValidationUtility.validateBusiness(businessValidator, model));
         });
 
         return validationResults;
     }
-    
+
     /**
      * @return the inputValidators
      */
@@ -46,7 +55,8 @@ public abstract class BaseModelValidator implements Validator {
     }
 
     /**
-     * @param inputValidators the inputValidators to set
+     * @param inputValidators
+     *            the inputValidators to set
      */
     public void setInputValidators(Map<String, List<InputValidator>> inputValidators) {
         this.inputValidators = inputValidators;
@@ -60,49 +70,49 @@ public abstract class BaseModelValidator implements Validator {
     }
 
     /**
-     * @param businessValidators the businessValidators to set
+     * @param businessValidators
+     *            the businessValidators to set
      */
     public void setBusinessValidators(List<BusinessValidator> businessValidators) {
         this.businessValidators = businessValidators;
     }
-    
+
     public void addInputValidator(InputValidator inputValidator) {
-    	String key = inputValidator.getProperty();
+        String key = inputValidator.getProperty();
         List<InputValidator> inputValidators = this.inputValidators.get(key);
-        if(inputValidators == null) {
-            inputValidators = new ArrayList<InputValidator>();            
+        if (inputValidators == null) {
+            inputValidators = new ArrayList<InputValidator>();
         }
-        if(!inputValidators.contains(inputValidator)) {
-            inputValidators.add(inputValidator);        
+        if (!inputValidators.contains(inputValidator)) {
+            inputValidators.add(inputValidator);
             this.inputValidators.put(key, inputValidators);
         }
     }
-    
+
     public void removeInputValidator(InputValidator inputValidator) {
-    	String key = inputValidator.getProperty();
+        String key = inputValidator.getProperty();
         List<InputValidator> inputValidators = this.inputValidators.get(key);
-        if(inputValidators == null) {
-            inputValidators = new ArrayList<InputValidator>();            
+        if (inputValidators == null) {
+            inputValidators = new ArrayList<InputValidator>();
         }
-        if(inputValidators.contains(inputValidator)) {
+        if (inputValidators.contains(inputValidator)) {
             inputValidators.remove(inputValidator);
-            if(inputValidators.size() > 0) {
-            	this.inputValidators.put(key, inputValidators);
-            }
-            else {
-            	this.inputValidators.remove(inputValidator.getProperty());
+            if (inputValidators.size() > 0) {
+                this.inputValidators.put(key, inputValidators);
+            } else {
+                this.inputValidators.remove(inputValidator.getProperty());
             }
         }
     }
-    
+
     public void addBusinessValidator(BusinessValidator businessValidator) {
-        if(!this.businessValidators.contains(businessValidator)) {
+        if (!this.businessValidators.contains(businessValidator)) {
             this.businessValidators.add(businessValidator);
         }
     }
-    
+
     public void removeBusinessValidator(BusinessValidator businessValidator) {
         this.businessValidators.remove(businessValidator);
     }
-    
+
 }

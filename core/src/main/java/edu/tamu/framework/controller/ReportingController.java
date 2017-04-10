@@ -22,9 +22,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import edu.tamu.framework.aspect.annotation.ApiCredentials;
 import edu.tamu.framework.aspect.annotation.ApiData;
 import edu.tamu.framework.aspect.annotation.ApiMapping;
-import edu.tamu.framework.aspect.annotation.ApiCredentials;
 import edu.tamu.framework.model.ApiResponse;
 import edu.tamu.framework.model.Credentials;
 import edu.tamu.framework.util.EmailSender;

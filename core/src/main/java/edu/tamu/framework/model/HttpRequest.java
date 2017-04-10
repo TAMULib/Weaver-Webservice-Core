@@ -12,12 +12,9 @@ package edu.tamu.framework.model;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import edu.tamu.framework.model.AbstractCoreUser;
-
 /**
- * Http request. Created and stored in memory when a new request goes through
- * the interceptor. Is retrieved and removed when the aspect point cuts an
- * endpoint.
+ * Http request. Created and stored in memory when a new request goes through the interceptor. Is
+ * retrieved and removed when the aspect point cuts an endpoint.
  * 
  * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
  * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>

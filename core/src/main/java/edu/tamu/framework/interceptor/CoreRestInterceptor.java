@@ -38,8 +38,8 @@ import edu.tamu.framework.service.HttpRequestService;
 import edu.tamu.framework.util.JwtUtility;
 
 /**
- * REST interceptor. Intercepts AJAX request to decode and verify token before
- * allowing controller to process request.
+ * REST interceptor. Intercepts AJAX request to decode and verify token before allowing controller
+ * to process request.
  * 
  * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
  * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>
@@ -65,7 +65,8 @@ public abstract class CoreRestInterceptor<U extends AbstractCoreUser> extends Ha
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public CoreRestInterceptor() {}
+    public CoreRestInterceptor() {
+    }
 
     public abstract Credentials getAnonymousCredentials();
 
@@ -79,7 +80,7 @@ public abstract class CoreRestInterceptor<U extends AbstractCoreUser> extends Ha
         String jwt = request.getHeader("jwt");
 
         Credentials credentials = null;
-        
+
         U user = null;
 
         if (jwt == null) {
@@ -153,7 +154,7 @@ public abstract class CoreRestInterceptor<U extends AbstractCoreUser> extends Ha
             }
 
             credentials = new Credentials(credentialMap);
-            
+
             user = confirmCreateUser(credentials);
 
             if (user == null) {
@@ -162,11 +163,11 @@ public abstract class CoreRestInterceptor<U extends AbstractCoreUser> extends Ha
                 throw new JwtException("INVALID_USER", errorMessage);
             }
         }
-        
-        if(request.getHeader("data") != null) {
+
+        if (request.getHeader("data") != null) {
             request.setAttribute("data", request.getHeader("data"));
         }
-        
+
         List<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
 
         grantedAuthorities.add(new SimpleGrantedAuthority(credentials.getRole()));
@@ -174,7 +175,7 @@ public abstract class CoreRestInterceptor<U extends AbstractCoreUser> extends Ha
         if (credentials.getNetid() == null) {
             credentials.setNetid(credentials.getEmail());
         }
-        
+
         if (credentials.getUin() == null) {
             credentials.setUin(credentials.getEmail());
         }

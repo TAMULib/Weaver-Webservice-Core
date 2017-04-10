@@ -1,3 +1,12 @@
+/* 
+ * InputValidationType.java 
+ * 
+ * Version: 
+ *     $Id$ 
+ * 
+ * Revisions: 
+ *     $Log$ 
+ */
 package edu.tamu.framework.enums;
 
 public enum InputValidationType {

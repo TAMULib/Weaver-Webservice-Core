@@ -40,16 +40,16 @@ import org.springframework.util.PathMatcher;
 
 import edu.tamu.framework.mapping.WebSocketRequestMappingHandler;
 import edu.tamu.framework.mapping.condition.WebSocketRequestCondition;
-import edu.tamu.framework.model.ApiResponse;
 import edu.tamu.framework.model.AbstractCoreUser;
+import edu.tamu.framework.model.ApiResponse;
 import edu.tamu.framework.model.Credentials;
 import edu.tamu.framework.model.WebSocketRequest;
 import edu.tamu.framework.service.WebSocketRequestService;
 import edu.tamu.framework.util.JwtUtility;
 
 /**
- * Stomp interceptor. Checks command, decodes and verifies token, either returns
- * error message to frontend or continues to controller.
+ * Stomp interceptor. Checks command, decodes and verifies token, either returns error message to
+ * frontend or continues to controller.
  * 
  * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
  * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>
@@ -109,7 +109,7 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
         StompCommand command = accessor.getCommand();
 
         String accessorDestination = accessor.getDestination();
-        
+
         if (accessorDestination != null) {
             logger.debug("Accessor destination: " + accessorDestination);
         }
@@ -123,9 +123,9 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
         }
 
         Credentials credentials = null;
-        
+
         U user = null;
-        
+
         switch (command) {
         case ABORT:
             break;
@@ -171,11 +171,11 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
             List<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
 
             grantedAuthorities.add(new SimpleGrantedAuthority(credentials.getRole()));
-            
+
             if (credentials.getNetid() == null) {
                 credentials.setNetid(credentials.getEmail());
             }
-            
+
             if (credentials.getUin() == null) {
                 credentials.setUin(credentials.getEmail());
             }
@@ -203,8 +203,8 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
         case RECEIPT:
             break;
         case SEND:
-        	
-        	String destination = null;
+
+            String destination = null;
 
             List<String> matches = new ArrayList<String>();
 
@@ -255,9 +255,9 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
             String enhancedAccessorDestination = accessorDestination;
 
             if (accessorDestination.startsWith("/ws")) {
-            	enhancedAccessorDestination = accessorDestination.substring("/ws".length());
+                enhancedAccessorDestination = accessorDestination.substring("/ws".length());
             } else if (accessorDestination.startsWith("/private/queue")) {
-            	enhancedAccessorDestination = accessorDestination.substring("/private/queue".length());
+                enhancedAccessorDestination = accessorDestination.substring("/private/queue".length());
             }
 
             String[] destinationPaths = enhancedAccessorDestination.split("/");
@@ -317,7 +317,7 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
             } else {
                 credentials = getAnonymousCredentials();
             }
-            
+
             webSocketRequestService.addRequest(new WebSocketRequest<U>(message, user, destination, credentials));
 
             break;

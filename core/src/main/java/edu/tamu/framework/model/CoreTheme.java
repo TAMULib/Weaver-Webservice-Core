@@ -40,7 +40,8 @@ public class CoreTheme extends BaseEntity {
     @Fetch(FetchMode.SELECT)
     private Set<ThemeProperty> themeProperties = new HashSet<ThemeProperty>();
 
-    public CoreTheme() {}
+    public CoreTheme() {
+    }
 
     public CoreTheme(String name) {
         this();
@@ -95,7 +96,7 @@ public class CoreTheme extends BaseEntity {
     public void addThemeProperty(ThemeProperty themeProperty) {
         themeProperties.add(themeProperty);
     }
-    
+
     public void removeThemeProperty(ThemeProperty themeProperty) {
         themeProperties.remove(themeProperty);
     }

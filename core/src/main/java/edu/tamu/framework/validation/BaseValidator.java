@@ -1,11 +1,20 @@
+/* 
+ * BaseValidator.java 
+ * 
+ * Version: 
+ *     $Id$ 
+ * 
+ * Revisions: 
+ *     $Log$ 
+ */
 package edu.tamu.framework.validation;
 
 public abstract class BaseValidator<T> {
-    
+
     protected T type;
-    
+
     protected String message;
-    
+
     /**
      * @return the type
      */
@@ -14,7 +23,8 @@ public abstract class BaseValidator<T> {
     }
 
     /**
-     * @param type the type to set
+     * @param type
+     *            the type to set
      */
     public void setType(T type) {
         this.type = type;
@@ -28,7 +38,8 @@ public abstract class BaseValidator<T> {
     }
 
     /**
-     * @param message the message to set
+     * @param message
+     *            the message to set
      */
     public void setMessage(String message) {
         this.message = message;

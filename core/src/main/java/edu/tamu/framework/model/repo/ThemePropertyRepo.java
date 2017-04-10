@@ -16,6 +16,7 @@ import org.springframework.stereotype.Repository;
 
 import edu.tamu.framework.model.ThemeProperty;
 import edu.tamu.framework.model.ThemePropertyName;
+import edu.tamu.framework.model.repo.custom.ThemePropertyRepoCustom;
 
 /**
  * Application User repository.

@@ -1,5 +1,5 @@
 /* 
- * Parameters.java 
+ * ApiParameters.java 
  * 
  * Version: 
  *     $Id$ 

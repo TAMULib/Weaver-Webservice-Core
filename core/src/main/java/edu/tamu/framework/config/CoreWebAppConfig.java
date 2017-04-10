@@ -75,12 +75,12 @@ import wro4j.http.handler.CustomRequestHandler;
 @EnableJpaRepositories(basePackages = { "edu.tamu.framework.model.repo" })
 @EntityScan(basePackages = { "edu.tamu.framework.model" })
 public class CoreWebAppConfig extends WebMvcConfigurerAdapter {
-	
-	@PersistenceContext
-	private EntityManager entityManager;
-	
-	@Autowired
-	private ApplicationContext applicationContext;
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    @Autowired
+    private ApplicationContext applicationContext;
 
     /**
      * {@inheritDoc}
@@ -125,14 +125,14 @@ public class CoreWebAppConfig extends WebMvcConfigurerAdapter {
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         objectMapper.configure(MapperFeature.DEFAULT_VIEW_INCLUSION, true);
         objectMapper.setHandlerInstantiator(new SpringHandlerInstantiator(applicationContext.getAutowireCapableBeanFactory()) {
-			@Override
-			public ObjectIdResolver resolverIdGeneratorInstance(final MapperConfig<?> config, final Annotated annotated, final Class<?> implClass) {
-				if (implClass == BaseEntityIdResolver.class) {
-					return new BaseEntityIdResolver(entityManager);
-				}
-				return null;
-			}
-		});
+            @Override
+            public ObjectIdResolver resolverIdGeneratorInstance(final MapperConfig<?> config, final Annotated annotated, final Class<?> implClass) {
+                if (implClass == BaseEntityIdResolver.class) {
+                    return new BaseEntityIdResolver(entityManager);
+                }
+                return null;
+            }
+        });
         return objectMapper;
     }
 

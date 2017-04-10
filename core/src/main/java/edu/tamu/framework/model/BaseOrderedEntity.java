@@ -1,9 +1,16 @@
+/* 
+ * BaseOrderedEntity.java 
+ * 
+ * Version: 
+ *     $Id$ 
+ * 
+ * Revisions: 
+ *     $Log$ 
+ */
 package edu.tamu.framework.model;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
-
-import edu.tamu.framework.model.BaseEntity;
 
 @MappedSuperclass
 public abstract class BaseOrderedEntity extends BaseEntity {
@@ -18,5 +25,5 @@ public abstract class BaseOrderedEntity extends BaseEntity {
     public void setPosition(Long position) {
         this.position = position;
     }
-    
+
 }

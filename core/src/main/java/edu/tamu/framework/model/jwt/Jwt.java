@@ -1,5 +1,5 @@
 /* 
- * JWTtoken.java 
+ * Jwt.java 
  * 
  * Version: 
  *     $Id$ 

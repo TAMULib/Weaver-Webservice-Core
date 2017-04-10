@@ -15,6 +15,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import edu.tamu.framework.model.CoreTheme;
+import edu.tamu.framework.model.repo.custom.CoreThemeRepoCustom;
 
 /**
  * Application User repository.

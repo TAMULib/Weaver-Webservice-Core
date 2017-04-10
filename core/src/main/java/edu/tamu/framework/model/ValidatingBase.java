@@ -17,7 +17,7 @@ import edu.tamu.framework.validation.ValidationResults;
 import edu.tamu.framework.validation.Validator;
 
 public abstract class ValidatingBase {
-    
+
     @Transient
     @JsonIgnore
     protected Validator modelValidator;
@@ -31,13 +31,14 @@ public abstract class ValidatingBase {
     }
 
     /**
-     * @param modelValidator the modelValidator to set
+     * @param modelValidator
+     *            the modelValidator to set
      */
     @JsonIgnore
     public void setModelValidator(Validator modelValidator) {
         this.modelValidator = modelValidator;
     }
-    
+
     public <U extends ValidatingBase> ValidationResults validate(U model) {
         return modelValidator.validate(model);
     }

@@ -1,3 +1,12 @@
+/* 
+ * SpringContext.java 
+ * 
+ * Version: 
+ *     $Id$ 
+ * 
+ * Revisions: 
+ *     $Log$ 
+ */
 package edu.tamu.framework;
 
 import org.springframework.beans.BeansException;
@@ -14,7 +23,7 @@ public class SpringContext implements ApplicationContextAware {
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        context = applicationContext;   
+        context = applicationContext;
     }
 
     public static <T> T bean(Class<T> clazz) {
@@ -31,5 +40,5 @@ public class SpringContext implements ApplicationContextAware {
         }
         return (T) context.getBean(name);
     }
-    
+
 }

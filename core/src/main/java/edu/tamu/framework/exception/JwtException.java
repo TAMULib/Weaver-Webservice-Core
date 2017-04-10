@@ -1,5 +1,5 @@
 /* 
- * JWTException.java 
+ * JwtException.java 
  * 
  * Version: 
  *     $Id$ 
