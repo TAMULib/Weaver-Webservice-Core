@@ -162,16 +162,19 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
                     logger.error(errorMessage);
                     return MessageBuilder.withPayload(errorMessage).setHeaders(accessor).build();
                 }
+                else {
+                    Authentication auth = new AnonymousAuthenticationToken(user.getUin(), user, user.getAuthorities());
+
+                    auth.setAuthenticated(true);
+
+                    securityContext.setAuthentication(auth);
+                }
 
             } else {
                 credentials = getAnonymousCredentials();
             }
 
-            Authentication auth = new AnonymousAuthenticationToken(user.getUin(), user, user.getAuthorities());
-
-            auth.setAuthenticated(true);
-
-            securityContext.setAuthentication(auth);
+            
 
             break;
         case CONNECTED:
@@ -309,6 +312,13 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
                         errorMessage = "Could not confirm user!";
                         logger.error(errorMessage);
                         return MessageBuilder.withPayload(errorMessage).setHeaders(accessor).build();
+                    }
+                    else {
+                        Authentication auth = new AnonymousAuthenticationToken(user.getUin(), user, user.getAuthorities());
+
+                        auth.setAuthenticated(true);
+
+                        securityContext.setAuthentication(auth);
                     }
 
                 }
