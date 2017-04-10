@@ -9,10 +9,8 @@
  */
 package edu.tamu.framework.interceptor;
 
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,8 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -169,21 +165,13 @@ public abstract class CoreRestInterceptor<U extends AbstractCoreUser> extends Ha
             request.setAttribute("data", request.getHeader("data"));
         }
 
-        List<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
-
-        grantedAuthorities.add(new SimpleGrantedAuthority(credentials.getRole()));
-
-        if (credentials.getUin() == null) {
-            credentials.setUin(credentials.getEmail());
-        }
-
-        Authentication auth = new AnonymousAuthenticationToken(credentials.getUin(), credentials.getUin(), grantedAuthorities);
+        Authentication auth = new AnonymousAuthenticationToken(user.getUin(), user, user.getAuthorities());
 
         auth.setAuthenticated(true);
 
         securityContext.setAuthentication(auth);
 
-        httpRequestService.addRequest(new HttpRequest<U>(request, response, credentials.getUin(), user, request.getRequestURI(), credentials));
+        httpRequestService.addRequest(new HttpRequest<U>(request, response, securityContext.getAuthentication().getName(), user, request.getRequestURI(), credentials));
 
         return true;
     }

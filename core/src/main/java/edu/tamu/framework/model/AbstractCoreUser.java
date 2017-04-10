@@ -13,6 +13,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+import org.springframework.security.core.userdetails.UserDetails;
+
 /**
  * Abstract Core User Implementation.
  * 
@@ -25,7 +27,9 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "core_users")
-public abstract class AbstractCoreUser extends BaseEntity implements CoreUser {
+public abstract class AbstractCoreUser extends BaseEntity implements CoreUser, UserDetails {
+
+    private static final long serialVersionUID = -4974106399870286015L;
 
     @Column(name = "uin", nullable = true, unique = true)
     private String uin;

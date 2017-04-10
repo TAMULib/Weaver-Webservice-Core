@@ -32,8 +32,6 @@ import org.springframework.messaging.support.ChannelInterceptorAdapter;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
@@ -102,6 +100,7 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
      * @return Message<?>
      * 
      */
+    @SuppressWarnings("unchecked")
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
 
@@ -168,17 +167,7 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
                 credentials = getAnonymousCredentials();
             }
 
-            List<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
-
-            grantedAuthorities.add(new SimpleGrantedAuthority(credentials.getRole()));
-
-            if (credentials.getUin() == null) {
-                credentials.setUin(credentials.getEmail());
-            }
-
-            // TODO: extend CoreUser with UserDetails and implement required methods
-            // pass <U extends CoreUser> in as Object principal, second argument
-            Authentication auth = new AnonymousAuthenticationToken(credentials.getUin(), credentials.getUin(), grantedAuthorities);
+            Authentication auth = new AnonymousAuthenticationToken(user.getUin(), user, user.getAuthorities());
 
             auth.setAuthenticated(true);
 
@@ -308,7 +297,21 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
 
                 credentials = new Credentials(credentialMap);
 
-                user = confirmCreateUser(credentials);
+                user = (U) securityContext.getAuthentication().getPrincipal();
+
+                if (credentials.getUin().equals(user.getUin())) {
+                    credentials.setRole(user.getRole().toString());
+                } else {
+
+                    user = confirmCreateUser(credentials);
+
+                    if (user == null) {
+                        errorMessage = "Could not confirm user!";
+                        logger.error(errorMessage);
+                        return MessageBuilder.withPayload(errorMessage).setHeaders(accessor).build();
+                    }
+
+                }
 
             } else {
                 credentials = getAnonymousCredentials();
