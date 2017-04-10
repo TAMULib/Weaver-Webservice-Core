@@ -172,17 +172,13 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
 
             grantedAuthorities.add(new SimpleGrantedAuthority(credentials.getRole()));
 
-            if (credentials.getNetid() == null) {
-                credentials.setNetid(credentials.getEmail());
-            }
-
             if (credentials.getUin() == null) {
                 credentials.setUin(credentials.getEmail());
             }
 
             // TODO: extend CoreUser with UserDetails and implement required methods
             // pass <U extends CoreUser> in as Object principal, second argument
-            Authentication auth = new AnonymousAuthenticationToken(credentials.getNetid(), credentials.getUin(), grantedAuthorities);
+            Authentication auth = new AnonymousAuthenticationToken(credentials.getUin(), credentials.getUin(), grantedAuthorities);
 
             auth.setAuthenticated(true);
 
@@ -318,7 +314,7 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
                 credentials = getAnonymousCredentials();
             }
 
-            webSocketRequestService.addRequest(new WebSocketRequest<U>(message, user, destination, credentials));
+            webSocketRequestService.addRequest(new WebSocketRequest<U>(message, securityContext.getAuthentication().getName(), user, destination, credentials));
 
             break;
         case STOMP:

@@ -29,15 +29,18 @@ public class HttpRequest<U extends AbstractCoreUser> {
 
     private HttpServletResponse response;
 
+    private String contextUin;
+
     private U user;
 
     private String destination;
 
     private Credentials credentials;
 
-    public HttpRequest(HttpServletRequest request, HttpServletResponse response, U user, String destination, Credentials credentials) {
+    public HttpRequest(HttpServletRequest request, HttpServletResponse response, String contextUin, U user, String destination, Credentials credentials) {
         this.request = request;
         this.response = response;
+        this.contextUin = contextUin;
         this.user = user;
         this.destination = destination;
         this.credentials = credentials;
@@ -79,6 +82,22 @@ public class HttpRequest<U extends AbstractCoreUser> {
      */
     public void setResponse(HttpServletResponse response) {
         this.response = response;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public String getContextUin() {
+        return contextUin;
+    }
+
+    /**
+     * 
+     * @param contextUin
+     */
+    public void setContextUin(String contextUin) {
+        this.contextUin = contextUin;
     }
 
     /**

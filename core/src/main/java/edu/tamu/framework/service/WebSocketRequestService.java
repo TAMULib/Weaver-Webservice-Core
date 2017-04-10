@@ -82,13 +82,13 @@ public class WebSocketRequestService<U extends AbstractCoreUser> {
      *            Long
      * @return WebSocketRequest<U>
      */
-    public synchronized WebSocketRequest<U> getAndRemoveMessageByDestinationAndUin(String pattern, String uin) {
+    public synchronized WebSocketRequest<U> getAndRemoveMessageByDestinationAndContextUin(String pattern, String uin) {
         if (pattern.charAt(0) != '/') {
             pattern = "/" + pattern;
         }
         for (int index = 0; index < requests.size(); index++) {
             WebSocketRequest<U> request = requests.get(index);
-            if (request.getUser().getUin().equals(uin) && pathMatcher.match(pattern, request.getDestination())) {
+            if (request.getContextUin().equals(uin) && pathMatcher.match(pattern, request.getDestination())) {
                 requests.remove(index);
                 return request;
             }

@@ -26,14 +26,17 @@ public class WebSocketRequest<U extends AbstractCoreUser> {
 
     private Message<?> message;
 
+    private String contextUin;
+
     private U user;
 
     private String destination;
 
     private Credentials credentials;
 
-    public WebSocketRequest(Message<?> message, U user, String destination, Credentials credentials) {
+    public WebSocketRequest(Message<?> message, String contextUin, U user, String destination, Credentials credentials) {
         this.message = message;
+        this.contextUin = contextUin;
         this.user = user;
         this.destination = destination;
         this.credentials = credentials;
@@ -56,6 +59,22 @@ public class WebSocketRequest<U extends AbstractCoreUser> {
      */
     public void setMessage(Message<?> message) {
         this.message = message;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public String getContextUin() {
+        return contextUin;
+    }
+
+    /**
+     * 
+     * @param contextUin
+     */
+    public void setContextUin(String contextUin) {
+        this.contextUin = contextUin;
     }
 
     /**

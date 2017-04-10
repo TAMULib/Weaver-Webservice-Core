@@ -82,13 +82,13 @@ public class HttpRequestService<U extends AbstractCoreUser> {
      *            Long
      * @return HttpRequest<U>
      */
-    public synchronized HttpRequest<U> getAndRemoveRequestByDestinationAndUin(String pattern, String uin) {
+    public synchronized HttpRequest<U> getAndRemoveRequestByDestinationAndContextUin(String pattern, String uin) {
         if (pattern.charAt(0) != '/') {
             pattern = "/" + pattern;
         }
         for (int index = 0; index < requests.size(); index++) {
             HttpRequest<U> request = requests.get(index);
-            if (request.getUser().getUin().equals(uin) && pathMatcher.match(pattern, request.getDestination())) {
+            if (request.getContextUin().equals(uin) && pathMatcher.match(pattern, request.getDestination())) {
                 requests.remove(index);
                 return request;
             }

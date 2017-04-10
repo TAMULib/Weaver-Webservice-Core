@@ -66,6 +66,7 @@ public abstract class CoreRestInterceptor<U extends AbstractCoreUser> extends Ha
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public CoreRestInterceptor() {
+        
     }
 
     public abstract Credentials getAnonymousCredentials();
@@ -172,21 +173,17 @@ public abstract class CoreRestInterceptor<U extends AbstractCoreUser> extends Ha
 
         grantedAuthorities.add(new SimpleGrantedAuthority(credentials.getRole()));
 
-        if (credentials.getNetid() == null) {
-            credentials.setNetid(credentials.getEmail());
-        }
-
         if (credentials.getUin() == null) {
             credentials.setUin(credentials.getEmail());
         }
 
-        Authentication auth = new AnonymousAuthenticationToken(credentials.getNetid(), credentials.getUin(), grantedAuthorities);
+        Authentication auth = new AnonymousAuthenticationToken(credentials.getUin(), credentials.getUin(), grantedAuthorities);
 
         auth.setAuthenticated(true);
 
         securityContext.setAuthentication(auth);
 
-        httpRequestService.addRequest(new HttpRequest<U>(request, response, user, request.getRequestURI(), credentials));
+        httpRequestService.addRequest(new HttpRequest<U>(request, response, credentials.getUin(), user, request.getRequestURI(), credentials));
 
         return true;
     }
