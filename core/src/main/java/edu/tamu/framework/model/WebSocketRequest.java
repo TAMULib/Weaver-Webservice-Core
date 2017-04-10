@@ -33,13 +33,17 @@ public class WebSocketRequest<U extends AbstractCoreUser> {
     private String destination;
 
     private Credentials credentials;
-
-    public WebSocketRequest(Message<?> message, String contextUin, U user, String destination, Credentials credentials) {
+    
+    public WebSocketRequest(Message<?> message, String contextUin, String destination, Credentials credentials) {
         this.message = message;
         this.contextUin = contextUin;
-        this.user = user;
         this.destination = destination;
         this.credentials = credentials;
+    }
+
+    public WebSocketRequest(Message<?> message, String contextUin, String destination, Credentials credentials, U user) {
+        this(message, contextUin, destination, credentials);
+        this.user = user;
     }
 
     /**

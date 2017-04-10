@@ -20,9 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -31,6 +28,7 @@ import edu.tamu.framework.model.AbstractCoreUser;
 import edu.tamu.framework.model.Credentials;
 import edu.tamu.framework.model.HttpRequest;
 import edu.tamu.framework.service.HttpRequestService;
+import edu.tamu.framework.service.SecurityContextService;
 import edu.tamu.framework.util.JwtUtility;
 
 /**
@@ -57,12 +55,12 @@ public abstract class CoreRestInterceptor<U extends AbstractCoreUser> extends Ha
     private HttpRequestService<U> httpRequestService;
 
     @Autowired
-    private SecurityContext securityContext;
+    private SecurityContextService<U> securityContextService;
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public CoreRestInterceptor() {
-        
+
     }
 
     public abstract Credentials getAnonymousCredentials();
@@ -165,13 +163,13 @@ public abstract class CoreRestInterceptor<U extends AbstractCoreUser> extends Ha
             request.setAttribute("data", request.getHeader("data"));
         }
 
-        Authentication auth = new AnonymousAuthenticationToken(user.getUin(), user, user.getAuthorities());
-
-        auth.setAuthenticated(true);
-
-        securityContext.setAuthentication(auth);
-
-        httpRequestService.addRequest(new HttpRequest<U>(request, response, securityContext.getAuthentication().getName(), user, request.getRequestURI(), credentials));
+        if (user != null) {
+            securityContextService.setAuthentication(user.getUin(), user);
+            httpRequestService.addRequest(new HttpRequest<U>(request, response, securityContextService.getAuthenticatedName(), request.getRequestURI(), credentials, user));
+        } else {
+            securityContextService.setAuthentication(credentials.getUin(), credentials);
+            httpRequestService.addRequest(new HttpRequest<U>(request, response, securityContextService.getAuthenticatedName(), request.getRequestURI(), credentials));
+        }
 
         return true;
     }

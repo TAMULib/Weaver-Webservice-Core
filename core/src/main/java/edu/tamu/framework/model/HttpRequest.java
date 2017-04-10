@@ -37,13 +37,17 @@ public class HttpRequest<U extends AbstractCoreUser> {
 
     private Credentials credentials;
 
-    public HttpRequest(HttpServletRequest request, HttpServletResponse response, String contextUin, U user, String destination, Credentials credentials) {
+    public HttpRequest(HttpServletRequest request, HttpServletResponse response, String contextUin, String destination, Credentials credentials) {
         this.request = request;
         this.response = response;
         this.contextUin = contextUin;
-        this.user = user;
         this.destination = destination;
         this.credentials = credentials;
+    }
+
+    public HttpRequest(HttpServletRequest request, HttpServletResponse response, String contextUin, String destination, Credentials credentials, U user) {
+        this(request, response, contextUin, destination, credentials);
+        this.user = user;
     }
 
     /**

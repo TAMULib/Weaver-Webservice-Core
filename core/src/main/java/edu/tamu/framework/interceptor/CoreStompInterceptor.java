@@ -30,9 +30,8 @@ import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptorAdapter;
 import org.springframework.messaging.support.MessageBuilder;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 
@@ -42,6 +41,7 @@ import edu.tamu.framework.model.AbstractCoreUser;
 import edu.tamu.framework.model.ApiResponse;
 import edu.tamu.framework.model.Credentials;
 import edu.tamu.framework.model.WebSocketRequest;
+import edu.tamu.framework.service.SecurityContextService;
 import edu.tamu.framework.service.WebSocketRequestService;
 import edu.tamu.framework.util.JwtUtility;
 
@@ -65,7 +65,7 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
     private WebSocketRequestService<U> webSocketRequestService;
 
     @Autowired
-    private SecurityContext securityContext;
+    private SecurityContextService<U> securityContextService;
 
     @Autowired
     @Lazy
@@ -161,26 +161,27 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
                     errorMessage = "Could not confirm user!";
                     logger.error(errorMessage);
                     return MessageBuilder.withPayload(errorMessage).setHeaders(accessor).build();
-                }
-                else {
-                    Authentication auth = new AnonymousAuthenticationToken(user.getUin(), user, user.getAuthorities());
+                } else {
 
-                    auth.setAuthenticated(true);
-
-                    securityContext.setAuthentication(auth);
                 }
 
             } else {
                 credentials = getAnonymousCredentials();
             }
 
-            
+            if (user != null) {
+                securityContextService.setAuthentication(user.getUin(), user, user.getAuthorities());
+            } else {
+                List<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
+                grantedAuthorities.add(new SimpleGrantedAuthority(credentials.getRole()));
+                securityContextService.setAuthentication(credentials.getUin(), credentials, grantedAuthorities);
+            }
 
             break;
         case CONNECTED:
             break;
         case DISCONNECT:
-            logger.debug("Disconnecting websocket connection for " + securityContext.getAuthentication().getName() + ".");
+            logger.debug("Disconnecting websocket connection for " + securityContextService.getAuthenticatedName() + ".");
             break;
         case ERROR:
             break;
@@ -286,7 +287,7 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
                 String errorMessage = credentialMap.get("ERROR");
 
                 if (errorMessage != null) {
-                    logger.error("Security Context Name: " + securityContext.getAuthentication().getName());
+                    logger.error("Security Context Name: " + securityContextService.getAuthenticatedName());
                     logger.error("JWT error: " + errorMessage);
                     simpMessagingTemplate.convertAndSend(accessorDestination.replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse(requestId, ERROR, errorMessage));
                     return null;
@@ -300,7 +301,7 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
 
                 credentials = new Credentials(credentialMap);
 
-                user = (U) securityContext.getAuthentication().getPrincipal();
+                user = (U) securityContextService.getAuthenticatedPrincipal();
 
                 if (credentials.getUin().equals(user.getUin())) {
                     credentials.setRole(user.getRole().toString());
@@ -312,13 +313,8 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
                         errorMessage = "Could not confirm user!";
                         logger.error(errorMessage);
                         return MessageBuilder.withPayload(errorMessage).setHeaders(accessor).build();
-                    }
-                    else {
-                        Authentication auth = new AnonymousAuthenticationToken(user.getUin(), user, user.getAuthorities());
-
-                        auth.setAuthenticated(true);
-
-                        securityContext.setAuthentication(auth);
+                    } else {
+                        securityContextService.setAuthentication(user.getUin(), user);
                     }
 
                 }
@@ -327,7 +323,11 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
                 credentials = getAnonymousCredentials();
             }
 
-            webSocketRequestService.addRequest(new WebSocketRequest<U>(message, securityContext.getAuthentication().getName(), user, destination, credentials));
+            if (user != null) {
+                webSocketRequestService.addRequest(new WebSocketRequest<U>(message, securityContextService.getAuthenticatedName(), destination, credentials, user));
+            } else {
+                webSocketRequestService.addRequest(new WebSocketRequest<U>(message, securityContextService.getAuthenticatedName(), destination, credentials));
+            }
 
             break;
         case STOMP:
