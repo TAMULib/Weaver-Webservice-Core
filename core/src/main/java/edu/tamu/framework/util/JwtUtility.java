@@ -33,7 +33,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
-import org.springframework.security.jwt.Jwt;
 import org.springframework.security.jwt.JwtHelper;
 import org.springframework.security.jwt.crypto.sign.MacSigner;
 import org.springframework.stereotype.Service;
@@ -41,8 +40,8 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import edu.tamu.framework.exception.JWTException;
-import edu.tamu.framework.model.jwt.JWT;;
+import edu.tamu.framework.exception.JwtException;
+import edu.tamu.framework.model.jwt.Jwt;
 
 /**
  * JSON Web Token Utility.
@@ -74,31 +73,32 @@ public class JwtUtility {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public JwtUtility() { }
+    public JwtUtility() {
+    }
 
     /**
      * Instantiate new token.
      * 
      * @return
      */
-    public JWT craftToken() {
+    public Jwt craftToken() {
         try {
-            return new JWT(secret_key, expiration);
+            return new Jwt(secret_key, expiration);
         } catch (InvalidKeyException e) {
             log.debug(e.getStackTrace().toString());
-            throw new JWTException("InvalidKeyException", e.getMessage());
+            throw new JwtException("InvalidKeyException", e.getMessage());
         } catch (JsonProcessingException e) {
             log.debug(e.getStackTrace().toString());
-            throw new JWTException("JsonProcessingException", e.getMessage());
+            throw new JwtException("JsonProcessingException", e.getMessage());
         } catch (NoSuchAlgorithmException e) {
             log.debug(e.getStackTrace().toString());
-            throw new JWTException("NoSuchAlgorithmException", e.getMessage());
+            throw new JwtException("NoSuchAlgorithmException", e.getMessage());
         } catch (IllegalStateException e) {
             log.debug(e.getStackTrace().toString());
-            throw new JWTException("IllegalStateException", e.getMessage());
+            throw new JwtException("IllegalStateException", e.getMessage());
         } catch (UnsupportedEncodingException e) {
             log.debug(e.getStackTrace().toString());
-            throw new JWTException("UnsupportedEncodingException", e.getMessage());
+            throw new JwtException("UnsupportedEncodingException", e.getMessage());
         }
     }
 
@@ -108,27 +108,27 @@ public class JwtUtility {
      * @param token
      * @return
      */
-    public String tokenAsString(JWT token) {
+    public String tokenAsString(Jwt token) {
         try {
             return token.getTokenAsString();
         } catch (InvalidKeyException e) {
             log.debug(e.getStackTrace().toString());
-            throw new JWTException("InvalidKeyException", e.getMessage());
+            throw new JwtException("InvalidKeyException", e.getMessage());
         } catch (JsonProcessingException e) {
             log.debug(e.getStackTrace().toString());
-            throw new JWTException("JsonProcessingException", e.getMessage());
+            throw new JwtException("JsonProcessingException", e.getMessage());
         } catch (NoSuchAlgorithmException e) {
             log.debug(e.getStackTrace().toString());
-            throw new JWTException("NoSuchAlgorithmException", e.getMessage());
+            throw new JwtException("NoSuchAlgorithmException", e.getMessage());
         } catch (NoSuchPaddingException e) {
             log.debug(e.getStackTrace().toString());
-            throw new JWTException("NoSuchPaddingException", e.getMessage());
+            throw new JwtException("NoSuchPaddingException", e.getMessage());
         } catch (IllegalBlockSizeException e) {
             log.debug(e.getStackTrace().toString());
-            throw new JWTException("IllegalBlockSizeException", e.getMessage());
+            throw new JwtException("IllegalBlockSizeException", e.getMessage());
         } catch (BadPaddingException e) {
             log.debug(e.getStackTrace().toString());
-            throw new JWTException("BadPaddingException", e.getMessage());
+            throw new JwtException("BadPaddingException", e.getMessage());
         }
     }
 
@@ -144,8 +144,8 @@ public class JwtUtility {
      * @throws IllegalStateException
      * @throws UnsupportedEncodingException
      */
-    public JWT makeToken(Map<String, String> payload) throws InvalidKeyException, JsonProcessingException, NoSuchAlgorithmException, IllegalStateException, UnsupportedEncodingException {
-        JWT token = craftToken();
+    public Jwt makeToken(Map<String, String> payload) throws InvalidKeyException, JsonProcessingException, NoSuchAlgorithmException, IllegalStateException, UnsupportedEncodingException {
+        Jwt token = craftToken();
         for (String k : shibKeys) {
             token.makeClaim(k, payload.get(env.getProperty("shib." + k, "")) != null ? payload.get(env.getProperty("shib." + k, "")) : payload.get(k));
         }
@@ -214,7 +214,7 @@ public class JwtUtility {
         }
 
         MacSigner hmac = new MacSigner(secret_key);
-        Jwt token = null;
+        org.springframework.security.jwt.Jwt token = null;
 
         try {
             token = JwtHelper.decodeAndVerify(new String(decValue), hmac);

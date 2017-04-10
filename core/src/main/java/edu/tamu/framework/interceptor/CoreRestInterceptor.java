@@ -30,7 +30,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import edu.tamu.framework.exception.JWTException;
+import edu.tamu.framework.exception.JwtException;
 import edu.tamu.framework.model.AbstractCoreUser;
 import edu.tamu.framework.model.Credentials;
 import edu.tamu.framework.model.HttpRequest;
@@ -144,12 +144,12 @@ public abstract class CoreRestInterceptor<U extends AbstractCoreUser> extends Ha
             String errorMessage = credentialMap.get("ERROR");
             if (errorMessage != null) {
                 logger.error("JWT error: " + errorMessage);
-                throw new JWTException("INVALID_JWT", errorMessage);
+                throw new JwtException("INVALID_JWT", errorMessage);
             }
 
             if (jwtService.isExpired(credentialMap)) {
                 logger.info("The token for " + credentialMap.get("firstName") + " " + credentialMap.get("lastName") + " (" + credentialMap.get("uin") + ") has expired. Attempting to get new token.");
-                throw new JWTException("EXPIRED_JWT", "JWT is expired!");
+                throw new JwtException("EXPIRED_JWT", "JWT is expired!");
             }
 
             credentials = new Credentials(credentialMap);
@@ -159,7 +159,7 @@ public abstract class CoreRestInterceptor<U extends AbstractCoreUser> extends Ha
             if (user == null) {
                 errorMessage = "Could not confirm user!";
                 logger.error(errorMessage);
-                throw new JWTException("INVALID_USER", errorMessage);
+                throw new JwtException("INVALID_USER", errorMessage);
             }
         }
         
