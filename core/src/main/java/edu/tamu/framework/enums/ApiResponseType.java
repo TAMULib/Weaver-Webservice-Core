@@ -20,23 +20,21 @@ package edu.tamu.framework.enums;
  */
 public enum ApiResponseType {
 
-	SUCCESS("Your request was successful"), 
-	REFRESH("Your token has expired"), 
-	ERROR("Your request caused an error"), 
-	VALIDATION_ERROR("Your request caused a validation error"), 
-	WARNING("Your request caused warning"), 
-	VALIDATION_WARNING("Your request caused a validation warning"), 
-	INFO("Your request was processed"),
-	VALIDATION_INFO("Your validation request was processed");
+    SUCCESS("Your request was successful"),
+    REFRESH("Your token has expired"),
+    ERROR("Your request caused an error"),
+    WARNING("Your request caused warning"),
+    INFO("Your request was processed"),
+    INVALID("Your request failed validation");
 
-	String message;
+    String message;
 
-	ApiResponseType(String message) {
-		this.message = message;
-	}
+    ApiResponseType(String message) {
+        this.message = message;
+    }
 
-	public String getMessage() {
-		return message;
-	}
+    public String getMessage() {
+        return message;
+    }
 
 }

@@ -24,9 +24,9 @@ import org.springframework.stereotype.Component;
 import edu.tamu.framework.model.repo.SymlinkRepo;
 
 /**
- * Core Context Initialize Handler. Handles initialization for when the app
- * starts or the context is refreshed. Creates symlinks that are populated in
- * the SymlinkRepo. Provides two abstract methods to be implemented.
+ * Core Context Initialize Handler. Handles initialization for when the app starts or the context is
+ * refreshed. Creates symlinks that are populated in the SymlinkRepo. Provides two abstract methods
+ * to be implemented.
  * 
  * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
  * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>
@@ -38,46 +38,45 @@ import edu.tamu.framework.model.repo.SymlinkRepo;
 @Component
 public abstract class CoreContextInitializedHandler implements ApplicationListener<ContextRefreshedEvent> {
 
-	@Autowired
-	private SymlinkRepo symlinkRepo;
+    @Autowired
+    private SymlinkRepo symlinkRepo;
 
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	/**
-	 * Method for event context refreshes.
-	 * 
-	 * @param event
-	 *            The event being triggered.
-	 */
-	public void onApplicationEvent(ContextRefreshedEvent event) {
-		before(event);
-		createSymlinks(event);
-		after(event);
-	}
+    /**
+     * Method for event context refreshes.
+     * 
+     * @param event
+     *            The event being triggered.
+     */
+    public void onApplicationEvent(ContextRefreshedEvent event) {
+        before(event);
+        createSymlinks(event);
+        after(event);
+    }
 
-	/**
-	 * Create symlinks.
-	 * 
-	 * @param event
-	 *            The event that is being triggered. Used to get application
-	 *            context.
-	 */
-	private void createSymlinks(ContextRefreshedEvent event) {
-		if (symlinkRepo.getSymlinks() != null) {
-			symlinkRepo.getSymlinks().values().stream().forEach(symlink -> {
-				logger.info("Creating symlink: " + symlink.getPath() + " => " + symlink.getTarget());
-				try {
-					Files.createSymbolicLink(Paths.get(event.getApplicationContext().getResource("classpath:static").getFile().getAbsolutePath() + File.separator + symlink.getPath()), Paths.get(symlink.target));
-				} catch (IOException e) {
-					logger.error("Failed to create symlink. " + e.getMessage());
-					e.printStackTrace();
-				}
-			});
-		}
-	}
+    /**
+     * Create symlinks.
+     * 
+     * @param event
+     *            The event that is being triggered. Used to get application context.
+     */
+    private void createSymlinks(ContextRefreshedEvent event) {
+        if (symlinkRepo.getSymlinks() != null) {
+            symlinkRepo.getSymlinks().values().stream().forEach(symlink -> {
+                logger.info("Creating symlink: " + symlink.getPath() + " => " + symlink.getTarget());
+                try {
+                    Files.createSymbolicLink(Paths.get(event.getApplicationContext().getResource("classpath:static").getFile().getAbsolutePath() + File.separator + symlink.getPath()), Paths.get(symlink.target));
+                } catch (IOException e) {
+                    logger.error("Failed to create symlink. " + e.getMessage());
+                    e.printStackTrace();
+                }
+            });
+        }
+    }
 
-	protected abstract void before(ContextRefreshedEvent event);
+    protected abstract void before(ContextRefreshedEvent event);
 
-	protected abstract void after(ContextRefreshedEvent event);
+    protected abstract void after(ContextRefreshedEvent event);
 
 }

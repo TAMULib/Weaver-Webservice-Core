@@ -34,42 +34,41 @@ import edu.tamu.framework.mapping.WebSocketRequestMappingHandler;
 @Configuration
 public abstract class CoreWebConfigSupport extends WebMvcConfigurationSupport {
 
-	@Autowired
-	private SubscribableChannel clientInboundChannel;
+    @Autowired
+    private SubscribableChannel clientInboundChannel;
 
-	@Autowired
-	private MessageChannel clientOutboundChannel;
+    @Autowired
+    private MessageChannel clientOutboundChannel;
 
-	@Autowired
-	private SimpMessageSendingOperations brokerTemplate;
+    @Autowired
+    private SimpMessageSendingOperations brokerTemplate;
 
-	@Autowired
-	private ContentNegotiationManager contentNegotiationManager;
+    @Autowired
+    private ContentNegotiationManager contentNegotiationManager;
 
-	/**
-	 * Rest request mapping handler bean.
-	 * 
-	 * @return RestRequestMappingHandler
-	 */
-	@Bean
-	public RestRequestMappingHandler restRequestMappingHandler() {
-		RestRequestMappingHandler handlerMapping = new RestRequestMappingHandler(contentNegotiationManager);
-		handlerMapping.setOrder(1);
-		handlerMapping.setInterceptors(new Object[] { getRestInterceptor() });
-		return handlerMapping;
-	}
+    /**
+     * Rest request mapping handler bean.
+     * 
+     * @return RestRequestMappingHandler
+     */
+    @Bean
+    public RestRequestMappingHandler restRequestMappingHandler() {
+        RestRequestMappingHandler handlerMapping = new RestRequestMappingHandler(contentNegotiationManager);
+        handlerMapping.setOrder(1);
+        handlerMapping.setInterceptors(new Object[] { getRestInterceptor() });
+        return handlerMapping;
+    }
 
-	public abstract Object getRestInterceptor();
+    public abstract Object getRestInterceptor();
 
-	/**
-	 * Websocket request mapping handler bean
-	 * 
-	 * @return WebSocketRequestMappingHandler
-	 */
-	@Bean
-	public WebSocketRequestMappingHandler webSocketRequestMappingHandler() {
-		WebSocketRequestMappingHandler handlerMapping = new WebSocketRequestMappingHandler(clientInboundChannel, clientOutboundChannel, brokerTemplate);
-		return handlerMapping;
-	}
+    /**
+     * Websocket request mapping handler bean
+     * 
+     * @return WebSocketRequestMappingHandler
+     */
+    @Bean
+    public WebSocketRequestMappingHandler webSocketRequestMappingHandler() {
+        return new WebSocketRequestMappingHandler(clientInboundChannel, clientOutboundChannel, brokerTemplate);
+    }
 
 }

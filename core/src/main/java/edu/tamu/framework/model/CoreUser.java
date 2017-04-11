@@ -20,39 +20,39 @@ package edu.tamu.framework.model;
  *
  */
 public interface CoreUser {
-	
-	/**
-	 * Sets UIN.
-	 * 
-	 * @param uin
-	 *            Long
-	 * 
-	 */
-	public void setUin(Long uin);
 
-	/**
-	 * Gets UIN.
-	 * 
-	 * @return Long
-	 * 
-	 */
-	public Long getUin();
+    /**
+     * Sets UIN.
+     * 
+     * @param uin
+     *            String
+     * 
+     */
+    public void setUin(String uin);
 
-	/**
-	 * Sets role.
-	 * 
-	 * @param role
-	 *            String
-	 * 
-	 */
-	public void setRole(IRole role);
-	
-	/**
-	 * Gets role.
-	 * 
-	 * @return String
-	 * 
-	 */
-	public IRole getRole();
-	
+    /**
+     * Gets UIN.
+     * 
+     * @return String
+     * 
+     */
+    public String getUin();
+
+    /**
+     * Sets role.
+     * 
+     * @param role
+     *            String
+     * 
+     */
+    public void setRole(IRole role);
+
+    /**
+     * Gets role.
+     * 
+     * @return String
+     * 
+     */
+    public IRole getRole();
+
 }

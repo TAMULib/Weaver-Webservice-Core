@@ -1,3 +1,12 @@
+/* 
+ * MockEmailConfig.java 
+ * 
+ * Version: 
+ *     $Id$ 
+ * 
+ * Revisions: 
+ *     $Log$ 
+ */
 package edu.tamu.framework.config;
 
 import org.springframework.context.annotation.Bean;
@@ -16,5 +25,5 @@ public class MockEmailConfig extends CoreEmailConfig {
     public EmailSender emailSender() {
         return new MockEmailUtility();
     }
-    
+
 }

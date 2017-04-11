@@ -1,5 +1,5 @@
 /* 
- * Shib.java 
+ * ApiParameters.java 
  * 
  * Version: 
  *     $Id$ 
@@ -15,7 +15,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation to have aspect inject shibboleth credentials.
+ * Annotation to have aspect inject request id.
  * 
  * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
  * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>
@@ -26,6 +26,6 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Shib {
+public @interface ApiParameters {
 
 }

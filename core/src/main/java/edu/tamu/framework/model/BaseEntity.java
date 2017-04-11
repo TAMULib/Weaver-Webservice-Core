@@ -9,6 +9,8 @@
  */
 package edu.tamu.framework.model;
 
+import java.util.Objects;
+
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -27,7 +29,7 @@ public abstract class BaseEntity extends ValidatingBase implements Comparable<Ba
     public Long getId() {
         return id;
     }
-    
+
     /**
      * @param id
      *            the id to set
@@ -53,19 +55,12 @@ public abstract class BaseEntity extends ValidatingBase implements Comparable<Ba
 
     @Override
     public int hashCode() {
-        int hashCode = 1;
-        hashCode = 31 * hashCode + (getId() == null ? 0 : getId().hashCode());
-        return hashCode;
+        return Objects.hash(getId());
     }
 
     @Override
     public int compareTo(BaseEntity o) {
-        if (this.getId() < o.getId()) {
-            return -1;
-        } else if (this.getId() > o.getId()) {
-            return 1;
-        }
-        return 0;
+        return this.getId().compareTo(o.getId());
     }
 
 }

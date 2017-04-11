@@ -13,29 +13,34 @@ import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import edu.tamu.framework.validation.ModelBindingResult;
+import edu.tamu.framework.validation.ValidationResults;
+import edu.tamu.framework.validation.Validator;
 
 public abstract class ValidatingBase {
 
     @Transient
     @JsonIgnore
-    protected ModelBindingResult bindingResult;
+    protected Validator modelValidator;
 
     /**
-     * @return the bindingResult
+     * @return the modelValidator
      */
     @JsonIgnore
-    public ModelBindingResult getBindingResult() {
-        return bindingResult;
+    public Validator getModelValidator() {
+        return modelValidator;
     }
 
     /**
-     * @param bindingResult
-     *            the bindingResult to set
+     * @param modelValidator
+     *            the modelValidator to set
      */
     @JsonIgnore
-    public void setBindingResult(ModelBindingResult bindingResult) {
-        this.bindingResult = bindingResult;
+    public void setModelValidator(Validator modelValidator) {
+        this.modelValidator = modelValidator;
+    }
+
+    public <U extends ValidatingBase> ValidationResults validate(U model) {
+        return modelValidator.validate(model);
     }
 
 }
