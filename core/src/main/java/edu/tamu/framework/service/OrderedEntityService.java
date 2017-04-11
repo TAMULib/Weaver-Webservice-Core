@@ -1,3 +1,12 @@
+/* 
+ * OrderedEntityService.java 
+ * 
+ * Version: 
+ *     $Id$ 
+ * 
+ * Revisions: 
+ *     $Log$ 
+ */
 package edu.tamu.framework.service;
 
 import java.util.ArrayList;
@@ -21,16 +30,16 @@ import edu.tamu.framework.model.BaseOrderedEntity;
 
 @Service
 public class OrderedEntityService {
-    
-    private Logger logger = LoggerFactory.getLogger(this.getClass()); 
-    
+
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+
     private static final String POSITION_COLUMN_NAME = "position";
 
     private static final Long one = new Long(1);
 
     @PersistenceContext
     private EntityManager entityManager;
-    
+
     @SuppressWarnings("unchecked")
     private void swap(Class<?> clazz, Long here, Long there, String whereProp, Object whereVal) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -60,7 +69,7 @@ public class OrderedEntityService {
     public synchronized void reorder(Class<?> clazz, Long src, Long dest) {
         this.reorder(clazz, src, dest, null, null);
     }
-    
+
     /**
      * 
      * @param clazz
@@ -116,7 +125,8 @@ public class OrderedEntityService {
      * 
      * for every row(boe) that is of {@link BaseOrderedEntity}:
      * 
-     * boe.setOrder(i+1) -- where i is the index of the position in the result-list from the SELECT statement above as we iterate through that list.
+     * boe.setOrder(i+1) -- where i is the index of the position in the result-list from the SELECT
+     * statement above as we iterate through that list.
      * 
      * @param clazz
      *            -- the entity class
@@ -125,14 +135,16 @@ public class OrderedEntityService {
      * @param whereProp
      *            -- the property to filter by (ex. "guarantor" for {@link Embargo})
      * @param whereVal
-     *            -- the property value to filter by (ex. {@link EmbargoGuarantor}.DEFAULT for guarantor for {@link Embargo})
+     *            -- the property value to filter by (ex. {@link EmbargoGuarantor}.DEFAULT for
+     *            guarantor for {@link Embargo})
      */
     @SuppressWarnings("unchecked")
     public synchronized void sort(Class<?> clazz, String property, String whereProp, Object whereVal) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Object> cq = cb.createQuery();
         Root<?> e = cq.from((Class<Object>) clazz);
-        cq.multiselect(e); // select the whole object, so we can get a BasedOrderedEntity-capable cast later TODO: maybe we only need id and order?
+        cq.multiselect(e); // select the whole object, so we can get a BasedOrderedEntity-capable
+                           // cast later TODO: maybe we only need id and order?
         if (whereProp != null && whereVal != null) {
             cq.where(cb.equal(e.get(whereProp), whereVal));
         }
@@ -140,8 +152,9 @@ public class OrderedEntityService {
         List<Object> orderedResults = entityManager.createQuery(cq).getResultList();
         for (int i = 0; i < orderedResults.size(); i++) {
             if (orderedResults.get(i) instanceof BaseOrderedEntity) {
-                BaseOrderedEntity boe = (BaseOrderedEntity) orderedResults.get(i); //cast it safely
-                boe.setPosition((long) i + 1); // i+1 because i starts at 0, order positions start at 1
+                BaseOrderedEntity boe = (BaseOrderedEntity) orderedResults.get(i); // cast it safely
+                boe.setPosition((long) i + 1); // i+1 because i starts at 0, order positions start
+                                               // at 1
                 entityManager.persist(boe); // persist the new order
             } else {
                 String err = "Could not sort [" + clazz.getName() + "]! It doesn't extend " + BaseOrderedEntity.class.getName() + "!";
@@ -150,14 +163,14 @@ public class OrderedEntityService {
             }
         }
     }
-    
+
     public synchronized void remove(Object repo, Class<?> clazz, Long position) {
         this.remove(repo, clazz, position, null, null);
     }
-    
+
     @SuppressWarnings("unchecked")
     public synchronized void remove(Object repo, Class<?> clazz, Long position, String whereProp, Object whereVal) {
-        Long id = ((BaseOrderedEntity) findByPosition(clazz, position)).getId(); 
+        Long id = ((BaseOrderedEntity) findByPosition(clazz, position)).getId();
         ((JpaRepository<Object, Long>) repo).delete(id);
         {
             CriteriaBuilder cb = entityManager.getCriteriaBuilder();

@@ -1,3 +1,12 @@
+/* 
+ * ApiValidation.java 
+ * 
+ * Version: 
+ *     $Id$ 
+ * 
+ * Revisions: 
+ *     $Log$ 
+ */
 package edu.tamu.framework.aspect.annotation;
 
 import static java.lang.annotation.ElementType.METHOD;
@@ -14,36 +23,36 @@ import edu.tamu.framework.enums.MethodValidationType;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface ApiValidation {
-    
-	Business[] business() default {};
-	
-	Method[] method() default {};
-	
-	@Target({ METHOD })
-	@Retention(RetentionPolicy.RUNTIME)
-	@Documented
-	public @interface Business {
-		
-		BusinessValidationType value();
-		
-		Class<?>[] joins() default {};
-		
-		String[] params() default {};
-		
-		String[] path() default {};
-		
-		String restrict() default "";
-	}
-	
-	@Target({ METHOD })
-	@Retention(RetentionPolicy.RUNTIME)
-	@Documented
-	public @interface Method {
-		
-		MethodValidationType value();
-		
-		Class<?> model();
-		
-		String[] params() default {};
-	}
+
+    Business[] business() default {};
+
+    Method[] method() default {};
+
+    @Target({ METHOD })
+    @Retention(RetentionPolicy.RUNTIME)
+    @Documented
+    public @interface Business {
+
+        BusinessValidationType value();
+
+        Class<?>[] joins() default {};
+
+        String[] params() default {};
+
+        String[] path() default {};
+
+        String restrict() default "";
+    }
+
+    @Target({ METHOD })
+    @Retention(RetentionPolicy.RUNTIME)
+    @Documented
+    public @interface Method {
+
+        MethodValidationType value();
+
+        Class<?> model();
+
+        String[] params() default {};
+    }
 }

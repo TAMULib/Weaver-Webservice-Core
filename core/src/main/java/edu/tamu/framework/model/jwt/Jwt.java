@@ -1,5 +1,5 @@
 /* 
- * JWTtoken.java 
+ * Jwt.java 
  * 
  * Version: 
  *     $Id$ 
@@ -30,9 +30,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import edu.tamu.framework.util.JwtUtility;
 
-import edu.tamu.framework.model.jwt.JWTheader;
-import edu.tamu.framework.model.jwt.JWTclaim;
-
 /**
  * JSON Web Token.
  * 
@@ -43,10 +40,14 @@ import edu.tamu.framework.model.jwt.JWTclaim;
  * @author <a href="mailto:wwelling@library.tamu.edu">William Welling</a>
  *
  */
-public class JWT {
+public class Jwt {
 
-    private JWTheader header;
-    private JWTclaim claim;
+    // over-encapsulation, Should be Map<String, String> headers
+    private JwtHeader header;
+
+    // over-encapsulation, Should be Map<String, String> claims
+    private JwtClaim claim;
+
     private String secret;
 
     /**
@@ -64,11 +65,11 @@ public class JWT {
      * @exception UnsupportedEncodingException
      * 
      */
-    public JWT(Map<String, String> content, String secret, Long expiration) throws JsonProcessingException, InvalidKeyException, NoSuchAlgorithmException, IllegalStateException, UnsupportedEncodingException {
+    public Jwt(Map<String, String> content, String secret, Long expiration) throws JsonProcessingException, InvalidKeyException, NoSuchAlgorithmException, IllegalStateException, UnsupportedEncodingException {
 
-        JWTheader newHeader = new JWTheader(new HashMap<String, String>());
+        JwtHeader newHeader = new JwtHeader(new HashMap<String, String>());
 
-        JWTclaim newClaim = new JWTclaim(content);
+        JwtClaim newClaim = new JwtClaim(content);
 
         this.header = newHeader;
         this.claim = newClaim;
@@ -90,9 +91,9 @@ public class JWT {
      * @exception UnsupportedEncodingException
      * 
      */
-    public JWT(String secret, Long expiration) throws JsonProcessingException, InvalidKeyException, NoSuchAlgorithmException, IllegalStateException, UnsupportedEncodingException {
-        this.header = new JWTheader(new HashMap<String, String>());
-        this.claim = new JWTclaim(new HashMap<String, String>());
+    public Jwt(String secret, Long expiration) throws JsonProcessingException, InvalidKeyException, NoSuchAlgorithmException, IllegalStateException, UnsupportedEncodingException {
+        this.header = new JwtHeader(new HashMap<String, String>());
+        this.claim = new JwtClaim(new HashMap<String, String>());
         this.secret = secret;
 
         makeClaim("exp", Objects.toString(Calendar.getInstance().getTime().getTime() + expiration, null));

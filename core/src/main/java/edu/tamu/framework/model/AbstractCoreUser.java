@@ -1,5 +1,5 @@
 /* 
- * AbstractCoreUserImpl.java 
+ * AbstractCoreUser.java 
  * 
  * Version: 
  *     $Id$ 
@@ -13,6 +13,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+import org.springframework.security.core.userdetails.UserDetails;
+
 /**
  * Abstract Core User Implementation.
  * 
@@ -25,14 +27,17 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "core_users")
-public abstract class AbstractCoreUserImpl extends BaseEntity implements CoreUser {
+public abstract class AbstractCoreUser extends BaseEntity implements CoreUser, UserDetails {
+
+    private static final long serialVersionUID = -4974106399870286015L;
 
     @Column(name = "uin", nullable = true, unique = true)
-    private Long uin;
+    private String uin;
 
-    public AbstractCoreUserImpl() {}
+    public AbstractCoreUser() {
+    }
 
-    public AbstractCoreUserImpl(Long uin) {
+    public AbstractCoreUser(String uin) {
         this();
         this.uin = uin;
     }
@@ -42,12 +47,12 @@ public abstract class AbstractCoreUserImpl extends BaseEntity implements CoreUse
     }
 
     @Override
-    public void setUin(Long uin) {
+    public void setUin(String uin) {
         this.uin = uin;
     }
 
     @Override
-    public Long getUin() {
+    public String getUin() {
         return uin;
     }
 

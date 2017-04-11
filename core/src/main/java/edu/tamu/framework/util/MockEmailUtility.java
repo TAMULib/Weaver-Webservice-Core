@@ -1,3 +1,12 @@
+/* 
+ * MockEmailUtility.java 
+ * 
+ * Version: 
+ *     $Id$ 
+ * 
+ * Revisions: 
+ *     $Log$ 
+ */
 package edu.tamu.framework.util;
 
 import javax.mail.internet.MimeMessage;

@@ -13,9 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Http request. Created and stored in memory when a new request goes through
- * the interceptor. Is retrieved and removed when the aspect point cuts an
- * endpoint.
+ * Http request. Created and stored in memory when a new request goes through the interceptor. Is
+ * retrieved and removed when the aspect point cuts an endpoint.
  * 
  * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
  * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>
@@ -24,24 +23,31 @@ import javax.servlet.http.HttpServletResponse;
  * @author <a href="mailto:wwelling@library.tamu.edu">William Welling</a>
  *
  */
-public class HttpRequest {
+public class HttpRequest<U extends AbstractCoreUser> {
 
     private HttpServletRequest request;
 
     private HttpServletResponse response;
 
-    private String user;
+    private String contextUin;
+
+    private U user;
 
     private String destination;
 
     private Credentials credentials;
 
-    public HttpRequest(HttpServletRequest request, HttpServletResponse response, String user, String destination, Credentials credentials) {
+    public HttpRequest(HttpServletRequest request, HttpServletResponse response, String contextUin, String destination, Credentials credentials) {
         this.request = request;
         this.response = response;
-        this.user = user;
+        this.contextUin = contextUin;
         this.destination = destination;
         this.credentials = credentials;
+    }
+
+    public HttpRequest(HttpServletRequest request, HttpServletResponse response, String contextUin, String destination, Credentials credentials, U user) {
+        this(request, response, contextUin, destination, credentials);
+        this.user = user;
     }
 
     /**
@@ -83,11 +89,27 @@ public class HttpRequest {
     }
 
     /**
+     * 
+     * @return
+     */
+    public String getContextUin() {
+        return contextUin;
+    }
+
+    /**
+     * 
+     * @param contextUin
+     */
+    public void setContextUin(String contextUin) {
+        this.contextUin = contextUin;
+    }
+
+    /**
      * Gets user.
      * 
      * @return String
      */
-    public String getUser() {
+    public U getUser() {
         return user;
     }
 
@@ -97,7 +119,7 @@ public class HttpRequest {
      * @param user
      *            String
      */
-    public void setUser(String user) {
+    public void setUser(U user) {
         this.user = user;
     }
 

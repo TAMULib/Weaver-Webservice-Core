@@ -1,3 +1,12 @@
+/* 
+ * CoreThemeRepoImpl.java 
+ * 
+ * Version: 
+ *     $Id$ 
+ * 
+ * Revisions: 
+ *     $Log$ 
+ */
 package edu.tamu.framework.model.repo.impl;
 
 import java.util.ArrayList;
@@ -14,9 +23,9 @@ import edu.tamu.framework.model.CoreTheme;
 import edu.tamu.framework.model.ThemeProperty;
 import edu.tamu.framework.model.ThemePropertyName;
 import edu.tamu.framework.model.repo.CoreThemeRepo;
-import edu.tamu.framework.model.repo.CoreThemeRepoCustom;
 import edu.tamu.framework.model.repo.ThemePropertyNameRepo;
 import edu.tamu.framework.model.repo.ThemePropertyRepo;
+import edu.tamu.framework.model.repo.custom.CoreThemeRepoCustom;
 
 public class CoreThemeRepoImpl implements CoreThemeRepoCustom {
 

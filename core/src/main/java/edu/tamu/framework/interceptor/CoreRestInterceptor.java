@@ -9,10 +9,8 @@
  */
 package edu.tamu.framework.interceptor;
 
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,23 +20,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import edu.tamu.framework.exception.JWTException;
+import edu.tamu.framework.exception.JwtException;
+import edu.tamu.framework.model.AbstractCoreUser;
 import edu.tamu.framework.model.Credentials;
 import edu.tamu.framework.model.HttpRequest;
 import edu.tamu.framework.service.HttpRequestService;
+import edu.tamu.framework.service.SecurityContextService;
 import edu.tamu.framework.util.JwtUtility;
 
 /**
- * REST interceptor. Intercepts AJAX request to decode and verify token before
- * allowing controller to process request.
+ * REST interceptor. Intercepts AJAX request to decode and verify token before allowing controller
+ * to process request.
  * 
  * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
  * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>
@@ -48,7 +43,7 @@ import edu.tamu.framework.util.JwtUtility;
  *
  */
 @Component
-public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
+public abstract class CoreRestInterceptor<U extends AbstractCoreUser> extends HandlerInterceptorAdapter {
 
     @Value("${app.whitelist}")
     private String[] whitelist;
@@ -57,14 +52,16 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
     private JwtUtility jwtService;
 
     @Autowired
-    private HttpRequestService httpRequestService;
+    private HttpRequestService<U> httpRequestService;
 
     @Autowired
-    private SecurityContext securityContext;
+    private SecurityContextService<U> securityContextService;
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public CoreRestInterceptor() {}
+    public CoreRestInterceptor() {
+
+    }
 
     public abstract Credentials getAnonymousCredentials();
 
@@ -78,6 +75,8 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
         String jwt = request.getHeader("jwt");
 
         Credentials credentials = null;
+
+        U user = null;
 
         if (jwt == null) {
 
@@ -141,42 +140,36 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
             String errorMessage = credentialMap.get("ERROR");
             if (errorMessage != null) {
                 logger.error("JWT error: " + errorMessage);
-                throw new JWTException("INVALID_JWT", errorMessage);
+                throw new JwtException("INVALID_JWT", errorMessage);
             }
 
             if (jwtService.isExpired(credentialMap)) {
                 logger.info("The token for " + credentialMap.get("firstName") + " " + credentialMap.get("lastName") + " (" + credentialMap.get("uin") + ") has expired. Attempting to get new token.");
-                throw new JWTException("EXPIRED_JWT", "JWT is expired!");
+                throw new JwtException("EXPIRED_JWT", "JWT is expired!");
             }
 
-            credentials = confirmCreateUser(new Credentials(credentialMap));
+            credentials = new Credentials(credentialMap);
 
-            if (credentials == null) {
+            user = confirmCreateUser(credentials);
+
+            if (user == null) {
                 errorMessage = "Could not confirm user!";
                 logger.error(errorMessage);
-                throw new JWTException("INVALID_USER", errorMessage);
+                throw new JwtException("INVALID_USER", errorMessage);
             }
         }
-        
-        if(request.getHeader("data") != null) {
+
+        if (request.getHeader("data") != null) {
             request.setAttribute("data", request.getHeader("data"));
         }
-        
-        List<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
 
-        grantedAuthorities.add(new SimpleGrantedAuthority(credentials.getRole()));
-
-        if (credentials.getNetid() == null) {
-            credentials.setNetid(credentials.getEmail());
+        if (user != null) {
+            securityContextService.setAuthentication(user.getUin(), user);
+            httpRequestService.addRequest(new HttpRequest<U>(request, response, securityContextService.getAuthenticatedName(), request.getRequestURI(), credentials, user));
+        } else {
+            securityContextService.setAuthentication(credentials.getUin(), credentials);
+            httpRequestService.addRequest(new HttpRequest<U>(request, response, securityContextService.getAuthenticatedName(), request.getRequestURI(), credentials));
         }
-
-        Authentication auth = new AnonymousAuthenticationToken(credentials.getUin(), credentials.getNetid(), grantedAuthorities);
-
-        auth.setAuthenticated(true);
-
-        securityContext.setAuthentication(auth);
-
-        httpRequestService.addRequest(new HttpRequest(request, response, credentials.getNetid(), request.getRequestURI(), credentials));
 
         return true;
     }
@@ -185,5 +178,5 @@ public abstract class CoreRestInterceptor extends HandlerInterceptorAdapter {
 
     }
 
-    public abstract Credentials confirmCreateUser(Credentials shib);
+    public abstract U confirmCreateUser(Credentials credentials);
 }

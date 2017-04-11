@@ -1,5 +1,5 @@
 /* 
- * InputStream.java 
+ * ApiInputStream.java 
  * 
  * Version: 
  *     $Id$ 

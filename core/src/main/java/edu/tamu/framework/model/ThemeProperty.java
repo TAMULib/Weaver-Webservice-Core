@@ -39,7 +39,8 @@ public class ThemeProperty extends BaseEntity {
     @OneToOne(fetch = FetchType.EAGER)
     private ThemePropertyName themePropertyName;
 
-    public ThemeProperty() {}
+    public ThemeProperty() {
+    }
 
     public ThemeProperty(ThemePropertyName themePropertyName, String value) {
         this();

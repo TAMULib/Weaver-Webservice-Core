@@ -60,6 +60,7 @@ import edu.tamu.framework.aspect.annotation.ApiMapping;
 import edu.tamu.framework.aspect.annotation.ApiValidation;
 import edu.tamu.framework.aspect.annotation.Auth;
 import edu.tamu.framework.enums.ApiResponseType;
+import edu.tamu.framework.model.AbstractCoreUser;
 import edu.tamu.framework.model.ApiResponse;
 import edu.tamu.framework.model.BaseEntity;
 import edu.tamu.framework.model.Credentials;
@@ -87,11 +88,11 @@ import edu.tamu.framework.validation.ValidationResults;
  */
 @Component
 @Aspect
-public abstract class CoreControllerAspect {
+public abstract class CoreControllerAspect<U extends AbstractCoreUser> {
 
     @Value("${app.aspect.retry}")
     private int NUMBER_OF_RETRY_ATTEMPTS;
-    
+
     @Autowired
     private PlatformTransactionManager platformTransactionManager;
 
@@ -99,10 +100,10 @@ public abstract class CoreControllerAspect {
     public ObjectMapper objectMapper;
 
     @Autowired
-    private WebSocketRequestService webSocketRequestService;
+    private WebSocketRequestService<U> webSocketRequestService;
 
     @Autowired
-    private HttpRequestService httpRequestService;
+    private HttpRequestService<U> httpRequestService;
 
     @Autowired
     private SecurityContext securityContext;
@@ -117,17 +118,17 @@ public abstract class CoreControllerAspect {
     private SimpMessagingTemplate simpMessagingTemplate;
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    
+
     @Around("execution(* *.*.*.controller.*.*(..)) && !@annotation(edu.tamu.framework.aspect.annotation.SkipAop) && @annotation(edu.tamu.framework.aspect.annotation.ApiValidation) && @annotation(auth)")
     public ApiResponse transactionallyPolpulateCredentialsAndAuthorize(ProceedingJoinPoint joinPoint, Auth auth) throws Throwable {
-        List<ApiResponse> apiresponses = new ArrayList<ApiResponse>();        
+        List<ApiResponse> apiresponses = new ArrayList<ApiResponse>();
         createTransactionTemplate().execute(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus ts) {
                 try {
                     apiresponses.add(authorizeAndProceed(joinPoint, auth));
                 } catch (Throwable e) {
-                    apiresponses.add(new ApiResponse( ERROR, "Failed to process request!"));
+                    apiresponses.add(new ApiResponse(ERROR, "Failed to process request!"));
                     e.printStackTrace();
                 }
             }
@@ -139,7 +140,7 @@ public abstract class CoreControllerAspect {
     public ApiResponse polpulateCredentialsAndAuthorize(ProceedingJoinPoint joinPoint, Auth auth) throws Throwable {
         return authorizeAndProceed(joinPoint, auth);
     }
-    
+
     @Around("execution(* *.*.*.controller.*.*(..)) && !@annotation(edu.tamu.framework.aspect.annotation.SkipAop) && @annotation(edu.tamu.framework.aspect.annotation.ApiValidation) && !@annotation(edu.tamu.framework.aspect.annotation.Auth)")
     public ApiResponse transactionallyPopulateCredentials(ProceedingJoinPoint joinPoint) throws Throwable {
         List<ApiResponse> apiresponses = new ArrayList<ApiResponse>();
@@ -149,7 +150,7 @@ public abstract class CoreControllerAspect {
                 try {
                     apiresponses.add(proceed(joinPoint));
                 } catch (Throwable e) {
-                    apiresponses.add(new ApiResponse( ERROR, "Failed to process request!"));
+                    apiresponses.add(new ApiResponse(ERROR, "Failed to process request!"));
                     e.printStackTrace();
                 }
             }
@@ -161,7 +162,7 @@ public abstract class CoreControllerAspect {
     public ApiResponse populateCredentials(ProceedingJoinPoint joinPoint) throws Throwable {
         return proceed(joinPoint);
     }
-    
+
     private TransactionTemplate createTransactionTemplate() {
         TransactionTemplate transactionTemplate = new TransactionTemplate(platformTransactionManager);
         transactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
@@ -231,6 +232,8 @@ public abstract class CoreControllerAspect {
 
     private PreProcessObject preProcess(ProceedingJoinPoint joinPoint) throws Throwable {
 
+        U user = null;
+
         Credentials credentials = null;
 
         Map<String, String> apiVariables = null;
@@ -238,7 +241,7 @@ public abstract class CoreControllerAspect {
         String requestId = null;
 
         String data = null;
-        
+
         String headerData = null;
 
         Map<String, String[]> parameters = new HashMap<String, String[]>();
@@ -287,7 +290,7 @@ public abstract class CoreControllerAspect {
                 path += method.getAnnotation(ApiMapping.class).value()[0];
             }
 
-            HttpRequest request = httpRequestService.getAndRemoveRequestByDestinationAndUser(path, securityContext.getAuthentication().getName());
+            HttpRequest<U> request = httpRequestService.getAndRemoveRequestByDestinationAndContextUin(path, securityContext.getAuthentication().getName());
 
             servletRequest = request.getRequest();
 
@@ -301,6 +304,8 @@ public abstract class CoreControllerAspect {
 
             credentials = request.getCredentials();
 
+            user = (U) request.getUser();
+
             if (servletRequest.getMethod().equals("POST")) {
                 data = StreamUtils.copyToString(servletRequest.getInputStream(), StandardCharsets.UTF_8);
             }
@@ -308,7 +313,7 @@ public abstract class CoreControllerAspect {
             if (servletRequest.getAttribute("data") != null) {
                 headerData = (String) servletRequest.getAttribute("data");
             }
-            
+
         } else {
 
             // determine endpoint path either from ApiMapping or MessageMapping annotation
@@ -328,7 +333,7 @@ public abstract class CoreControllerAspect {
                 protocol = Protocol.WEBSOCKET;
             }
 
-            WebSocketRequest request = webSocketRequestService.getAndRemoveMessageByDestinationAndUser(path, securityContext.getAuthentication().getName());
+            WebSocketRequest<U> request = webSocketRequestService.getAndRemoveMessageByDestinationAndContextUin(path, securityContext.getAuthentication().getName());
 
             message = request.getMessage();
 
@@ -341,6 +346,8 @@ public abstract class CoreControllerAspect {
             requestId = accessor.getNativeHeader("id").get(0);
 
             credentials = request.getCredentials();
+
+            user = (U) request.getUser();
 
             if (path.contains("{")) {
                 apiVariables = getApiVariable(path, accessor.getDestination());
@@ -365,31 +372,42 @@ public abstract class CoreControllerAspect {
 
             if (annotationString != null) {
                 switch (annotationString) {
-                    case "ApiVariable": {
-                        arguments[index] = apiVariables.get(argNames[index]) != null ? objectMapper.convertValue(apiVariables.get(argNames[index]), objectMapper.constructType(argTypes[index])) : null;
-                    } break;
-                    case "ApiCredentials": {
-                        arguments[index] = credentials;
-                    } break;
-                    case "ApiData": {
-                        String pData = headerData != null ? headerData : data;
-                        arguments[index] = pData != null ? objectMapper.convertValue(objectMapper.readTree(pData), objectMapper.constructType(argTypes[index])) : null;
-                    } break;
-                    case "ApiModel": {
-                        String pData = headerData != null ? headerData : data;
-                        arguments[index] = ensureCompleteModel(pData != null ? objectMapper.convertValue(objectMapper.readTree(pData), objectMapper.constructType(argTypes[index])) : null);
-                    } break;
-                    case "ApiValidatedModel": {
-                        String pData = headerData != null ? headerData : data;
-                        arguments[index] = ensureCompleteModel(pData != null ? objectMapper.convertValue(objectMapper.readTree(pData), objectMapper.constructType(argTypes[index])) : null);
-                        preProcessObject.validation = validateModel((ValidatingBase) arguments[index], method);
-                    } break;
-                    case "ApiParameters": {
-                        arguments[index] = parameters;
-                    } break;
-                    case "ApiInputStream": {
-                        arguments[index] = new ByteArrayInputStream(data.getBytes(StandardCharsets.UTF_8));
-                    } break;
+                case "ApiVariable": {
+                    arguments[index] = apiVariables.get(argNames[index]) != null ? objectMapper.convertValue(apiVariables.get(argNames[index]), objectMapper.constructType(argTypes[index])) : null;
+                }
+                    break;
+                case "ApiCredentials": {
+                    arguments[index] = credentials;
+                }
+                    break;
+                case "ApiUser": {
+                    arguments[index] = user;
+                }
+                    break;
+                case "ApiData": {
+                    String pData = headerData != null ? headerData : data;
+                    arguments[index] = pData != null ? objectMapper.convertValue(objectMapper.readTree(pData), objectMapper.constructType(argTypes[index])) : null;
+                }
+                    break;
+                case "ApiModel": {
+                    String pData = headerData != null ? headerData : data;
+                    arguments[index] = ensureCompleteModel(pData != null ? objectMapper.convertValue(objectMapper.readTree(pData), objectMapper.constructType(argTypes[index])) : null);
+                }
+                    break;
+                case "ApiValidatedModel": {
+                    String pData = headerData != null ? headerData : data;
+                    arguments[index] = ensureCompleteModel(pData != null ? objectMapper.convertValue(objectMapper.readTree(pData), objectMapper.constructType(argTypes[index])) : null);
+                    preProcessObject.validation = validateModel((ValidatingBase) arguments[index], method);
+                }
+                    break;
+                case "ApiParameters": {
+                    arguments[index] = parameters;
+                }
+                    break;
+                case "ApiInputStream": {
+                    arguments[index] = new ByteArrayInputStream(data.getBytes(StandardCharsets.UTF_8));
+                }
+                    break;
                 }
             }
             index++;
@@ -401,18 +419,18 @@ public abstract class CoreControllerAspect {
 
         return preProcessObject;
     }
-    
+
     public Object ensureCompleteModel(Object model) {
-        if(model != null) {
+        if (model != null) {
             // TODO: move some non-validation methods into seperate utility
-            
+
             List<String> serializedProperties = recursivelyFindJsonIdentityReference(model.getClass());
-            
-            if(serializedProperties.size() > 0) {
+
+            if (serializedProperties.size() > 0) {
                 List<Object> response = queryWithClassById(model.getClass(), ((BaseEntity) model).getId());
-                if(response.size() > 0) {
+                if (response.size() > 0) {
                     Object fullModel = response.get(0);
-                    
+
                     serializedProperties.forEach(serializedProperty -> {
                         setValueForProperty(model, serializedProperty, getValueForProperty(fullModel, serializedProperty));
                     });
@@ -422,7 +440,7 @@ public abstract class CoreControllerAspect {
         return model;
     }
 
-    public <U extends ValidatingBase> ValidationResults validateModel(U model, Method method) {
+    public <V extends ValidatingBase> ValidationResults validateModel(V model, Method method) {
 
         for (Annotation validationAnnotation : method.getAnnotations()) {
             if (validationAnnotation instanceof ApiValidation) {

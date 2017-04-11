@@ -1,7 +1,16 @@
+/* 
+ * BusinessValidationType.java 
+ * 
+ * Version: 
+ *     $Id$ 
+ * 
+ * Revisions: 
+ *     $Log$ 
+ */
 package edu.tamu.framework.enums;
 
 public enum BusinessValidationType {
-    
+
     CREATE("Unable to create model"),
     READ("Unable to read model"),
     UPDATE("Unable to update model"),
@@ -19,5 +28,5 @@ public enum BusinessValidationType {
     public String getMessage() {
         return message;
     }
-    
+
 }

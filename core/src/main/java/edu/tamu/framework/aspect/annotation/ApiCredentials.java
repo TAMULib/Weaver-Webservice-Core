@@ -1,5 +1,5 @@
 /* 
- * Shib.java 
+ * ApiCredentials.java 
  * 
  * Version: 
  *     $Id$ 

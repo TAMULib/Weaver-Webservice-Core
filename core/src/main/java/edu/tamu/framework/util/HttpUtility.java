@@ -12,9 +12,12 @@ package edu.tamu.framework.util;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 /**
@@ -30,25 +33,55 @@ import org.springframework.stereotype.Service;
 @Service
 public class HttpUtility {
 
-    /**
-     * Makes http request and returns response.
-     * 
-     * @param urlString
-     *            String
-     * @param method
-     *            String
-     * @return String
-     * @throws IOException
-     */
-    public String makeHttpRequest(String urlString, String method) throws IOException {
+    @Value("${app.http.timeout}")
+    private int DEFAULT_TIMEOUT;
 
+    public String makeHttpRequest(String urlString, String method) throws IOException {
+        return makeHttpRequest(urlString, method, Optional.empty(), Optional.empty(), DEFAULT_TIMEOUT);
+    }
+
+    public String makeHttpRequest(String urlString, String method, String message) throws IOException {
+        return makeHttpRequest(urlString, method, Optional.of(message), Optional.empty(), DEFAULT_TIMEOUT);
+    }
+
+    public String makeHttpRequest(String urlString, String method, String message, String contentType) throws IOException {
+        return makeHttpRequest(urlString, method, Optional.of(message), Optional.of(contentType), DEFAULT_TIMEOUT);
+    }
+
+    public String makeHttpRequest(String urlString, String method, String message, int timeout) throws IOException {
+        return makeHttpRequest(urlString, method, Optional.of(message), Optional.empty(), timeout);
+    }
+
+    public String makeHttpRequest(String urlString, String method, String message, String contentType, int timeout) throws IOException {
+        return makeHttpRequest(urlString, method, Optional.of(message), Optional.of(contentType), timeout);
+    }
+
+    public String makeHttpRequest(String urlString, String method, Optional<String> message, Optional<String> contentType, int timeout) throws IOException {
         URL url = new URL(urlString);
 
-        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
-        con.setRequestMethod(method);
+        conn.setConnectTimeout(timeout);
+        conn.setReadTimeout(timeout);
 
-        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        conn.setRequestMethod(method);
+
+        conn.setDoOutput(true);
+
+        if (message.isPresent()) {
+
+            conn.setDoInput(true);
+
+            if (contentType.isPresent()) {
+                conn.setRequestProperty("Content-type", contentType.get());
+            }
+
+            PrintWriter pw = new PrintWriter(conn.getOutputStream());
+            pw.write(message.get());
+            pw.close();
+        }
+
+        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
         String inputLine;
 

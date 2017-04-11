@@ -34,7 +34,8 @@ public class Credentials extends ValidatingBase {
     private String affiliation;
     private Map<String, String> allCredentials;
 
-    public Credentials() { }
+    public Credentials() {
+    }
 
     /**
      * Constructor

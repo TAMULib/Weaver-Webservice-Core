@@ -12,7 +12,6 @@ package edu.tamu.framework.model;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
-
 /**
  * Application ThemePropertyName entity.
  * 
@@ -25,7 +24,8 @@ public class ThemePropertyName extends BaseEntity {
     @Column(unique = true)
     private String name;
 
-    public ThemePropertyName() {}
+    public ThemePropertyName() {
+    }
 
     public ThemePropertyName(String name) {
         this();

@@ -17,11 +17,12 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.PathMatcher;
 
+import edu.tamu.framework.model.AbstractCoreUser;
 import edu.tamu.framework.model.WebSocketRequest;
 
 /**
- * Websocket request service. Stores, retrieves, and removes current requests.
- * Used to marshel websocket requests between interceptor and aspect.
+ * Websocket request service. Stores, retrieves, and removes current requests. Used to marshel
+ * websocket requests between interceptor and aspect.
  * 
  * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
  * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>
@@ -31,20 +32,20 @@ import edu.tamu.framework.model.WebSocketRequest;
  *
  */
 @Service
-public class WebSocketRequestService {
+public class WebSocketRequestService<U extends AbstractCoreUser> {
 
     @Autowired
     @Lazy
     private PathMatcher pathMatcher;
 
-    protected List<WebSocketRequest> requests = new ArrayList<WebSocketRequest>();
+    protected List<WebSocketRequest<U>> requests = new ArrayList<WebSocketRequest<U>>();
 
     /**
      * Get all current requests.
      * 
-     * @return List<WebSocketRequest>
+     * @return List<WebSocketRequest<U>>
      */
-    public List<WebSocketRequest> getRequests() {
+    public List<WebSocketRequest<U>> getRequests() {
         return requests;
     }
 
@@ -52,9 +53,9 @@ public class WebSocketRequestService {
      * Add request.
      * 
      * @param request
-     *            WebSocketRequest
+     *            WebSocketRequest<U>
      */
-    public synchronized void addRequest(WebSocketRequest request) {
+    public synchronized void addRequest(WebSocketRequest<U> request) {
         if (request.getDestination() != null && request.getUser() != null) {
             requests.add(request);
         }
@@ -64,9 +65,9 @@ public class WebSocketRequestService {
      * Remove request.
      * 
      * @param request
-     *            WebSocketRequest
+     *            WebSocketRequest<U>
      */
-    public synchronized void removeRequest(WebSocketRequest request) {
+    public synchronized void removeRequest(WebSocketRequest<U> request) {
         if (request.getDestination() != null && request.getUser() != null) {
             requests.remove(request);
         }
@@ -77,17 +78,17 @@ public class WebSocketRequestService {
      * 
      * @param pattern
      *            String
-     * @param user
-     *            String
-     * @return WebSocketRequest
+     * @param uin
+     *            Long
+     * @return WebSocketRequest<U>
      */
-    public synchronized WebSocketRequest getAndRemoveMessageByDestinationAndUser(String pattern, String user) {
+    public synchronized WebSocketRequest<U> getAndRemoveMessageByDestinationAndContextUin(String pattern, String uin) {
         if (pattern.charAt(0) != '/') {
             pattern = "/" + pattern;
         }
         for (int index = 0; index < requests.size(); index++) {
-            WebSocketRequest request = requests.get(index);
-            if (request.getUser().equals(user) && pathMatcher.match(pattern, request.getDestination())) {
+            WebSocketRequest<U> request = requests.get(index);
+            if (request.getContextUin().equals(uin) && pathMatcher.match(pattern, request.getDestination())) {
                 requests.remove(index);
                 return request;
             }

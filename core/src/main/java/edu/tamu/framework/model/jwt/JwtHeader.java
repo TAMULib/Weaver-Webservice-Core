@@ -1,5 +1,5 @@
 /* 
- * JWTclaim.java 
+ * JwtHeader.java 
  * 
  * Version: 
  *     $Id$ 
@@ -15,7 +15,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * JSON Web Token Claims.
+ * JSON Web Token header.
  * 
  * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
  * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>
@@ -24,67 +24,56 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author <a href="mailto:wwelling@library.tamu.edu">William Welling</a>
  * 
  */
-public class JWTclaim {
+public class JwtHeader {
 
-    private Map<String, String> claim;
+    private Map<String, String> header;
 
     /**
      * Constructor.
      *
-     * @param claim
+     * @param header
      *            Map<String, String>
      *
      * @exception JsonProcessingException
      * 
      */
-    public JWTclaim(Map<String, String> claim) throws JsonProcessingException {
-        this.claim = claim;
+    public JwtHeader(Map<String, String> header) throws JsonProcessingException {
+        this.header = header;
+        header.put("alg", "HS256");
+        header.put("typ", "JWT");
     }
 
     /**
-     * Retrieve contents of claims as a Map.
+     * Retrieve header as map.
      *
      * @return Map<String, String>
      *
      */
-    public Map<String, String> getContentAsMap() {
-        return claim;
+    public Map<String, String> getHeaderAsMap() {
+        return header;
     }
 
     /**
-     * Set contents of claim.
+     * Set header from map.
      *
-     * @param claim
+     * @param header
      *            Map<String, String>
      *
      */
-    public void setContent(Map<String, String> claim) {
-        this.claim = claim;
+    public void setHeader(Map<String, String> header) {
+        this.header = header;
     }
 
     /**
-     * Add claims.
-     *
-     * @param key
-     *            String
-     * @param value
-     *            String
-     *
-     */
-    public void putClaim(String key, String value) {
-        this.claim.put(key, value);
-    }
-
-    /**
-     * Retrieve claim as a JSON.
+     * Retrieve header as a JSON.
      *
      * @return String
      *
      * @exception JsonProcessingException
      * 
      */
-    public String getClaimAsJSON() throws JsonProcessingException {
-        return new ObjectMapper().writeValueAsString(claim);
+    public String getHeaderAsJSON() throws JsonProcessingException {
+        return new ObjectMapper().writeValueAsString(header);
     }
 
 }

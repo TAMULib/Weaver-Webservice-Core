@@ -1,5 +1,5 @@
 /* 
- * JWTException.java 
+ * JwtException.java 
  * 
  * Version: 
  *     $Id$ 
@@ -12,14 +12,14 @@ package edu.tamu.framework.exception;
 /**
  * JSON web token exception
  */
-public class JWTException extends RuntimeException {
+public class JwtException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
     private String errCode;
     private String errMsg;
 
-    public JWTException(String errCode, String errMsg) {
+    public JwtException(String errCode, String errMsg) {
         this.errCode = errCode;
         this.errMsg = errMsg;
     }

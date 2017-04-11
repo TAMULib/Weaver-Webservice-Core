@@ -1,12 +1,21 @@
+/* 
+ * ValidationResults.java 
+ * 
+ * Version: 
+ *     $Id$ 
+ * 
+ * Revisions: 
+ *     $Log$ 
+ */
 package edu.tamu.framework.validation;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class ValidationResults {
-    
+
     private boolean valid;
-    
+
     private Map<String, Map<String, String>> messages;
 
     public ValidationResults() {
@@ -22,7 +31,8 @@ public class ValidationResults {
     }
 
     /**
-     * @param valid the valid to set
+     * @param valid
+     *            the valid to set
      */
     public void setValid(boolean valid) {
         this.valid = valid;
@@ -36,19 +46,20 @@ public class ValidationResults {
     }
 
     /**
-     * @param messages the messages to set
+     * @param messages
+     *            the messages to set
      */
     public void setMessages(Map<String, Map<String, String>> messages) {
         this.messages = messages;
     }
-    
+
     public void addMessage(String key, String type, String message) {
         Map<String, String> messages = this.messages.get(key);
-        if(messages == null) {
-            messages = new HashMap<String, String>();            
-        }        
-        messages.put(type, message);        
-        this.messages.put(key, messages);      
+        if (messages == null) {
+            messages = new HashMap<String, String>();
+        }
+        messages.put(type, message);
+        this.messages.put(key, messages);
     }
 
 }

@@ -1,3 +1,12 @@
+/* 
+ * CoreSpringBanner.java 
+ * 
+ * Version: 
+ *     $Id$ 
+ * 
+ * Revisions: 
+ *     $Log$ 
+ */
 package edu.tamu.framework;
 
 import java.io.BufferedReader;
@@ -30,9 +39,7 @@ public class CoreSpringBanner implements Banner {
 
         ResourceLoader resourceLoader = new DefaultResourceLoader();
 
-        try (InputStream bannerInputStream = resourceLoader.getResource("classpath:config/banner.txt").getInputStream(); 
-             InputStreamReader inputStreamReader = new InputStreamReader(bannerInputStream, Charset.forName("UTF-8")); 
-             BufferedReader bufferReader = new BufferedReader(inputStreamReader);) {
+        try (InputStream bannerInputStream = resourceLoader.getResource("classpath:config/banner.txt").getInputStream(); InputStreamReader inputStreamReader = new InputStreamReader(bannerInputStream, Charset.forName("UTF-8")); BufferedReader bufferReader = new BufferedReader(inputStreamReader);) {
             String line;
             while ((line = bufferReader.readLine()) != null) {
                 out.println(line);

@@ -65,12 +65,7 @@ public class CoreWebMvcConfig extends WebMvcAutoConfiguration.WebMvcAutoConfigur
         boolean devMode = this.env.acceptsProfiles("dev");
         boolean useResourceCache = !devMode;
         Integer cachePeriod = devMode ? 0 : null;
-        registry.addResourceHandler("/static/**")
-                .addResourceLocations("classpath:/static/")
-                .setCachePeriod(cachePeriod)
-                .resourceChain(useResourceCache)
-                .addResolver(new VersionResourceResolver().addContentVersionStrategy("/**"))
-                .addTransformer(new AppCacheManifestTransformer());
+        registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/").setCachePeriod(cachePeriod).resourceChain(useResourceCache).addResolver(new VersionResourceResolver().addContentVersionStrategy("/**")).addTransformer(new AppCacheManifestTransformer());
     }
 
 }

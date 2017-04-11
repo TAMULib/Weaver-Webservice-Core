@@ -1,3 +1,12 @@
+/* 
+ * CoreAuthController.java 
+ * 
+ * Version: 
+ *     $Id$ 
+ * 
+ * Revisions: 
+ *     $Log$ 
+ */
 package edu.tamu.framework.controller;
 
 import java.util.Map;

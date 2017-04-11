@@ -24,7 +24,8 @@ public class Symlink {
     public String path;
     public String target;
 
-    public Symlink() { }
+    public Symlink() {
+    }
 
     public Symlink(String path, String target) {
         this.path = path;

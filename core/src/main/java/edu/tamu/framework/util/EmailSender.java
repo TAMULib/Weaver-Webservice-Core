@@ -1,3 +1,12 @@
+/* 
+ * EmailSender.java 
+ * 
+ * Version: 
+ *     $Id$ 
+ * 
+ * Revisions: 
+ *     $Log$ 
+ */
 package edu.tamu.framework.util;
 
 import javax.mail.MessagingException;
