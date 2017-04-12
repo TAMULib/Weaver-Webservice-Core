@@ -193,6 +193,63 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
             break;
         case SEND:
 
+            String requestId = accessor.getNativeHeader("id").get(0);
+
+            if (jwt != null && !"undefined".equals(jwt)) {
+
+                Map<String, String> credentialMap = new HashMap<String, String>();
+
+                credentialMap = jwtService.validateJWT(jwt);
+
+                logger.info(credentialMap.get("firstName") + " " + credentialMap.get("lastName") + " (" + credentialMap.get("uin") + ") requesting " + accessorDestination);
+
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Credential Map");
+                    for (String key : credentialMap.keySet()) {
+                        logger.debug(key + " - " + credentialMap.get(key));
+                    }
+                }
+
+                String errorMessage = credentialMap.get("ERROR");
+
+                if (errorMessage != null) {
+                    logger.error("Security Context Name: " + securityContextService.getAuthenticatedName());
+                    logger.error("JWT error: " + errorMessage);
+                    simpMessagingTemplate.convertAndSend(accessorDestination.replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse(requestId, ERROR, errorMessage));
+                    return null;
+                }
+
+                if (jwtService.isExpired(credentialMap)) {
+                    logger.info("The token for " + credentialMap.get("firstName") + " " + credentialMap.get("lastName") + " (" + credentialMap.get("uin") + ") has expired. Attempting to get new token.");
+                    simpMessagingTemplate.convertAndSend(accessorDestination.replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse(requestId, REFRESH));
+                    return null;
+                }
+
+                credentials = new Credentials(credentialMap);
+
+                user = (U) securityContextService.getAuthenticatedPrincipal();
+
+                if (credentials.getUin().equals(user.getUin())) {
+                    credentials.setRole(user.getRole().toString());
+                } else {
+
+                    user = confirmCreateUser(credentials);
+
+                    if (user == null) {
+                        errorMessage = "Could not confirm user!";
+                        logger.error(errorMessage);
+                        simpMessagingTemplate.convertAndSend(accessorDestination.replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse(requestId, ERROR, errorMessage));
+                        return null;
+                    } else {
+                        securityContextService.setAuthentication(user.getUin(), user);
+                    }
+
+                }
+
+            } else {
+                credentials = getAnonymousCredentials();
+            }
+
             String destination = null;
 
             List<String> matches = new ArrayList<String>();
@@ -265,63 +322,6 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
                         destination = pattern;
                     }
                 }
-            }
-
-            String requestId = accessor.getNativeHeader("id").get(0);
-
-            if (jwt != null && !"undefined".equals(jwt)) {
-
-                Map<String, String> credentialMap = new HashMap<String, String>();
-
-                credentialMap = jwtService.validateJWT(jwt);
-
-                logger.info(credentialMap.get("firstName") + " " + credentialMap.get("lastName") + " (" + credentialMap.get("uin") + ") requesting " + accessorDestination);
-
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Credential Map");
-                    for (String key : credentialMap.keySet()) {
-                        logger.debug(key + " - " + credentialMap.get(key));
-                    }
-                }
-
-                String errorMessage = credentialMap.get("ERROR");
-
-                if (errorMessage != null) {
-                    logger.error("Security Context Name: " + securityContextService.getAuthenticatedName());
-                    logger.error("JWT error: " + errorMessage);
-                    simpMessagingTemplate.convertAndSend(accessorDestination.replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse(requestId, ERROR, errorMessage));
-                    return null;
-                }
-
-                if (jwtService.isExpired(credentialMap)) {
-                    logger.info("The token for " + credentialMap.get("firstName") + " " + credentialMap.get("lastName") + " (" + credentialMap.get("uin") + ") has expired. Attempting to get new token.");
-                    simpMessagingTemplate.convertAndSend(accessorDestination.replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse(requestId, REFRESH));
-                    return null;
-                }
-
-                credentials = new Credentials(credentialMap);
-
-                user = (U) securityContextService.getAuthenticatedPrincipal();
-
-                if (credentials.getUin().equals(user.getUin())) {
-                    credentials.setRole(user.getRole().toString());
-                } else {
-
-                    user = confirmCreateUser(credentials);
-
-                    if (user == null) {
-                        errorMessage = "Could not confirm user!";
-                        logger.error(errorMessage);
-                        simpMessagingTemplate.convertAndSend(accessorDestination.replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse(requestId, ERROR, errorMessage));
-                        return null;
-                    } else {
-                        securityContextService.setAuthentication(user.getUin(), user);
-                    }
-
-                }
-
-            } else {
-                credentials = getAnonymousCredentials();
             }
 
             if (user != null) {
