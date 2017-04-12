@@ -422,7 +422,6 @@ public abstract class CoreControllerAspect<U extends AbstractCoreUser> {
 
     public Object ensureCompleteModel(Object model) {
         if (model != null) {
-            // TODO: move some non-validation methods into seperate utility
 
             List<String> serializedProperties = recursivelyFindJsonIdentityReference(model.getClass());
 

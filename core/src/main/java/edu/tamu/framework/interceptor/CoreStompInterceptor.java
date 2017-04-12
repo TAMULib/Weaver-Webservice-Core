@@ -100,8 +100,8 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
      * @return Message<?>
      * 
      */
-    @SuppressWarnings("unchecked")
     @Override
+    @SuppressWarnings("unchecked")
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
 
         final StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
@@ -312,7 +312,8 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
                     if (user == null) {
                         errorMessage = "Could not confirm user!";
                         logger.error(errorMessage);
-                        return MessageBuilder.withPayload(errorMessage).setHeaders(accessor).build();
+                        simpMessagingTemplate.convertAndSend(accessorDestination.replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse(requestId, ERROR, errorMessage));
+                        return null;
                     } else {
                         securityContextService.setAuthentication(user.getUin(), user);
                     }
