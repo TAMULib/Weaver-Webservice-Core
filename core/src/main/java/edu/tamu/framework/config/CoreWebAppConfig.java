@@ -17,8 +17,8 @@ import javax.persistence.PersistenceContext;
 import javax.xml.transform.Source;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.embedded.FilterRegistrationBean;
-import org.springframework.boot.orm.jpa.EntityScan;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;

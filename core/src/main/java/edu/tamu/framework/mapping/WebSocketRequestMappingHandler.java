@@ -278,7 +278,6 @@ public class WebSocketRequestMappingHandler extends CustomAbstractMethodMessageH
 
         if (!CollectionUtils.isEmpty(vars)) {
             MessageHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, MessageHeaderAccessor.class);
-            Assert.state(accessor != null && accessor.isMutable());
             accessor.setHeader(DestinationVariableMethodArgumentResolver.DESTINATION_TEMPLATE_VARIABLES_HEADER, vars);
         }
 

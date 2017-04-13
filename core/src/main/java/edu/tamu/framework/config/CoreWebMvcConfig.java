@@ -10,14 +10,13 @@
 package edu.tamu.framework.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.resource.AppCacheManifestTransformer;
 import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 import org.springframework.web.servlet.resource.VersionResourceResolver;
@@ -32,9 +31,9 @@ import org.springframework.web.servlet.resource.VersionResourceResolver;
  * @author <a href="mailto:wwelling@library.tamu.edu">William Welling</a>
  *
  */
+@EnableWebMvc
 @Configuration
-@AutoConfigureAfter(DispatcherServletAutoConfiguration.class)
-public class CoreWebMvcConfig extends WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter {
+public class CoreWebMvcConfig extends WebMvcConfigurerAdapter {
 
     @Autowired
     private Environment env;
@@ -65,7 +64,13 @@ public class CoreWebMvcConfig extends WebMvcAutoConfiguration.WebMvcAutoConfigur
         boolean devMode = this.env.acceptsProfiles("dev");
         boolean useResourceCache = !devMode;
         Integer cachePeriod = devMode ? 0 : null;
-        registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/").setCachePeriod(cachePeriod).resourceChain(useResourceCache).addResolver(new VersionResourceResolver().addContentVersionStrategy("/**")).addTransformer(new AppCacheManifestTransformer());
+        registry
+            .addResourceHandler("/static/**")
+            .addResourceLocations("classpath:/static/")
+            .setCachePeriod(cachePeriod)
+            .resourceChain(useResourceCache)
+            .addResolver(new VersionResourceResolver().addContentVersionStrategy("/**"))
+            .addTransformer(new AppCacheManifestTransformer());
     }
 
 }
