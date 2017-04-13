@@ -32,6 +32,7 @@ import org.springframework.messaging.support.ChannelInterceptorAdapter;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 
@@ -56,6 +57,7 @@ import edu.tamu.framework.util.JwtUtility;
  * @author <a href="mailto:wwelling@library.tamu.edu">William Welling</a>
  *
  */
+@Component
 public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends ChannelInterceptorAdapter {
 
     @Autowired
