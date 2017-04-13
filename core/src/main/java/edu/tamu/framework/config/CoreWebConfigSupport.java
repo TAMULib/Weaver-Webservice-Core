@@ -11,7 +11,6 @@ package edu.tamu.framework.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.SubscribableChannel;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
@@ -31,7 +30,6 @@ import edu.tamu.framework.mapping.WebSocketRequestMappingHandler;
  * @author <a href="mailto:wwelling@library.tamu.edu">William Welling</a>
  *
  */
-@Configuration
 public abstract class CoreWebConfigSupport extends WebMvcConfigurationSupport {
 
     @Autowired
