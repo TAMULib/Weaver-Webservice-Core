@@ -43,6 +43,7 @@ import edu.tamu.framework.model.ApiResponse;
 import edu.tamu.framework.model.Credentials;
 import edu.tamu.framework.model.WebSocketRequest;
 import edu.tamu.framework.service.SecurityContextService;
+import edu.tamu.framework.service.StompService;
 import edu.tamu.framework.service.WebSocketRequestService;
 import edu.tamu.framework.util.JwtUtility;
 
@@ -72,6 +73,10 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
     @Autowired
     @Lazy
     private SimpMessagingTemplate simpMessagingTemplate;
+
+    @Autowired
+    @Lazy
+    private StompService stompService;
 
     @Autowired
     @Lazy
@@ -131,6 +136,18 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
         case ABORT:
             break;
         case ACK:
+
+            List<String> refreshHeader = ((Map<String, List<String>>) message.getHeaders().get("nativeHeaders")).get("refresh");
+
+            if (refreshHeader != null) {
+
+                String refreshChannel = refreshHeader.get(0);
+
+                String refreshSessionId = (String) message.getHeaders().get("simpSessionId");
+
+                stompService.ackReliableMessage(refreshChannel.substring("/private".length()) + "-user" + refreshSessionId);
+            }
+
             break;
         case BEGIN:
             break;
@@ -181,9 +198,10 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
 
             break;
         case CONNECTED:
+            logger.debug("Connected websocket connection for " + securityContextService.getAuthenticatedName() + ".");
             break;
         case DISCONNECT:
-            logger.debug("Disconnecting websocket connection for " + securityContextService.getAuthenticatedName() + ".");
+            logger.debug("Disconnected websocket connection for " + securityContextService.getAuthenticatedName() + ".");
             break;
         case ERROR:
             break;
@@ -223,7 +241,8 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
 
                 if (jwtService.isExpired(credentialMap)) {
                     logger.info("The token for " + credentialMap.get("firstName") + " " + credentialMap.get("lastName") + " (" + credentialMap.get("uin") + ") has expired. Attempting to get new token.");
-                    simpMessagingTemplate.convertAndSend(accessorDestination.replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse(requestId, REFRESH));
+                    // send refresh message reliably
+                    stompService.sendReliableMessage(accessorDestination.replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse(requestId, REFRESH));
                     return null;
                 }
 

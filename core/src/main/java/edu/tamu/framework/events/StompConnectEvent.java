@@ -17,7 +17,7 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.web.socket.config.WebSocketMessageBrokerStats;
 import org.springframework.web.socket.messaging.SessionConnectEvent;
 
-import edu.tamu.framework.service.StompConnectionService;
+import edu.tamu.framework.service.StompService;
 
 /**
  * 
@@ -33,7 +33,7 @@ public class StompConnectEvent implements ApplicationListener<SessionConnectEven
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    private StompConnectionService stompConnectionService;
+    private StompService stompService;
 
     @Autowired
     private WebSocketMessageBrokerStats webSocketMessageBrokerStats;
@@ -44,11 +44,11 @@ public class StompConnectEvent implements ApplicationListener<SessionConnectEven
     @Override
     public void onApplicationEvent(SessionConnectEvent event) {
         StompHeaderAccessor sha = StompHeaderAccessor.wrap(event.getMessage());
-        stompConnectionService.incrementActiveConnections();
+        stompService.incrementActiveConnections();
         logger.debug("ApplicationListener: Connect event [sessionId: " + sha.getSessionId() + "]");
         logger.debug("Timestamp: " + event.getTimestamp());
         logger.debug("Message: " + event.getMessage());
-        logger.debug("ApplicationListener: Total number of web socket connections: " + stompConnectionService.getActiveConnections());
+        logger.debug("ApplicationListener: Total number of web socket connections: " + stompService.getActiveConnections());
         logger.debug(webSocketMessageBrokerStats.getWebSocketSessionStatsInfo());
     }
 

@@ -16,7 +16,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.web.socket.config.WebSocketMessageBrokerStats;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
-import edu.tamu.framework.service.StompConnectionService;
+import edu.tamu.framework.service.StompService;
 
 /**
  * 
@@ -32,7 +32,7 @@ public class StompDisconnectEvent implements ApplicationListener<SessionDisconne
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    private StompConnectionService stompConnectionService;
+    private StompService stompService;
 
     @Autowired
     private WebSocketMessageBrokerStats webSocketMessageBrokerStats;
@@ -42,12 +42,12 @@ public class StompDisconnectEvent implements ApplicationListener<SessionDisconne
      */
     @Override
     public void onApplicationEvent(SessionDisconnectEvent event) {
-        stompConnectionService.decrementActiveConnections();
+        stompService.decrementActiveConnections();
         logger.debug("Disconnect event [sessionId: " + event.getSessionId() + "]");
         logger.debug("Timestamp: " + event.getTimestamp());
         logger.debug("Status: " + event.getCloseStatus());
         logger.debug("Message: " + event.getMessage());
-        logger.debug("ApplicationListener: Total number of web socket connections: " + stompConnectionService.getActiveConnections());
+        logger.debug("ApplicationListener: Total number of web socket connections: " + stompService.getActiveConnections());
         logger.debug(webSocketMessageBrokerStats.getWebSocketSessionStatsInfo());
     }
 

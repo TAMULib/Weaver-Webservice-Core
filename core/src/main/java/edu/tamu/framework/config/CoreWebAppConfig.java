@@ -50,8 +50,10 @@ import com.fasterxml.jackson.databind.introspect.Annotated;
 
 import edu.tamu.framework.events.StompConnectEvent;
 import edu.tamu.framework.events.StompDisconnectEvent;
+import edu.tamu.framework.events.StompSubscribeEvent;
+import edu.tamu.framework.events.StompUnsubscribeEvent;
 import edu.tamu.framework.resolver.BaseEntityIdResolver;
-import edu.tamu.framework.service.StompConnectionService;
+import edu.tamu.framework.service.StompService;
 import edu.tamu.framework.service.ThemeManagerService;
 import edu.tamu.framework.wro4j.manager.factory.CustomConfigurableWroManagerFactory;
 import ro.isdc.wro.config.jmx.ConfigConstants;
@@ -163,8 +165,8 @@ public class CoreWebAppConfig extends WebMvcConfigurerAdapter {
      * @return StompConnectionService
      */
     @Bean
-    public StompConnectionService stopmConnectionService() {
-        return new StompConnectionService();
+    public StompService stopmService() {
+        return new StompService();
     }
 
     /**
@@ -185,6 +187,26 @@ public class CoreWebAppConfig extends WebMvcConfigurerAdapter {
     @Bean
     public StompDisconnectEvent stompDisconnectEvent() {
         return new StompDisconnectEvent();
+    }
+
+    /**
+     * Stomp subscribe event bean.
+     * 
+     * @return StompSubscribeEvent
+     */
+    @Bean
+    public StompSubscribeEvent stompSubscribeEvent() {
+        return new StompSubscribeEvent();
+    }
+
+    /**
+     * Stomp unsubscribe event bean.
+     * 
+     * @return StompUnsubscribeEvent
+     */
+    @Bean
+    public StompUnsubscribeEvent stompUnsubscribeEvent() {
+        return new StompUnsubscribeEvent();
     }
 
     /**
