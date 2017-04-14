@@ -62,7 +62,7 @@ public class StompService {
     }
 
     public void ackReliableMessage(String destination) {
-        logger.info("Removing: " + destination + " - " + reliableMessages.get(destination));
+        logger.info("Removing reliable message: " + destination);
         reliableMessages.remove(destination);
     }
 
@@ -77,7 +77,7 @@ public class StompService {
             simpMessagingTemplate.convertAndSend(destination, entry.getValue().getApiReponse());
 
             if (reliableResponse.getRetry() >= MAX_RETRIES) {
-                logger.info("Unable to receive acknowledgement after 3 attempts: " + destination + " - " + reliableMessages.get(destination));
+                logger.info("Unable to receive acknowledgement after " + MAX_RETRIES + " attempts: " + destination);
                 reliableMessages.remove(destination);
             }
         }
