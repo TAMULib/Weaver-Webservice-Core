@@ -41,7 +41,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Component;
@@ -69,6 +68,7 @@ import edu.tamu.framework.model.ValidatingBase;
 import edu.tamu.framework.model.WebSocketRequest;
 import edu.tamu.framework.service.HttpRequestService;
 import edu.tamu.framework.service.RoleService;
+import edu.tamu.framework.service.StompService;
 import edu.tamu.framework.service.WebSocketRequestService;
 import edu.tamu.framework.util.ValidationUtility;
 import edu.tamu.framework.validation.BaseModelValidator;
@@ -115,7 +115,7 @@ public abstract class CoreControllerAspect<U extends AbstractCoreUser> {
     private RoleService roleService;
 
     @Autowired
-    private SimpMessagingTemplate simpMessagingTemplate;
+    private StompService stompService;
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -199,7 +199,7 @@ public abstract class CoreControllerAspect<U extends AbstractCoreUser> {
         // if using combined ApiMapping annotation send message as similar to SendToUser annotation
         if (preProcessObject.protocol == Protocol.WEBSOCKET) {
             apiresponse.getMeta().setId(preProcessObject.requestId);
-            simpMessagingTemplate.convertAndSend(preProcessObject.destination, apiresponse);
+            stompService.sendReliableMessage(preProcessObject.destination, apiresponse);
         }
     }
 

@@ -137,11 +137,11 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
             break;
         case ACK:
 
-            List<String> refreshHeader = ((Map<String, List<String>>) message.getHeaders().get("nativeHeaders")).get("refresh");
+            List<String> channelHeader = ((Map<String, List<String>>) message.getHeaders().get("nativeHeaders")).get("channel");
 
-            if (refreshHeader != null) {
+            if (channelHeader != null) {
 
-                String refreshChannel = refreshHeader.get(0);
+                String refreshChannel = channelHeader.get(0);
 
                 String refreshSessionId = (String) message.getHeaders().get("simpSessionId");
 
