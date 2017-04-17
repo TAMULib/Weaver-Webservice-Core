@@ -35,7 +35,7 @@ public class StompService {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private final int MAX_RETRIES = 4;
+    private final int MAX_RETRIES = 5;
 
     private static Map<String, ReliableResponse> reliableMessages = new ConcurrentHashMap<String, ReliableResponse>();
 
@@ -62,7 +62,7 @@ public class StompService {
     }
 
     public void ackReliableMessage(String destination) {
-        logger.info("Removing reliable message: " + destination);
+        logger.info("Reliable message acknowledged: " + destination);
         reliableMessages.remove(destination);
     }
 
