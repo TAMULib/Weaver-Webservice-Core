@@ -24,7 +24,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.handler.DestinationPatternsMessageCondition;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.support.SimpAnnotationMethodMessageHandler;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
@@ -69,10 +68,6 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
 
     @Autowired
     private SecurityContextService<U> securityContextService;
-
-    @Autowired
-    @Lazy
-    private SimpMessagingTemplate simpMessagingTemplate;
 
     @Autowired
     @Lazy
@@ -235,7 +230,7 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
                 if (errorMessage != null) {
                     logger.error("Security Context Name: " + securityContextService.getAuthenticatedName());
                     logger.error("JWT error: " + errorMessage);
-                    simpMessagingTemplate.convertAndSend(accessorDestination.replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse(requestId, ERROR, errorMessage));
+                    stompService.sendReliableMessage(accessorDestination.replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse(requestId, ERROR, errorMessage));
                     return null;
                 }
 
@@ -259,7 +254,7 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
                     if (user == null) {
                         errorMessage = "Could not confirm user!";
                         logger.error(errorMessage);
-                        simpMessagingTemplate.convertAndSend(accessorDestination.replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse(requestId, ERROR, errorMessage));
+                        stompService.sendReliableMessage(accessorDestination.replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse(requestId, ERROR, errorMessage));
                         return null;
                     } else {
                         securityContextService.setAuthentication(user.getUin(), user);
