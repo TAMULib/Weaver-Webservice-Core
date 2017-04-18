@@ -13,14 +13,13 @@ import static edu.tamu.framework.enums.ApiResponseType.SUCCESS;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 import java.util.Date;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.fasterxml.jackson.databind.JsonNode;
 
 import edu.tamu.framework.aspect.annotation.ApiCredentials;
 import edu.tamu.framework.aspect.annotation.ApiData;
@@ -61,16 +60,16 @@ public class ReportingController {
      * @throws Exception
      */
     @ApiMapping(value = "/error", method = POST)
-    public ApiResponse reportError(@ApiCredentials Credentials shib, @ApiData JsonNode errorReport) throws Exception {
+    public ApiResponse reportError(@ApiCredentials Credentials shib, @ApiData Map<String, String> errorReport) throws Exception {
 
         String content = "Error Report\n\n";
 
         Date now = new Date();
 
-        content += "channel: " + errorReport.get("channel").textValue() + "\n";
+        content += "channel: " + errorReport.get("channel") + "\n";
         content += "time: " + now + "\n";
-        content += "type: " + errorReport.get("type").textValue() + "\n";
-        content += "message: " + errorReport.get("message").textValue() + "\n";
+        content += "type: " + errorReport.get("type") + "\n";
+        content += "message: " + errorReport.get("message") + "\n";
         content += "user: " + shib.getFirstName() + " " + shib.getLastName() + " (" + shib.getUin() + ")" + "\n";
 
         emailSender.sendEmail(reportingAddress, "Error Report", content);
