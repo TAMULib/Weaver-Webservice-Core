@@ -15,6 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -35,7 +36,8 @@ public class StompService {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private final int MAX_RETRIES = 5;
+    @Value("${app.stomp.retries ?: 5}")
+    private int MAX_RETRIES;
 
     private static Map<String, ReliableResponse> reliableMessages = new ConcurrentHashMap<String, ReliableResponse>();
 
