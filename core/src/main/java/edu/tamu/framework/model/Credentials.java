@@ -9,7 +9,15 @@
  */
 package edu.tamu.framework.model;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * Credentials object.
@@ -22,7 +30,9 @@ import java.util.Map;
  * @author <a href="mailto:wwelling@library.tamu.edu">William Welling</a>
  *
  */
-public class Credentials extends ValidatingBase {
+public class Credentials extends ValidatingBase implements UserDetails {
+
+    private static final long serialVersionUID = -7790519788243591978L;
 
     private String lastName;
     private String firstName;
@@ -223,5 +233,50 @@ public class Credentials extends ValidatingBase {
      */
     public void setAllCredentials(Map<String, String> allCredentials) {
         this.allCredentials = allCredentials;
+    }
+
+    @Override
+    @JsonIgnore
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        Collection<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(this.getRole().toString());
+        authorities.add(authority);
+        return authorities;
+    }
+
+    @Override
+    @JsonIgnore
+    public String getPassword() {
+        return null;
+    }
+
+    @Override
+    @JsonIgnore
+    public String getUsername() {
+        return getEmail();
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isAccountNonExpired() {
+        return false;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isAccountNonLocked() {
+        return false;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isCredentialsNonExpired() {
+        return false;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isEnabled() {
+        return true;
     }
 }

@@ -56,7 +56,7 @@ public class WebSocketRequestService<U extends AbstractCoreUser> {
      *            WebSocketRequest<U>
      */
     public synchronized void addRequest(WebSocketRequest<U> request) {
-        if (request.getDestination() != null && request.getUser() != null) {
+        if (request.getDestination() != null && request.getContextUin() != null) {
             requests.add(request);
         }
     }
@@ -68,7 +68,7 @@ public class WebSocketRequestService<U extends AbstractCoreUser> {
      *            WebSocketRequest<U>
      */
     public synchronized void removeRequest(WebSocketRequest<U> request) {
-        if (request.getDestination() != null && request.getUser() != null) {
+        if (request.getDestination() != null && request.getContextUin() != null) {
             requests.remove(request);
         }
     }
