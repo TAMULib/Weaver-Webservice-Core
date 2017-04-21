@@ -38,15 +38,12 @@ public class ThemeProperty {
 	@Column
 	private String value;
 	
-
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, scope = CoreTheme.class, property = "id") 
 	@JsonIdentityReference(alwaysAsId = true)
 	private CoreTheme theme;	
 
 	@OneToOne(fetch = FetchType.EAGER)
-	@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, scope = ThemePropertyName.class, property = "id") 
-	@JsonIdentityReference(alwaysAsId = false)
 	private ThemePropertyName themePropertyName;
 	
 	public ThemeProperty() {}
@@ -76,7 +73,7 @@ public class ThemeProperty {
 		this.themePropertyName = propertyName;
 	}
 	
-	public ThemePropertyName getPropertyName() {
+	public ThemePropertyName getThemePropertyName() {
 		return this.themePropertyName;
 	}
 
