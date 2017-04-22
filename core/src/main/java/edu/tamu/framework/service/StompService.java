@@ -74,13 +74,13 @@ public class StompService {
         for (Map.Entry<String, ReliableResponse> entry : reliableMessages.entrySet()) {
             String destination = entry.getKey();
             ReliableResponse reliableResponse = entry.getValue();
-            reliableResponse.incrementRetry();
-
-            simpMessagingTemplate.convertAndSend(destination, entry.getValue().getApiReponse());
-
             if (reliableResponse.getRetry() >= MAX_RETRIES) {
                 logger.info("Unable to receive acknowledgement after " + MAX_RETRIES + " attempts: " + destination);
                 reliableMessages.remove(destination);
+            }
+            else {
+            	reliableResponse.incrementRetry();
+                simpMessagingTemplate.convertAndSend(destination, entry.getValue().getApiReponse());
             }
         }
 
