@@ -36,7 +36,7 @@ public class StompService {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Value("${app.stomp.retries ?: 5}")
+    @Value("${app.stomp.retries:5}")
     private int MAX_RETRIES;
 
     private static Map<String, ReliableResponse> reliableMessages = new ConcurrentHashMap<String, ReliableResponse>();
@@ -68,13 +68,13 @@ public class StompService {
         reliableMessages.remove(destination);
     }
 
-    @Scheduled(fixedDelay = 2500)
+    @Scheduled(fixedDelayString = "${app.stomp.resend.interval:2500}")
     public synchronized void resendUnacknowledgedMessages() {
 
         for (Map.Entry<String, ReliableResponse> entry : reliableMessages.entrySet()) {
             String destination = entry.getKey();
             ReliableResponse reliableResponse = entry.getValue();
-            if (reliableResponse.getRetry() >= MAX_RETRIES) {
+            if (reliableResponse.getRetry() > MAX_RETRIES) {
                 logger.info("Unable to receive acknowledgement after " + MAX_RETRIES + " attempts: " + destination);
                 reliableMessages.remove(destination);
             }

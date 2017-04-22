@@ -90,7 +90,7 @@ import edu.tamu.framework.validation.ValidationResults;
 @Aspect
 public abstract class CoreControllerAspect<U extends AbstractCoreUser> {
 
-    @Value("${app.aspect.retry}")
+    @Value("${app.aspect.retries:3}")
     private int NUMBER_OF_RETRY_ATTEMPTS;
 
     @Autowired
