@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>edu.tamu.weaverframework</groupId>
 	<artifactId>weaver-webservice-parent</artifactId>
-	<version>1.2.1-RC1-SNAPSHOT</version>
+	<version>1.2.0-RC2-SNAPSHOT</version>
 	<name>weaver-webservice-parent</name>
 	<url>http://maven.apache.org</url>
 
