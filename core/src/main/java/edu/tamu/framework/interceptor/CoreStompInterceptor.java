@@ -243,9 +243,14 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
 
                 credentials = new Credentials(credentialMap);
 
-                user = (U) securityContextService.getAuthenticatedPrincipal();
+                try {
+                    user = (U) securityContextService.getAuthenticatedPrincipal();
+                }
+                catch(Exception e) {
+                    logger.info("Authenticated principal is Credentials not a User");
+                }
 
-                if (credentials.getUin().equals(user.getUin())) {
+                if (user != null && credentials.getUin().equals(user.getUin())) {
                     credentials.setRole(user.getRole().toString());
                 } else {
 
