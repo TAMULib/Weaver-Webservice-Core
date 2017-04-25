@@ -15,6 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -35,7 +36,8 @@ public class StompService {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private final int MAX_RETRIES = 5;
+    @Value("${app.stomp.retries:5}")
+    private int MAX_RETRIES;
 
     private static Map<String, ReliableResponse> reliableMessages = new ConcurrentHashMap<String, ReliableResponse>();
 
@@ -66,19 +68,19 @@ public class StompService {
         reliableMessages.remove(destination);
     }
 
-    @Scheduled(fixedDelay = 2500)
+    @Scheduled(fixedDelayString = "${app.stomp.resend.interval:2500}")
     public synchronized void resendUnacknowledgedMessages() {
 
         for (Map.Entry<String, ReliableResponse> entry : reliableMessages.entrySet()) {
             String destination = entry.getKey();
             ReliableResponse reliableResponse = entry.getValue();
-            reliableResponse.incrementRetry();
-
-            simpMessagingTemplate.convertAndSend(destination, entry.getValue().getApiReponse());
-
-            if (reliableResponse.getRetry() >= MAX_RETRIES) {
+            if (reliableResponse.getRetry() > MAX_RETRIES) {
                 logger.info("Unable to receive acknowledgement after " + MAX_RETRIES + " attempts: " + destination);
                 reliableMessages.remove(destination);
+            }
+            else {
+            	reliableResponse.incrementRetry();
+                simpMessagingTemplate.convertAndSend(destination, entry.getValue().getApiReponse());
             }
         }
 

@@ -42,7 +42,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
@@ -68,6 +67,7 @@ import edu.tamu.framework.model.ValidatingBase;
 import edu.tamu.framework.model.WebSocketRequest;
 import edu.tamu.framework.service.HttpRequestService;
 import edu.tamu.framework.service.RoleService;
+import edu.tamu.framework.service.SecurityContextService;
 import edu.tamu.framework.service.StompService;
 import edu.tamu.framework.service.WebSocketRequestService;
 import edu.tamu.framework.util.ValidationUtility;
@@ -90,7 +90,7 @@ import edu.tamu.framework.validation.ValidationResults;
 @Aspect
 public abstract class CoreControllerAspect<U extends AbstractCoreUser> {
 
-    @Value("${app.aspect.retry}")
+    @Value("${app.aspect.retries:3}")
     private int NUMBER_OF_RETRY_ATTEMPTS;
 
     @Autowired
@@ -106,7 +106,7 @@ public abstract class CoreControllerAspect<U extends AbstractCoreUser> {
     private HttpRequestService<U> httpRequestService;
 
     @Autowired
-    private SecurityContext securityContext;
+    private SecurityContextService<U> securityContextService;
 
     @Autowired
     private ServletContext servletContext;
@@ -290,7 +290,7 @@ public abstract class CoreControllerAspect<U extends AbstractCoreUser> {
                 path += method.getAnnotation(ApiMapping.class).value()[0];
             }
 
-            HttpRequest<U> request = httpRequestService.getAndRemoveRequestByDestinationAndContextUin(path, securityContext.getAuthentication().getName());
+            HttpRequest<U> request = httpRequestService.getAndRemoveRequestByDestinationAndContextUin(path, securityContextService.getAuthenticatedName());
 
             servletRequest = request.getRequest();
 
@@ -333,7 +333,7 @@ public abstract class CoreControllerAspect<U extends AbstractCoreUser> {
                 protocol = Protocol.WEBSOCKET;
             }
 
-            WebSocketRequest<U> request = webSocketRequestService.getAndRemoveMessageByDestinationAndContextUin(path, securityContext.getAuthentication().getName());
+            WebSocketRequest<U> request = webSocketRequestService.getAndRemoveMessageByDestinationAndContextUin(path, securityContextService.getAuthenticatedName());
 
             message = request.getMessage();
 

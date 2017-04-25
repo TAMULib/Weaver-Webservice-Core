@@ -56,7 +56,7 @@ public class HttpRequestService<U extends AbstractCoreUser> {
      *            HttpRequest<U>
      */
     public synchronized void addRequest(HttpRequest<U> request) {
-        if (request.getDestination() != null && request.getUser() != null) {
+        if (request.getDestination() != null && request.getContextUin() != null) {
             requests.add(request);
         }
     }
@@ -68,7 +68,7 @@ public class HttpRequestService<U extends AbstractCoreUser> {
      *            HttpRequest<U>
      */
     public synchronized void removeRequest(HttpRequest<U> request) {
-        if (request.getDestination() != null && request.getUser() != null) {
+        if (request.getDestination() != null && request.getContextUin() != null) {
             requests.remove(request);
         }
     }
