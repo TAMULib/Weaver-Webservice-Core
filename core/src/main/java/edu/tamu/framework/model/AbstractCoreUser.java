@@ -31,7 +31,7 @@ public abstract class AbstractCoreUser extends BaseEntity implements CoreUser, U
 
     private static final long serialVersionUID = -4974106399870286015L;
 
-    @Column(name = "uin", nullable = true, unique = true)
+    @Column(name = "uin", nullable = false, unique = true)
     private String uin;
 
     public AbstractCoreUser() {
