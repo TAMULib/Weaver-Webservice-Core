@@ -325,17 +325,31 @@ public class ValidationUtility {
                                         U owningModel = (U) queryByPropertyResults.get(0);
 
                                         message = "Could not delete " + modelToDelete.getClass().getSimpleName() + " with id " + ((BaseEntity) modelToDelete).getId() + " due to being used by " + owningModel.getClass().getSimpleName() + " with id " + ((BaseEntity) owningModel).getId();
-
                                     }
 
                                 }
+                            }
+
+                            if (!invalid && validator.getRestrict().length() == 0) {
+                                String fullPath = String.join(".", validator.getPath());
+                                List<Object> queryByPropertyResults = queryByProperty(join, fullPath, ((BaseEntity) modelToDelete).getId());
+
+                                if (queryByPropertyResults.size() > 0) {
+                                    invalid = true;
+
+                                    message = "Could not delete " + modelToDelete.getClass().getSimpleName() + " with id " + ((BaseEntity) modelToDelete).getId() + " due to being used by ";
+                                    for (Object qm : queryByPropertyResults) {
+                                        message += qm.getClass().getSimpleName() + " with id " + ((BaseEntity) qm).getId();
+                                    }
+                                }
+
                             }
                         }
                     }
                 }
             }
 
-            if (!invalid) {
+            if (!invalid && validator.getRestrict().length() > 0) {
 
                 // check if path value matches restrict value from a join
 
