@@ -21,8 +21,10 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Root;
 
+import org.hibernate.jpa.criteria.path.PluralAttributePath;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
@@ -197,7 +199,19 @@ public class EntityUtility {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Object> query = cb.createQuery();
         Root<?> root = query.from(clazz);
-        query.select(root).where(cb.equal(root.get(property), value));
+        Path<Object> path = null;
+        for (String p : property.split("\\.")) {
+            if (path == null) {
+                if (root.get(p) instanceof PluralAttributePath) {
+                    path = root.join(p);
+                } else {
+                    path = root.get(p);
+                }
+            } else {
+                path = path.get(p);
+            }
+        }
+        query.select(root).where(cb.equal(path, value));
         return entityManager.createQuery(query).getResultList();
     }
 
