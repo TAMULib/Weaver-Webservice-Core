@@ -180,6 +180,7 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
                 }
 
             } else {
+                System.out.println("\nANONYMOUS: " + jwt + "\n");
                 credentials = getAnonymousCredentials();
             }
 
@@ -268,6 +269,7 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
                 }
 
             } else {
+                System.out.println("\nANONYMOUS: " + jwt + "\n");
                 credentials = getAnonymousCredentials();
             }
 
