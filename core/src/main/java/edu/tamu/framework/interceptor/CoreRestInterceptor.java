@@ -119,7 +119,7 @@ public abstract class CoreRestInterceptor<U extends AbstractCoreUser> extends Ha
             }
 
             if (!accepted) {
-                System.out.println("\nANONYMOUS: " + credentialMap + "\n");
+                System.out.println("\nANONYMOUS NOT WHITELISTED: " + credentialMap + "\n");
                 credentials = getAnonymousCredentials();
             }
         } else {

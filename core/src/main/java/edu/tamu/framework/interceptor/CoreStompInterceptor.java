@@ -112,7 +112,7 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
         String accessorDestination = accessor.getDestination();
 
         if (accessorDestination != null) {
-            logger.debug("Accessor destination: " + accessorDestination);
+            logger.info("Accessor destination: " + accessorDestination);
         }
 
         logger.debug(command.name());
@@ -149,6 +149,8 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
         case COMMIT:
             break;
         case CONNECT:
+            
+            System.out.println("CONNECT TOKEN: " + jwt);
 
             if (jwt != null && !"undefined".equals(jwt)) {
 
@@ -180,7 +182,7 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
                 }
 
             } else {
-                System.out.println("\nANONYMOUS: " + jwt + "\n");
+                System.out.println("\nANONYMOUS CONNECT: " + jwt + "\n");
                 credentials = getAnonymousCredentials();
             }
 
@@ -210,6 +212,8 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
         case SEND:
 
             String requestId = accessor.getNativeHeader("id").get(0);
+            
+            System.out.println("SEND TOKEN: " + jwt);
 
             if (jwt != null && !"undefined".equals(jwt)) {
 
@@ -269,7 +273,7 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
                 }
 
             } else {
-                System.out.println("\nANONYMOUS: " + jwt + "\n");
+                System.out.println("\nSEND ANONYMOUS: " + jwt + "\n");
                 credentials = getAnonymousCredentials();
             }
 
