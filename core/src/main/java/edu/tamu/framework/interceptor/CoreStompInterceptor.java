@@ -112,7 +112,7 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
         String accessorDestination = accessor.getDestination();
 
         if (accessorDestination != null) {
-            logger.info("Accessor destination: " + accessorDestination);
+            logger.debug("Accessor destination: " + accessorDestination);
         }
 
         logger.debug(command.name());
@@ -182,7 +182,6 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
                 }
 
             } else {
-                System.out.println("\nANONYMOUS CONNECT: " + jwt + "\n");
                 credentials = getAnonymousCredentials();
             }
 
@@ -273,7 +272,6 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
                 }
 
             } else {
-                System.out.println("\nSEND ANONYMOUS: " + jwt + "\n");
                 credentials = getAnonymousCredentials();
             }
 

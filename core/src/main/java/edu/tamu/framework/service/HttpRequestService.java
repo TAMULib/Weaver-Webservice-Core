@@ -21,8 +21,7 @@ import edu.tamu.framework.model.AbstractCoreUser;
 import edu.tamu.framework.model.HttpRequest;
 
 /**
- * Http request service. Stores, retrieves, and removes current requests. Used to marshel http
- * requests between interceptor and aspect.
+ * Http request service. Stores, retrieves, and removes current requests. Used to marshel http requests between interceptor and aspect.
  * 
  * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
  * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>
@@ -86,18 +85,13 @@ public class HttpRequestService<U extends AbstractCoreUser> {
         if (pattern.charAt(0) != '/') {
             pattern = "/" + pattern;
         }
-        System.out.println();
         for (int index = 0; index < requests.size(); index++) {
             HttpRequest<U> request = requests.get(index);
-            System.out.println("Matching: " + request.getContextUin() + "<=>" + uin + " = " + request.getContextUin().equals(uin) + "\n          " + pattern + "<=>" + request.getDestination() + " = " + pathMatcher.match(pattern, request.getDestination()));
             if (request.getContextUin().equals(uin) && pathMatcher.match(pattern, request.getDestination())) {
-                System.out.print(" MATCH\n\n");
                 requests.remove(index);
                 return request;
             }
-            System.out.println();
         }
-        System.out.println();
         throw new RuntimeException("Unable to find websocket request " + pattern + " for user " + uin);
     }
 
