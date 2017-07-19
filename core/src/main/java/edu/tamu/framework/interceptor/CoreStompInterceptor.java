@@ -47,8 +47,7 @@ import edu.tamu.framework.service.WebSocketRequestService;
 import edu.tamu.framework.util.JwtUtility;
 
 /**
- * Stomp interceptor. Checks command, decodes and verifies token, either returns error message to
- * frontend or continues to controller.
+ * Stomp interceptor. Checks command, decodes and verifies token, either returns error message to frontend or continues to controller.
  * 
  * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
  * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>
@@ -149,8 +148,6 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
         case COMMIT:
             break;
         case CONNECT:
-            
-            System.out.println("CONNECT TOKEN: " + jwt);
 
             if (jwt != null && !"undefined".equals(jwt)) {
 
@@ -211,8 +208,6 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
         case SEND:
 
             String requestId = accessor.getNativeHeader("id").get(0);
-            
-            System.out.println("SEND TOKEN: " + jwt);
 
             if (jwt != null && !"undefined".equals(jwt)) {
 
@@ -249,8 +244,7 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
 
                 try {
                     user = (U) securityContextService.getAuthenticatedPrincipal();
-                }
-                catch(Exception e) {
+                } catch (Exception e) {
                     logger.info("Authenticated principal is Credentials not a User");
                 }
 
