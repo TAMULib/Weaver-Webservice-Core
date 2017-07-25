@@ -139,7 +139,9 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
 
                 String refreshSessionId = (String) message.getHeaders().get("simpSessionId");
 
-                stompService.ackReliableMessage(refreshChannel.substring("/private".length()) + "-user" + refreshSessionId);
+                String requestId = accessor.getNativeHeader("id").get(0);
+
+                stompService.ackReliableMessage(refreshChannel.substring("/private".length()) + "-user" + refreshSessionId, requestId);
             }
 
             break;
@@ -229,14 +231,14 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
                 if (errorMessage != null) {
                     logger.error("Security Context Name: " + securityContextService.getAuthenticatedName());
                     logger.error("JWT error: " + errorMessage);
-                    stompService.sendReliableMessage(accessorDestination.replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse(requestId, ERROR, errorMessage));
+                    stompService.sendReliableMessage(accessorDestination.replace("ws", "queue") + "-user" + accessor.getSessionId(), requestId, new ApiResponse(requestId, ERROR, errorMessage));
                     return null;
                 }
 
                 if (jwtService.isExpired(credentialMap)) {
                     logger.info("The token for " + credentialMap.get("firstName") + " " + credentialMap.get("lastName") + " (" + credentialMap.get("uin") + ") has expired. Attempting to get new token.");
                     // send refresh message reliably
-                    stompService.sendReliableMessage(accessorDestination.replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse(requestId, REFRESH));
+                    stompService.sendReliableMessage(accessorDestination.replace("ws", "queue") + "-user" + accessor.getSessionId(), requestId, new ApiResponse(requestId, REFRESH));
                     return null;
                 }
 
@@ -257,7 +259,7 @@ public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends C
                     if (user == null) {
                         errorMessage = "Could not confirm user!";
                         logger.error(errorMessage);
-                        stompService.sendReliableMessage(accessorDestination.replace("ws", "queue") + "-user" + accessor.getSessionId(), new ApiResponse(requestId, ERROR, errorMessage));
+                        stompService.sendReliableMessage(accessorDestination.replace("ws", "queue") + "-user" + accessor.getSessionId(), requestId, new ApiResponse(requestId, ERROR, errorMessage));
                         return null;
                     } else {
                         securityContextService.setAuthentication(user.getUin(), user);
