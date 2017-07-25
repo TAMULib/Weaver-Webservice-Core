@@ -374,6 +374,22 @@ public class ValidationUtility {
 
             }
 
+            if (!invalid && validator.getRestrict().length() > 0) {
+
+                // check if path value matches restrict value
+
+                if (validator.getPath().length > 0) {
+
+                    Object value = getValueFromPath(model, validator.getPath());
+
+                    if (value.toString().equals(validator.getRestrict())) {
+                        message = "Unable to delete due to restrictions! " + model.getClass().getSimpleName() + " " + String.join(".", validator.getPath()) + " is " + validator.getRestrict() + "!";
+                        invalid = true;
+                    }
+                }
+
+            }
+
             if (!invalid) {
                 Object value = getValueForProperty(model, SYSTEM_COLUMN_NAME);
                 if (value != null && ((Boolean) value) == true) {
