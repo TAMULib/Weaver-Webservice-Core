@@ -21,8 +21,7 @@ import edu.tamu.framework.model.AbstractCoreUser;
 import edu.tamu.framework.model.WebSocketRequest;
 
 /**
- * Websocket request service. Stores, retrieves, and removes current requests. Used to marshel
- * websocket requests between interceptor and aspect.
+ * Websocket request service. Stores, retrieves, and removes current requests. Used to marshel websocket requests between interceptor and aspect.
  * 
  * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
  * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>
@@ -93,7 +92,7 @@ public class WebSocketRequestService<U extends AbstractCoreUser> {
                 return request;
             }
         }
-        return null;
+        throw new RuntimeException("Unable to find websocket request " + pattern + " for user " + uin);
     }
 
 }

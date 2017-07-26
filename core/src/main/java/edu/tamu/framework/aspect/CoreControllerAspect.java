@@ -199,7 +199,7 @@ public abstract class CoreControllerAspect<U extends AbstractCoreUser> {
         // if using combined ApiMapping annotation send message as similar to SendToUser annotation
         if (preProcessObject.protocol == Protocol.WEBSOCKET) {
             apiresponse.getMeta().setId(preProcessObject.requestId);
-            stompService.sendReliableMessage(preProcessObject.destination, apiresponse);
+            stompService.sendReliableMessage(preProcessObject.destination, preProcessObject.requestId, apiresponse);
         }
     }
 

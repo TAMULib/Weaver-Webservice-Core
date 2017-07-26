@@ -58,14 +58,14 @@ public class StompService {
         return totalActiveConnections;
     }
 
-    public void sendReliableMessage(String destination, ApiResponse response) {
-        reliableMessages.put(destination, new ReliableResponse(response));
+    public void sendReliableMessage(String destination, String requestId, ApiResponse response) {
+        reliableMessages.put(destination + "-" + requestId, new ReliableResponse(response));
         simpMessagingTemplate.convertAndSend(destination, response);
     }
 
-    public void ackReliableMessage(String destination) {
+    public void ackReliableMessage(String destination, String requestId) {
         logger.info("Reliable message acknowledged: " + destination);
-        reliableMessages.remove(destination);
+        reliableMessages.remove(destination + "-" + requestId);
     }
 
     @Scheduled(fixedDelayString = "${app.stomp.resend.interval:2500}")
@@ -77,10 +77,9 @@ public class StompService {
             if (reliableResponse.getRetry() > MAX_RETRIES) {
                 logger.info("Unable to receive acknowledgement after " + MAX_RETRIES + " attempts: " + destination);
                 reliableMessages.remove(destination);
-            }
-            else {
-            	reliableResponse.incrementRetry();
-                simpMessagingTemplate.convertAndSend(destination, entry.getValue().getApiReponse());
+            } else {
+                reliableResponse.incrementRetry();
+                simpMessagingTemplate.convertAndSend(destination.substring(0, destination.lastIndexOf("-")), entry.getValue().getApiReponse());
             }
         }
 

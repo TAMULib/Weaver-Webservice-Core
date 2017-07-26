@@ -330,7 +330,7 @@ public class ValidationUtility {
                                 }
                             }
 
-                            if (!invalid && validator.getRestrict().length() == 0) {
+                            if (!invalid && validator.getRestrict().length() == 0 && validator.getPath().length > 0) {
                                 String fullPath = String.join(".", validator.getPath());
                                 List<Object> queryByPropertyResults = queryByProperty(join, fullPath, ((BaseEntity) modelToDelete).getId());
 
@@ -370,6 +370,22 @@ public class ValidationUtility {
                         }
                     }
 
+                }
+
+            }
+
+            if (!invalid && validator.getRestrict().length() > 0) {
+
+                // check if path value matches restrict value
+
+                if (validator.getPath().length > 0) {
+
+                    Object value = getValueFromPath(model, validator.getPath());
+
+                    if (value.toString().equals(validator.getRestrict())) {
+                        message = "Unable to delete due to restrictions! " + model.getClass().getSimpleName() + " " + String.join(".", validator.getPath()) + " is " + validator.getRestrict() + "!";
+                        invalid = true;
+                    }
                 }
 
             }

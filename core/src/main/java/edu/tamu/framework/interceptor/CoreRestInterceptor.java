@@ -32,8 +32,7 @@ import edu.tamu.framework.service.SecurityContextService;
 import edu.tamu.framework.util.JwtUtility;
 
 /**
- * REST interceptor. Intercepts AJAX request to decode and verify token before allowing controller
- * to process request.
+ * REST interceptor. Intercepts AJAX request to decode and verify token before allowing controller to process request.
  * 
  * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
  * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>

@@ -106,9 +106,7 @@ public abstract class BaseModelValidator implements Validator {
     }
 
     public void addBusinessValidator(BusinessValidator businessValidator) {
-        if (!this.businessValidators.contains(businessValidator)) {
-            this.businessValidators.add(businessValidator);
-        }
+        this.businessValidators.add(businessValidator);
     }
 
     public void removeBusinessValidator(BusinessValidator businessValidator) {
