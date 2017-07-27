@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.Message;
+import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
@@ -116,6 +117,9 @@ public abstract class CoreControllerAspect<U extends AbstractCoreUser> {
 
     @Autowired
     private StompService stompService;
+
+    @Autowired
+    private MessageConverter messageConverter;
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -353,9 +357,12 @@ public abstract class CoreControllerAspect<U extends AbstractCoreUser> {
                 apiVariables = getApiVariable(path, accessor.getDestination());
             }
 
-            if (accessor.getNativeHeader("data") != null) {
+            data = (String) messageConverter.fromMessage(message, String.class);
+
+            if (data == null && accessor.getNativeHeader("data") != null) {
                 data = accessor.getNativeHeader("data").get(0).toString();
             }
+
         }
 
         PreProcessObject preProcessObject = new PreProcessObject(credentials, requestId, arguments, protocol, destination, true);
