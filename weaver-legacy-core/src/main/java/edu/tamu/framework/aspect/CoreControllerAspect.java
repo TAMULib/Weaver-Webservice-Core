@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.Message;
+import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
@@ -116,6 +117,9 @@ public abstract class CoreControllerAspect<U extends AbstractCoreUser> {
 
     @Autowired
     private StompService stompService;
+
+    @Autowired
+    private MessageConverter messageConverter;
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -353,7 +357,9 @@ public abstract class CoreControllerAspect<U extends AbstractCoreUser> {
                 apiVariables = getApiVariable(path, accessor.getDestination());
             }
 
-            if (accessor.getNativeHeader("data") != null) {
+            data = (String) messageConverter.fromMessage(message, String.class);
+
+            if (data == null && accessor.getNativeHeader("data") != null) {
                 data = accessor.getNativeHeader("data").get(0).toString();
             }
         }
@@ -374,40 +380,32 @@ public abstract class CoreControllerAspect<U extends AbstractCoreUser> {
                 switch (annotationString) {
                 case "ApiVariable": {
                     arguments[index] = apiVariables.get(argNames[index]) != null ? objectMapper.convertValue(apiVariables.get(argNames[index]), objectMapper.constructType(argTypes[index])) : null;
-                }
-                    break;
+                } break;
                 case "ApiCredentials": {
                     arguments[index] = credentials;
-                }
-                    break;
+                } break;
                 case "ApiUser": {
                     arguments[index] = user;
-                }
-                    break;
+                } break;
                 case "ApiData": {
                     String pData = headerData != null ? headerData : data;
                     arguments[index] = pData != null ? objectMapper.convertValue(objectMapper.readTree(pData), objectMapper.constructType(argTypes[index])) : null;
-                }
-                    break;
+                } break;
                 case "ApiModel": {
                     String pData = headerData != null ? headerData : data;
                     arguments[index] = ensureCompleteModel(pData != null ? objectMapper.convertValue(objectMapper.readTree(pData), objectMapper.constructType(argTypes[index])) : null);
-                }
-                    break;
+                } break;
                 case "ApiValidatedModel": {
                     String pData = headerData != null ? headerData : data;
                     arguments[index] = ensureCompleteModel(pData != null ? objectMapper.convertValue(objectMapper.readTree(pData), objectMapper.constructType(argTypes[index])) : null);
                     preProcessObject.validation = validateModel((ValidatingBase) arguments[index], method);
-                }
-                    break;
+                } break;
                 case "ApiParameters": {
                     arguments[index] = parameters;
-                }
-                    break;
+                } break;
                 case "ApiInputStream": {
                     arguments[index] = new ByteArrayInputStream(data.getBytes(StandardCharsets.UTF_8));
-                }
-                    break;
+                } break;
                 }
             }
             index++;
@@ -440,7 +438,6 @@ public abstract class CoreControllerAspect<U extends AbstractCoreUser> {
     }
 
     public <V extends ValidatingBase> ValidationResults validateModel(V model, Method method) {
-
         for (Annotation validationAnnotation : method.getAnnotations()) {
             if (validationAnnotation instanceof ApiValidation) {
                 for (ApiValidation.Business businessAnnotation : ((ApiValidation) validationAnnotation).business()) {
