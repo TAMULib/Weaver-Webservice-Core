@@ -362,6 +362,7 @@ public abstract class CoreControllerAspect<U extends AbstractCoreUser> {
             if (data == null && accessor.getNativeHeader("data") != null) {
                 data = accessor.getNativeHeader("data").get(0).toString();
             }
+
         }
 
         PreProcessObject preProcessObject = new PreProcessObject(credentials, requestId, arguments, protocol, destination, true);
@@ -380,32 +381,40 @@ public abstract class CoreControllerAspect<U extends AbstractCoreUser> {
                 switch (annotationString) {
                 case "ApiVariable": {
                     arguments[index] = apiVariables.get(argNames[index]) != null ? objectMapper.convertValue(apiVariables.get(argNames[index]), objectMapper.constructType(argTypes[index])) : null;
-                } break;
+                }
+                    break;
                 case "ApiCredentials": {
                     arguments[index] = credentials;
-                } break;
+                }
+                    break;
                 case "ApiUser": {
                     arguments[index] = user;
-                } break;
+                }
+                    break;
                 case "ApiData": {
                     String pData = headerData != null ? headerData : data;
                     arguments[index] = pData != null ? objectMapper.convertValue(objectMapper.readTree(pData), objectMapper.constructType(argTypes[index])) : null;
-                } break;
+                }
+                    break;
                 case "ApiModel": {
                     String pData = headerData != null ? headerData : data;
                     arguments[index] = ensureCompleteModel(pData != null ? objectMapper.convertValue(objectMapper.readTree(pData), objectMapper.constructType(argTypes[index])) : null);
-                } break;
+                }
+                    break;
                 case "ApiValidatedModel": {
                     String pData = headerData != null ? headerData : data;
                     arguments[index] = ensureCompleteModel(pData != null ? objectMapper.convertValue(objectMapper.readTree(pData), objectMapper.constructType(argTypes[index])) : null);
                     preProcessObject.validation = validateModel((ValidatingBase) arguments[index], method);
-                } break;
+                }
+                    break;
                 case "ApiParameters": {
                     arguments[index] = parameters;
-                } break;
+                }
+                    break;
                 case "ApiInputStream": {
                     arguments[index] = new ByteArrayInputStream(data.getBytes(StandardCharsets.UTF_8));
-                } break;
+                }
+                    break;
                 }
             }
             index++;
