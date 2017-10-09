@@ -1,10 +1,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>edu.tamu.weaverframework</groupId>
+
+	<groupId>edu.tamu.framework</groupId>
+
 	<artifactId>weaver-webservice-parent</artifactId>
-	<version>1.2.x-request-marshelling-SNAPSHOT</version>
-	<name>weaver-webservice-parent</name>
-	<url>http://maven.apache.org</url>
+
+	<version>1.3.x-reactor-SNAPSHOT</version>
+
+	<name>Weaver Webservice Parent</name>
+
+	<description>Parent Freamwork for Weaver</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -13,10 +19,17 @@
 	</parent>
 
 	<modules>
-		<module>core</module>
+		<module>weaver-legacy-core</module>
 	</modules>
 
 	<packaging>pom</packaging>
+
+	<properties>
+		<java.version>1.8</java.version>
+		<maven.compiler.source>${java.version}</maven.compiler.source>
+		<maven.compiler.target>${java.version}</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
 
 	<repositories>
 		<repository>
@@ -36,144 +49,120 @@
 		</snapshotRepository>
 	</distributionManagement>
 
-	<dependencies>
+	<build>
+		<pluginManagement>
+			<plugins>
 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-actuator</artifactId>
-		</dependency>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<version>1.5.2.RELEASE</version>
+					<configuration>
+						<addResources>false</addResources>
+					</configuration>
+				</plugin>
 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<configuration>
+						<source>${java.version}</source>
+						<target>${java.version}</target>
+					</configuration>
+				</plugin>
 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>3.0.2</version>
+					<configuration>
+						<delimiters>
+							<delimiter>@</delimiter>
+						</delimiters>
+					</configuration>
+				</plugin>
 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-websocket</artifactId>
-		</dependency>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>cobertura-maven-plugin</artifactId>
+					<version>2.7</version>
+					<configuration>
+						<quiet>true</quiet>
+						<instrumentation>
+							<ignoreTrivial>true</ignoreTrivial>
+							<ignores>
+								<ignore>java.util.logging.*</ignore>
+							</ignores>
+						</instrumentation>
+						<formats>
+							<format>html</format>
+							<format>xml</format>
+						</formats>
+						<aggregate>true</aggregate>
+					</configuration>
+				</plugin>
 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-tomcat</artifactId>
-			<scope>provided</scope>
-		</dependency>
+				<plugin>
+					<groupId>org.jacoco</groupId>
+					<artifactId>jacoco-maven-plugin</artifactId>
+					<version>0.7.9</version>
+					<executions>
+						<execution>
+							<id>default-prepare-agent</id>
+							<goals>
+								<goal>prepare-agent</goal>
+							</goals>
+						</execution>
+						<execution>
+							<id>default-report</id>
+							<phase>prepare-package</phase>
+							<goals>
+								<goal>report</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-configuration-processor</artifactId>
-			<optional>true</optional>
-		</dependency>
+				<plugin>
+					<groupId>org.eluder.coveralls</groupId>
+					<artifactId>coveralls-maven-plugin</artifactId>
+					<version>4.3.0</version>
+					<configuration>
+						<repoToken></repoToken>
+					</configuration>
+				</plugin>
 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-jpa</artifactId>
-		</dependency>
+				<plugin>
+					<groupId>org.asciidoctor</groupId>
+					<artifactId>asciidoctor-maven-plugin</artifactId>
+					<version>1.5.6</version>
+					<executions>
+						<execution>
+							<id>output-html</id>
+							<phase>generate-resources</phase>
+							<goals>
+								<goal>process-asciidoc</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
-		</dependency>
+			</plugins>
+		</pluginManagement>
+	</build>
 
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-jwt</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context-support</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>commons-collections</groupId>
-			<artifactId>commons-collections</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>2.5</version>
-		</dependency>
-
-		<dependency>
-			<groupId>commons-codec</groupId>
-			<artifactId>commons-codec</artifactId>
-			<version>1.10</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<version>9.4-1206-jdbc42</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>com.sun.mail</groupId>
-			<artifactId>javax.mail</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>ro.isdc.wro4j</groupId>
-			<artifactId>wro4j-core</artifactId>
-			<version>1.8.0</version>
-		</dependency>
-
-		<dependency>
-			<groupId>ro.isdc.wro4j</groupId>
-			<artifactId>wro4j-extensions</artifactId>
-			<version>1.8.0</version>
-		</dependency>
-
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
-			<version>1.10.19</version>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-library</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>com.jayway.jsonpath</groupId>
-			<artifactId>json-path</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>com.jayway.jsonpath</groupId>
-			<artifactId>json-path-assert</artifactId>
-			<version>2.2.0</version>
-			<scope>test</scope>
-		</dependency>
-
-	</dependencies>
+	<reporting>
+		<outputDirectory>${project.build.directory}/site</outputDirectory>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<version>2.9</version>
+				<configuration>
+					<dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+				</configuration>
+			</plugin>
+		</plugins>
+	</reporting>
 
 </project>
