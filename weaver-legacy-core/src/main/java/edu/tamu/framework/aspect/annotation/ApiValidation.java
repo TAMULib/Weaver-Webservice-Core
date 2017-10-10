@@ -19,6 +19,7 @@ import java.lang.annotation.Target;
 import edu.tamu.framework.enums.BusinessValidationType;
 import edu.tamu.framework.enums.MethodValidationType;
 
+@Deprecated
 @Target({ METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented

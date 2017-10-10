@@ -15,7 +15,7 @@ import java.util.HashMap;
  */
 public class ApiResponse {
 
-    private Meta meta;
+    private final Meta meta;
 
     private HashMap<String, Object> payload;
 
@@ -34,35 +34,56 @@ public class ApiResponse {
         this();
         this.meta.setStatus(status);
         this.meta.setMessage(status.getMessage());
-
         for (Object obj : payload) {
-
             String objectType = obj.getClass().getSimpleName();
-
             if (objectType.equals("ArrayList")) {
                 ArrayList<?> a = ((ArrayList<?>) obj);
                 if (a.size() > 0)
                     objectType += "<" + a.get(0).getClass().getSimpleName() + ">";
             }
-
             this.payload.put(objectType, obj);
         }
-
     }
 
-    public ApiResponse(ApiStatus type, String message, Object... payload) {
-        this(type, payload);
+    public ApiResponse(ApiStatus status, String message, Object... payload) {
+        this(status, payload);
         this.meta.setMessage(message);
     }
 
-    public ApiResponse(String id, ApiStatus type, String message, Object... payload) {
-        this(type, payload);
+    public ApiResponse(String id, ApiStatus status, String message, Object... payload) {
+        this(status, payload);
         this.meta.setId(id);
         this.meta.setMessage(message);
     }
 
-    public ApiResponse(String id, ApiStatus type, Object... payload) {
-        this(type, payload);
+    public ApiResponse(String id, ApiStatus status, Object... payload) {
+        this(status, payload);
+        this.meta.setId(id);
+    }
+
+    public ApiResponse(ApiStatus status, ApiAction action) {
+        this(status);
+        this.meta.setAction(action);
+    }
+
+    public ApiResponse(ApiStatus status, ApiAction action, Object... payload) {
+        this(status, payload);
+        this.meta.setAction(action);
+    }
+
+    public ApiResponse(ApiStatus status, ApiAction action, String message, Object... payload) {
+        this(status, action, payload);
+        this.meta.setMessage(message);
+    }
+
+    public ApiResponse(String id, ApiStatus status, ApiAction action, String message, Object... payload) {
+        this(status, action, payload);
+        this.meta.setId(id);
+        this.meta.setMessage(message);
+    }
+
+    public ApiResponse(String id, ApiStatus status, ApiAction action, Object... payload) {
+        this(status, action, payload);
         this.meta.setId(id);
     }
 
@@ -73,16 +94,6 @@ public class ApiResponse {
      */
     public Meta getMeta() {
         return meta;
-    }
-
-    /**
-     * Sets meta.
-     * 
-     * @param meta
-     *            Meta
-     */
-    public void setMeta(Meta meta) {
-        this.meta = meta;
     }
 
     /**

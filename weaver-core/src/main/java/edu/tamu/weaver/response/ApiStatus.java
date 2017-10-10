@@ -11,12 +11,14 @@ package edu.tamu.weaver.response;
  */
 public enum ApiStatus {
 
+    // @formatter:off
     SUCCESS("Your request was successful"),
     REFRESH("Your token has expired"),
     ERROR("Your request caused an error"),
     WARNING("Your request caused warning"),
     INFO("Your request was processed"),
     INVALID("Your request failed validation");
+    // @formatter:on
 
     String message;
 

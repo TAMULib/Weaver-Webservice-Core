@@ -9,6 +9,7 @@
  */
 package edu.tamu.framework.validation;
 
+@Deprecated
 public abstract class BaseValidator<T> {
 
     protected T type;

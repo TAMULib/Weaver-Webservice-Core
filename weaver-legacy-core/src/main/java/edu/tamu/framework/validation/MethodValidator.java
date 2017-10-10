@@ -11,6 +11,7 @@ package edu.tamu.framework.validation;
 
 import edu.tamu.framework.enums.MethodValidationType;
 
+@Deprecated
 public class MethodValidator extends SimpleValidator<MethodValidationType> {
 
     private Class<?> clazz;

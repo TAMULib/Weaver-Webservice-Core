@@ -11,6 +11,7 @@ package edu.tamu.framework.validation;
 
 import edu.tamu.framework.enums.InputValidationType;
 
+@Deprecated
 public class InputValidator extends SimpleValidator<InputValidationType> {
 
     private String property;

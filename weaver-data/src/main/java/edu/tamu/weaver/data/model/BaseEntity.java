@@ -1,18 +1,10 @@
-/* 
- * BaseEntity.java 
- * 
- * Version: 
- *     $Id$ 
- * 
- * Revisions: 
- *     $Log$ 
- */
 package edu.tamu.weaver.data.model;
+
+import static javax.persistence.GenerationType.IDENTITY;
 
 import java.util.Objects;
 
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
@@ -20,7 +12,7 @@ import javax.persistence.MappedSuperclass;
 public abstract class BaseEntity implements WeaverEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = IDENTITY)
     protected Long id;
 
     /**

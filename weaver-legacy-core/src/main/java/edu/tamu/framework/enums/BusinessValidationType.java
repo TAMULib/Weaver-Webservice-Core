@@ -9,6 +9,7 @@
  */
 package edu.tamu.framework.enums;
 
+@Deprecated
 public enum BusinessValidationType {
 
     CREATE("Unable to create model"),

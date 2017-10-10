@@ -7,10 +7,8 @@ import edu.tamu.weaver.data.model.WeaverEntity;
 
 @NoRepositoryBean
 public interface WeaverRepo<M extends WeaverEntity> extends JpaRepository<M, Long>, WeaverRepoCustom<M> {
-	
-	@Override
-	public void delete(M model);
+
+    @Override
+    public void delete(M model);
 
 }
-
-

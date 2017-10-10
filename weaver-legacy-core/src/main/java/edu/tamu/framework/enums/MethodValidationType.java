@@ -9,6 +9,7 @@
  */
 package edu.tamu.framework.enums;
 
+@Deprecated
 public enum MethodValidationType {
         
     REORDER("Unable to reorder"),
