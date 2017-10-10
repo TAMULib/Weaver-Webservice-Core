@@ -7,7 +7,7 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.model;
+package edu.tamu.weaver.data.model;
 
 import java.util.Objects;
 
@@ -17,8 +17,7 @@ import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
-@Deprecated
-public abstract class BaseEntity extends ValidatingBase implements Comparable<BaseEntity> {
+public abstract class BaseEntity implements WeaverEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -60,7 +59,7 @@ public abstract class BaseEntity extends ValidatingBase implements Comparable<Ba
     }
 
     @Override
-    public int compareTo(BaseEntity o) {
+    public int compareTo(WeaverEntity o) {
         return this.getId().compareTo(o.getId());
     }
 
