@@ -9,8 +9,8 @@
  */
 package edu.tamu.framework.controller;
 
-import static edu.tamu.framework.enums.ApiResponseType.INVALID;
-import static edu.tamu.framework.enums.ApiResponseType.SUCCESS;
+import static edu.tamu.weaver.response.ApiStatus.INVALID;
+import static edu.tamu.weaver.response.ApiStatus.SUCCESS;
 import static edu.tamu.framework.util.EntityUtility.recursivelyFindField;
 
 import java.lang.reflect.Field;
@@ -25,11 +25,10 @@ import org.springframework.stereotype.Controller;
 
 import edu.tamu.framework.aspect.annotation.ApiMapping;
 import edu.tamu.framework.aspect.annotation.ApiVariable;
-import edu.tamu.framework.model.ApiResponse;
+import edu.tamu.weaver.response.ApiResponse;
 import edu.tamu.framework.validation.InputValidator;
 import edu.tamu.framework.validation.Validator;
 
-@Deprecated
 @Controller
 @ApiMapping("/validations")
 public class ValidationsController {
