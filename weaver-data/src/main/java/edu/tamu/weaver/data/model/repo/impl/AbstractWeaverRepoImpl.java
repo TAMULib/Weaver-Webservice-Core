@@ -17,40 +17,40 @@ import edu.tamu.weaver.response.ApiResponse;
 
 public abstract class AbstractWeaverRepoImpl<M extends WeaverEntity, R extends WeaverRepo<M>> implements WeaverRepoCustom<M> {
 
-	@Autowired
-	protected R weaverRepo;
+    @Autowired
+    protected R weaverRepo;
 
-	@Autowired
-	private SimpMessagingTemplate simpMessagingTemplate;
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
 
-	protected abstract String getChannel();
+    protected abstract String getChannel();
 
-	@Override
-	public M create(M model) {
-		model = weaverRepo.save(model);
-		simpMessagingTemplate.convertAndSend(getChannel(), new ApiResponse(SUCCESS, CREATE, model));
-		return model;
-	}
+    @Override
+    public M create(M model) {
+        model = weaverRepo.save(model);
+        simpMessagingTemplate.convertAndSend(getChannel(), new ApiResponse(SUCCESS, CREATE, model));
+        return model;
+    }
 
-	@Override
-	public M read(Long id) {
-		M model = weaverRepo.findOne(id);
-		simpMessagingTemplate.convertAndSend(getChannel(), new ApiResponse(model != null ? SUCCESS : ERROR, READ, model));
-		return model;
-	}
+    @Override
+    public M read(Long id) {
+        M model = weaverRepo.findOne(id);
+        simpMessagingTemplate.convertAndSend(getChannel(), new ApiResponse(model != null ? SUCCESS : ERROR, READ, model));
+        return model;
+    }
 
-	@Override
-	public M update(M model) {
-		model = weaverRepo.save(model);
-		simpMessagingTemplate.convertAndSend(getChannel(), new ApiResponse(SUCCESS, UPDATE, model));
-		return model;
-	}
+    @Override
+    public M update(M model) {
+        model = weaverRepo.save(model);
+        simpMessagingTemplate.convertAndSend(getChannel(), new ApiResponse(SUCCESS, UPDATE, model));
+        return model;
+    }
 
-	@Override
-	public void delete(M model) {
-		Long id = model.getId();
-		weaverRepo.delete(id);
-		simpMessagingTemplate.convertAndSend(getChannel(), new ApiResponse(SUCCESS, DELETE, model));
-	}
+    @Override
+    public void delete(M model) {
+        Long id = model.getId();
+        weaverRepo.delete(id);
+        simpMessagingTemplate.convertAndSend(getChannel(), new ApiResponse(SUCCESS, DELETE, model));
+    }
 
 }
