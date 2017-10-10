@@ -9,6 +9,7 @@
  */
 package edu.tamu.framework.enums;
 
+@Deprecated
 public enum InputValidationType {
     
     minlength("Input minimum length not reached"),

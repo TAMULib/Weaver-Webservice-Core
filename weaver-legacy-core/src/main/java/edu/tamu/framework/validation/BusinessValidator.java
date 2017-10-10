@@ -11,6 +11,7 @@ package edu.tamu.framework.validation;
 
 import edu.tamu.framework.enums.BusinessValidationType;
 
+@Deprecated
 public class BusinessValidator extends SimpleValidator<BusinessValidationType> {
 
     private Class<?>[] joins;

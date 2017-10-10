@@ -16,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import edu.tamu.framework.validation.ValidationResults;
 import edu.tamu.framework.validation.Validator;
 
+@Deprecated
 public abstract class ValidatingBase {
 
     @Transient
