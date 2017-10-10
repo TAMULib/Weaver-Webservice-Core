@@ -9,9 +9,9 @@
  */
 package edu.tamu.framework.aspect;
 
-import static edu.tamu.framework.enums.ApiResponseType.ERROR;
-import static edu.tamu.framework.enums.ApiResponseType.INVALID;
-import static edu.tamu.framework.enums.ApiResponseType.WARNING;
+import static edu.tamu.weaver.response.ApiStatus.ERROR;
+import static edu.tamu.weaver.response.ApiStatus.INVALID;
+import static edu.tamu.weaver.response.ApiStatus.WARNING;
 import static edu.tamu.framework.util.EntityUtility.getValueForProperty;
 import static edu.tamu.framework.util.EntityUtility.queryWithClassById;
 import static edu.tamu.framework.util.EntityUtility.recursivelyFindJsonIdentityReference;
@@ -58,9 +58,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.tamu.framework.aspect.annotation.ApiMapping;
 import edu.tamu.framework.aspect.annotation.ApiValidation;
 import edu.tamu.framework.aspect.annotation.Auth;
-import edu.tamu.framework.enums.ApiResponseType;
 import edu.tamu.framework.model.AbstractCoreUser;
-import edu.tamu.framework.model.ApiResponse;
+import edu.tamu.weaver.response.ApiResponse;
 import edu.tamu.framework.model.BaseEntity;
 import edu.tamu.framework.model.Credentials;
 import edu.tamu.framework.model.HttpRequest;
@@ -87,7 +86,6 @@ import edu.tamu.framework.validation.ValidationResults;
  * @author <a href="mailto:wwelling@library.tamu.edu">William Welling</a>
  *
  */
-@Deprecated
 @Component
 @Aspect
 public abstract class CoreControllerAspect<U extends AbstractCoreUser> {
@@ -189,7 +187,7 @@ public abstract class CoreControllerAspect<U extends AbstractCoreUser> {
         if (apiresponse != null) {
             // retry endpoint if error response type
             int attempt = 0;
-            while (attempt <= NUMBER_OF_RETRY_ATTEMPTS && apiresponse.getMeta().getType() == ApiResponseType.ERROR) {
+            while (attempt <= NUMBER_OF_RETRY_ATTEMPTS && apiresponse.getMeta().getStatus() == ERROR) {
                 attempt++;
                 logger.debug("Retry attempt " + attempt);
                 apiresponse = (ApiResponse) joinPoint.proceed(preProcessObject.arguments);

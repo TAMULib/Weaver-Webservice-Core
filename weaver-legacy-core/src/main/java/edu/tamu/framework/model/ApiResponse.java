@@ -24,6 +24,7 @@ import edu.tamu.framework.enums.ApiResponseType;
  * @author <a href="mailto:wwelling@library.tamu.edu">William Welling</a>
  *
  */
+@Deprecated
 public class ApiResponse {
 
     private Meta meta;

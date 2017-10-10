@@ -18,6 +18,7 @@ package edu.tamu.framework.enums;
  * @author <a href="mailto:wwelling@library.tamu.edu">William Welling</a>
  *
  */
+@Deprecated
 public enum ApiResponseType {
 
     SUCCESS("Your request was successful"),
