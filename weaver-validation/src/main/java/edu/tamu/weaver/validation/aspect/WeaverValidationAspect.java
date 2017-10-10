@@ -1,10 +1,6 @@
 package edu.tamu.weaver.validation.aspect;
 
 import static edu.tamu.weaver.response.ApiStatus.INVALID;
-import static edu.tamu.weaver.utility.EntityUtility.getValueForProperty;
-import static edu.tamu.weaver.utility.EntityUtility.queryWithClassById;
-import static edu.tamu.weaver.utility.EntityUtility.recursivelyFindJsonIdentityReference;
-import static edu.tamu.weaver.utility.EntityUtility.setValueForProperty;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -22,6 +18,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import edu.tamu.weaver.data.model.WeaverEntity;
 import edu.tamu.weaver.response.ApiResponse;
+import edu.tamu.weaver.utility.EntityUtility;
 import edu.tamu.weaver.validation.aspect.annotation.WeaverValidatedModel;
 import edu.tamu.weaver.validation.aspect.annotation.WeaverValidation;
 import edu.tamu.weaver.validation.model.ValidatingBaseEntity;
@@ -38,9 +35,8 @@ public class WeaverValidationAspect {
     @Autowired
     private PlatformTransactionManager platformTransactionManager;
 
-    @Around("execution(* *.*.*.controller.*.*(..)) && @annotation(edu.tamu.weaver.validation.aspect.annotation.WeaverValidation)")
-    public ApiResponse transactionallyValidate(ProceedingJoinPoint joinPoint) throws Throwable {
-
+    @Around(value = "execution(* *(..)) && @annotation(edu.tamu.weaver.validation.aspect.annotation.WeaverValidation)")
+    public ApiResponse validate(ProceedingJoinPoint joinPoint) throws Throwable {
         ApiResponse response;
 
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
@@ -54,7 +50,7 @@ public class WeaverValidationAspect {
         ValidationUtility.aggregateValidationResults(validationResults, validateMethod(method, arguments));
 
         if (validationResults.isValid()) {
-            response = (ApiResponse) joinPoint.proceed();
+            response = (ApiResponse) joinPoint.proceed(arguments);
         } else {
             response = new ApiResponse(INVALID, validationResults);
         }
@@ -82,6 +78,7 @@ public class WeaverValidationAspect {
         return validationResults;
     }
 
+    @SuppressWarnings("unused")
     private TransactionTemplate createTransactionTemplate() {
         TransactionTemplate transactionTemplate = new TransactionTemplate(platformTransactionManager);
         transactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
@@ -89,16 +86,17 @@ public class WeaverValidationAspect {
         return transactionTemplate;
     }
 
-    public Object ensureCompleteModel(Object model) {
+    @SuppressWarnings("unused")
+    private Object ensureCompleteModel(Object model) {
         if (model != null) {
-            List<String> serializedProperties = recursivelyFindJsonIdentityReference(model.getClass());
+            List<String> serializedProperties = EntityUtility.recursivelyFindJsonIdentityReference(model.getClass());
             if (serializedProperties.size() > 0) {
-                List<Object> response = queryWithClassById(model.getClass(), ((WeaverEntity) model).getId());
+                List<Object> response = EntityUtility.queryWithClassById(model.getClass(), ((WeaverEntity) model).getId());
                 if (response.size() > 0) {
                     Object fullModel = response.get(0);
 
                     serializedProperties.forEach(serializedProperty -> {
-                        setValueForProperty(model, serializedProperty, getValueForProperty(fullModel, serializedProperty));
+                        EntityUtility.setValueForProperty(model, serializedProperty, EntityUtility.getValueForProperty(fullModel, serializedProperty));
                     });
                 }
             }
