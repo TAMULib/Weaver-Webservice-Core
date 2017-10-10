@@ -15,6 +15,14 @@
 
   <modules>
     <module>weaver-legacy-core</module>
+    <module>weaver-core</module>
+    <module>weaver-data</module>
+
+    <module>weaver-initializer</module>
+    <module>weaver-security</module>
+    <module>weaver-user</module>
+    <module>weaver-validation</module>
+
   </modules>
 
   <packaging>pom</packaging>
