@@ -15,13 +15,20 @@
 
   <modules>
     <module>weaver-legacy-core</module>
+
     <module>weaver-core</module>
     <module>weaver-data</module>
 
     <module>weaver-initializer</module>
     <module>weaver-security</module>
+    <module>weaver-auth</module>
+    <module>weaver-token</module>
     <module>weaver-user</module>
     <module>weaver-validation</module>
+
+    <module>weaver-email</module>
+    <module>weaver-cli</module>
+    <module>weaver-wro</module>
 
   </modules>
 
