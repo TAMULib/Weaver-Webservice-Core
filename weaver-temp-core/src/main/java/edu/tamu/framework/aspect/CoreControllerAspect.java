@@ -9,10 +9,15 @@
  */
 package edu.tamu.framework.aspect;
 
-import static edu.tamu.framework.util.EntityUtility.getValueForProperty;
-import static edu.tamu.framework.util.EntityUtility.queryWithClassById;
-import static edu.tamu.framework.util.EntityUtility.recursivelyFindJsonIdentityReference;
-import static edu.tamu.framework.util.EntityUtility.setValueForProperty;
+import edu.tamu.weaver.utility.EntityUtility;
+import edu.tamu.weaver.validation.aspect.annotation.WeaverValidation;
+import edu.tamu.weaver.validation.model.ValidatingEntity;
+import edu.tamu.weaver.validation.results.ValidationResults;
+import edu.tamu.weaver.validation.utility.ValidationUtility;
+import edu.tamu.weaver.validation.validators.BaseModelValidator;
+import edu.tamu.weaver.validation.validators.BusinessValidator;
+import edu.tamu.weaver.validation.validators.MethodValidator;
+
 import static edu.tamu.weaver.response.ApiStatus.ERROR;
 import static edu.tamu.weaver.response.ApiStatus.INVALID;
 import static edu.tamu.weaver.response.ApiStatus.WARNING;
@@ -56,24 +61,17 @@ import org.springframework.web.context.request.RequestContextHolder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.tamu.framework.aspect.annotation.ApiMapping;
-import edu.tamu.framework.aspect.annotation.ApiValidation;
 import edu.tamu.framework.aspect.annotation.Auth;
 import edu.tamu.framework.model.AbstractCoreUser;
-import edu.tamu.framework.model.BaseEntity;
 import edu.tamu.framework.model.Credentials;
 import edu.tamu.framework.model.HttpRequest;
-import edu.tamu.framework.model.ValidatingBase;
 import edu.tamu.framework.model.WebSocketRequest;
 import edu.tamu.framework.service.HttpRequestService;
 import edu.tamu.framework.service.RoleService;
 import edu.tamu.framework.service.SecurityContextService;
 import edu.tamu.framework.service.StompService;
 import edu.tamu.framework.service.WebSocketRequestService;
-import edu.tamu.framework.util.ValidationUtility;
-import edu.tamu.framework.validation.BaseModelValidator;
-import edu.tamu.framework.validation.BusinessValidator;
-import edu.tamu.framework.validation.MethodValidator;
-import edu.tamu.framework.validation.ValidationResults;
+import edu.tamu.weaver.data.model.BaseEntity;
 import edu.tamu.weaver.response.ApiResponse;
 
 /**
@@ -403,7 +401,7 @@ public abstract class CoreControllerAspect<U extends AbstractCoreUser> {
                 case "ApiValidatedModel": {
                     String pData = headerData != null ? headerData : data;
                     arguments[index] = ensureCompleteModel(pData != null ? objectMapper.convertValue(objectMapper.readTree(pData), objectMapper.constructType(argTypes[index])) : null);
-                    preProcessObject.validation = validateModel((ValidatingBase) arguments[index], method);
+                    preProcessObject.validation = validateModel((ValidatingEntity) arguments[index], method);
                 }
                     break;
                 case "ApiParameters": {
@@ -429,15 +427,15 @@ public abstract class CoreControllerAspect<U extends AbstractCoreUser> {
     public Object ensureCompleteModel(Object model) {
         if (model != null) {
 
-            List<String> serializedProperties = recursivelyFindJsonIdentityReference(model.getClass());
+            List<String> serializedProperties = EntityUtility.recursivelyFindJsonIdentityReference(model.getClass());
 
             if (serializedProperties.size() > 0) {
-                List<Object> response = queryWithClassById(model.getClass(), ((BaseEntity) model).getId());
+                List<Object> response = EntityUtility.queryWithClassById(model.getClass(), ((BaseEntity) model).getId());
                 if (response.size() > 0) {
                     Object fullModel = response.get(0);
 
                     serializedProperties.forEach(serializedProperty -> {
-                        setValueForProperty(model, serializedProperty, getValueForProperty(fullModel, serializedProperty));
+                        EntityUtility.setValueForProperty(model, serializedProperty, EntityUtility.getValueForProperty(fullModel, serializedProperty));
                     });
                 }
             }
@@ -445,16 +443,16 @@ public abstract class CoreControllerAspect<U extends AbstractCoreUser> {
         return model;
     }
 
-    public <V extends ValidatingBase> ValidationResults validateModel(V model, Method method) {
+    public <V extends ValidatingEntity> ValidationResults validateModel(V model, Method method) {
         for (Annotation validationAnnotation : method.getAnnotations()) {
-            if (validationAnnotation instanceof ApiValidation) {
-                for (ApiValidation.Business businessAnnotation : ((ApiValidation) validationAnnotation).business()) {
-                    ((BaseModelValidator) ((ValidatingBase) model).getModelValidator()).addBusinessValidator(new BusinessValidator(businessAnnotation.value(), businessAnnotation.joins(), businessAnnotation.params(), businessAnnotation.path(), businessAnnotation.restrict()));
+            if (validationAnnotation instanceof WeaverValidation) {
+                for (WeaverValidation.Business businessAnnotation : ((WeaverValidation) validationAnnotation).business()) {
+                    ((BaseModelValidator) ((ValidatingEntity) model).getModelValidator()).addBusinessValidator(new BusinessValidator(businessAnnotation.value(), businessAnnotation.joins(), businessAnnotation.params(), businessAnnotation.path(), businessAnnotation.restrict()));
                 }
             }
         }
 
-        return ((ValidatingBase) model).validate((ValidatingBase) model);
+        return ((ValidatingEntity) model).validate((ValidatingEntity) model);
     }
 
     public ValidationResults validateMethod(Method method, Object[] args) {
@@ -462,8 +460,8 @@ public abstract class CoreControllerAspect<U extends AbstractCoreUser> {
         ValidationResults validationResults = new ValidationResults();
 
         for (Annotation validationAnnotation : method.getAnnotations()) {
-            if (validationAnnotation instanceof ApiValidation) {
-                for (ApiValidation.Method methodAnnotation : ((ApiValidation) validationAnnotation).method()) {
+            if (validationAnnotation instanceof WeaverValidation) {
+                for (WeaverValidation.Method methodAnnotation : ((WeaverValidation) validationAnnotation).method()) {
                     ValidationUtility.aggregateValidationResults(validationResults, ValidationUtility.validateMethod(new MethodValidator(methodAnnotation.value(), methodAnnotation.model(), methodAnnotation.params(), args)));
                 }
             }
