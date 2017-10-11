@@ -9,9 +9,6 @@ import edu.tamu.weaver.data.model.WeaverEntity;
 @NoRepositoryBean
 public interface WeaverOrderedRepo<M extends WeaverEntity> extends WeaverRepo<M>, WeaverOrderedRepoCustom<M> {
 
-    @Override
-    public void delete(M model);
-
     public List<M> findAllByOrderByPositionAsc();
 
 }
