@@ -7,14 +7,13 @@ import static edu.tamu.weaver.response.ApiStatus.SUCCESS;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import edu.tamu.weaver.data.model.OrderedBaseEntity;
-import edu.tamu.weaver.data.model.WeaverEntity;
+import edu.tamu.weaver.data.model.WeaverOrderedEntity;
 import edu.tamu.weaver.data.model.repo.WeaverOrderedRepo;
 import edu.tamu.weaver.data.model.repo.WeaverOrderedRepoCustom;
 import edu.tamu.weaver.data.service.OrderedEntityService;
 import edu.tamu.weaver.response.ApiResponse;
 
-public abstract class AbstractWeaverOrderedRepoImpl<M extends WeaverEntity, R extends WeaverOrderedRepo<M>> extends AbstractWeaverRepoImpl<M, R> implements WeaverOrderedRepoCustom<M> {
+public abstract class AbstractWeaverOrderedRepoImpl<M extends WeaverOrderedEntity, R extends WeaverOrderedRepo<M>> extends AbstractWeaverRepoImpl<M, R> implements WeaverOrderedRepoCustom<M> {
 
     @Autowired
     private OrderedEntityService orderedEntityService;
@@ -33,7 +32,7 @@ public abstract class AbstractWeaverOrderedRepoImpl<M extends WeaverEntity, R ex
 
     @Override
     public void remove(M model) {
-        orderedEntityService.remove(weaverRepo, getModelClass(), ((OrderedBaseEntity) model).getPosition());
+        orderedEntityService.remove(weaverRepo, getModelClass(), ((WeaverOrderedEntity) model).getPosition());
         simpMessagingTemplate.convertAndSend(getChannel(), new ApiResponse(SUCCESS, REMOVE, weaverRepo.findAllByOrderByPositionAsc()));
     }
 

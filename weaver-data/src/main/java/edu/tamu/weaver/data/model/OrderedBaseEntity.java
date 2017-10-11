@@ -13,7 +13,7 @@ import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
-public abstract class OrderedBaseEntity extends BaseEntity {
+public abstract class OrderedBaseEntity extends BaseEntity implements WeaverOrderedEntity {
 
     @Column(nullable = true)
     protected Long position = null;
