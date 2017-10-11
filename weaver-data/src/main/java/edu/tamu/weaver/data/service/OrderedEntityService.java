@@ -1,12 +1,3 @@
-/* 
- * OrderedEntityService.java 
- * 
- * Version: 
- *     $Id$ 
- * 
- * Revisions: 
- *     $Log$ 
- */
 package edu.tamu.weaver.data.service;
 
 import java.util.ArrayList;
@@ -28,7 +19,7 @@ import org.springframework.stereotype.Service;
 
 import edu.tamu.weaver.data.model.OrderedBaseEntity;
 
-@Service
+@Service("wvrOrderedEntityService")
 public class OrderedEntityService {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -125,8 +116,7 @@ public class OrderedEntityService {
      * 
      * for every row(boe) that is of {@link OrderedBaseEntity}:
      * 
-     * boe.setOrder(i+1) -- where i is the index of the position in the result-list from the SELECT
-     * statement above as we iterate through that list.
+     * boe.setOrder(i+1) -- where i is the index of the position in the result-list from the SELECT statement above as we iterate through that list.
      * 
      * @param clazz
      *            -- the entity class
@@ -135,8 +125,7 @@ public class OrderedEntityService {
      * @param whereProp
      *            -- the property to filter by (ex. "guarantor" for {@link Embargo})
      * @param whereVal
-     *            -- the property value to filter by (ex. {@link EmbargoGuarantor}.DEFAULT for
-     *            guarantor for {@link Embargo})
+     *            -- the property value to filter by (ex. {@link EmbargoGuarantor}.DEFAULT for guarantor for {@link Embargo})
      */
     @SuppressWarnings("unchecked")
     public synchronized void sort(Class<?> clazz, String property, String whereProp, Object whereVal) {

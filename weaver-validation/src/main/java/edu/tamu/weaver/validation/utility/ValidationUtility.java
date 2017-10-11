@@ -41,7 +41,7 @@ import edu.tamu.weaver.validation.validators.BusinessValidator;
 import edu.tamu.weaver.validation.validators.InputValidator;
 import edu.tamu.weaver.validation.validators.MethodValidator;
 
-@Service
+@Service("wvrValidationUtility")
 public class ValidationUtility {
 
     // TODO: improve regex accordingly
