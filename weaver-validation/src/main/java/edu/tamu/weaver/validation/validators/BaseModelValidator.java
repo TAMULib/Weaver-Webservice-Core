@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import edu.tamu.weaver.validation.model.ValidatingBaseEntity;
+import edu.tamu.weaver.validation.model.ValidatingEntity;
 import edu.tamu.weaver.validation.results.ValidationResults;
 import edu.tamu.weaver.validation.utility.ValidationUtility;
 
@@ -17,7 +17,7 @@ public abstract class BaseModelValidator implements Validator {
     private List<BusinessValidator> businessValidators = new ArrayList<BusinessValidator>();
 
     @Override
-    public <U extends ValidatingBaseEntity> ValidationResults validate(U model) {
+    public <U extends ValidatingEntity> ValidationResults validate(U model) {
 
         ValidationResults validationResults = new ValidationResults();
 

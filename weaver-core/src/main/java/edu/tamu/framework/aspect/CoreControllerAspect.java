@@ -9,13 +9,13 @@
  */
 package edu.tamu.framework.aspect;
 
-import static edu.tamu.weaver.response.ApiStatus.ERROR;
-import static edu.tamu.weaver.response.ApiStatus.INVALID;
-import static edu.tamu.weaver.response.ApiStatus.WARNING;
 import static edu.tamu.framework.util.EntityUtility.getValueForProperty;
 import static edu.tamu.framework.util.EntityUtility.queryWithClassById;
 import static edu.tamu.framework.util.EntityUtility.recursivelyFindJsonIdentityReference;
 import static edu.tamu.framework.util.EntityUtility.setValueForProperty;
+import static edu.tamu.weaver.response.ApiStatus.ERROR;
+import static edu.tamu.weaver.response.ApiStatus.INVALID;
+import static edu.tamu.weaver.response.ApiStatus.WARNING;
 
 import java.io.ByteArrayInputStream;
 import java.lang.annotation.Annotation;
@@ -59,7 +59,6 @@ import edu.tamu.framework.aspect.annotation.ApiMapping;
 import edu.tamu.framework.aspect.annotation.ApiValidation;
 import edu.tamu.framework.aspect.annotation.Auth;
 import edu.tamu.framework.model.AbstractCoreUser;
-import edu.tamu.weaver.response.ApiResponse;
 import edu.tamu.framework.model.BaseEntity;
 import edu.tamu.framework.model.Credentials;
 import edu.tamu.framework.model.HttpRequest;
@@ -75,6 +74,7 @@ import edu.tamu.framework.validation.BaseModelValidator;
 import edu.tamu.framework.validation.BusinessValidator;
 import edu.tamu.framework.validation.MethodValidator;
 import edu.tamu.framework.validation.ValidationResults;
+import edu.tamu.weaver.response.ApiResponse;
 
 /**
  * Core Controller Aspect

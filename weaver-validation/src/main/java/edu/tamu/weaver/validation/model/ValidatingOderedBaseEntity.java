@@ -5,12 +5,12 @@ import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import edu.tamu.weaver.data.model.BaseEntity;
+import edu.tamu.weaver.data.model.OrderedBaseEntity;
 import edu.tamu.weaver.validation.results.ValidationResults;
 import edu.tamu.weaver.validation.validators.Validator;
 
 @MappedSuperclass
-public abstract class ValidatingBaseEntity extends BaseEntity implements ValidatingEntity {
+public abstract class ValidatingOderedBaseEntity extends OrderedBaseEntity implements ValidatingEntity {
 
     @Transient
     @JsonIgnore

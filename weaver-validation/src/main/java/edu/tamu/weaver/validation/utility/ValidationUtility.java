@@ -35,6 +35,7 @@ import org.springframework.stereotype.Service;
 import edu.tamu.weaver.context.SpringContext;
 import edu.tamu.weaver.data.model.WeaverEntity;
 import edu.tamu.weaver.validation.model.ValidatingBaseEntity;
+import edu.tamu.weaver.validation.model.ValidatingEntity;
 import edu.tamu.weaver.validation.results.ValidationResults;
 import edu.tamu.weaver.validation.validators.BusinessValidator;
 import edu.tamu.weaver.validation.validators.InputValidator;
@@ -55,7 +56,7 @@ public class ValidationUtility {
     public static final String BUSINESS_MESSAGE_KEY = "business";
     public static final String METHOD_MESSAGE_KEY = "method";
 
-    public static <U extends ValidatingBaseEntity> ValidationResults validateInputs(InputValidator validator, U model) {
+    public static <U extends ValidatingEntity> ValidationResults validateInputs(InputValidator validator, U model) {
         ValidationResults results = new ValidationResults();
 
         Object value = getValueForProperty(model, validator.getProperty());
@@ -125,7 +126,7 @@ public class ValidationUtility {
     }
 
     @SuppressWarnings("unchecked")
-    public static <U extends ValidatingBaseEntity> ValidationResults validateBusiness(BusinessValidator validator, U model) {
+    public static <U extends ValidatingEntity> ValidationResults validateBusiness(BusinessValidator validator, U model) {
         ValidationResults results = new ValidationResults();
 
         switch (validator.getType()) {
@@ -767,7 +768,7 @@ public class ValidationUtility {
     }
 
     @SuppressWarnings("unchecked")
-    private static <U extends ValidatingBaseEntity> Boolean uniqueConstraintPropertyChange(U model) {
+    private static <U extends ValidatingEntity> Boolean uniqueConstraintPropertyChange(U model) {
 
         Boolean change = false;
 
@@ -802,7 +803,7 @@ public class ValidationUtility {
         return change;
     }
 
-    private static <U extends ValidatingBaseEntity> UniqueConstraintViolation validateUniqueConstraints(U model) {
+    private static <U extends ValidatingEntity> UniqueConstraintViolation validateUniqueConstraints(U model) {
         EntityManager entityManager = SpringContext.bean(EntityManager.class);
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Object> query = cb.createQuery();
@@ -861,7 +862,7 @@ public class ValidationUtility {
         return uniqueConstraintViolation;
     }
 
-    private static <U extends ValidatingBaseEntity> String craftUniqueConstraintsMessage(U model, List<String> violatingColumns) {
+    private static <U extends ValidatingEntity> String craftUniqueConstraintsMessage(U model, List<String> violatingColumns) {
         String message = model.getClass().getSimpleName() + " with ";
         for (String column : violatingColumns) {
             Object value = getValueForProperty(model, column);
@@ -877,7 +878,7 @@ public class ValidationUtility {
         return message;
     }
 
-    private static <U extends ValidatingBaseEntity> List<String> getUniqueConstraints(U model) {
+    private static <U extends ValidatingEntity> List<String> getUniqueConstraints(U model) {
         List<String> uniqueColumns = new ArrayList<String>();
         uniqueColumns.addAll(recursivelyFindTableAnnotation(model.getClass()));
         uniqueColumns.addAll(recursivelyFindUniqueColumn(model.getClass()));

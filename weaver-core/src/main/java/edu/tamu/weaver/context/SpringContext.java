@@ -5,7 +5,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
-@Component
+@Component("wvrSpringContext")
 public class SpringContext implements ApplicationContextAware {
 
     private static final String ERR_MSG = "Spring utility class not initialized";

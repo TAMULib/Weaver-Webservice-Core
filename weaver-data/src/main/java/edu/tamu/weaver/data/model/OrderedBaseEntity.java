@@ -7,14 +7,13 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.model;
+package edu.tamu.weaver.data.model;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
-@Deprecated
-public abstract class BaseOrderedEntity extends BaseEntity {
+public abstract class OrderedBaseEntity extends BaseEntity {
 
     @Column(nullable = true)
     protected Long position = null;
