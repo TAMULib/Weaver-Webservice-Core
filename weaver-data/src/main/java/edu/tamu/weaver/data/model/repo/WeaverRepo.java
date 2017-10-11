@@ -1,5 +1,7 @@
 package edu.tamu.weaver.data.model.repo;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 
@@ -10,5 +12,7 @@ public interface WeaverRepo<M extends WeaverEntity> extends JpaRepository<M, Lon
 
     @Override
     public void delete(M model);
+    
+    public List<M> findAllByOrderByPositionAsc();
 
 }

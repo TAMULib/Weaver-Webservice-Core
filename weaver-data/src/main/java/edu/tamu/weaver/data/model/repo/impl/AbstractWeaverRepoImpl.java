@@ -19,7 +19,7 @@ public abstract class AbstractWeaverRepoImpl<M extends WeaverEntity, R extends W
     protected R weaverRepo;
 
     @Autowired
-    private SimpMessagingTemplate simpMessagingTemplate;
+    protected SimpMessagingTemplate simpMessagingTemplate;
 
     protected abstract String getChannel();
 
