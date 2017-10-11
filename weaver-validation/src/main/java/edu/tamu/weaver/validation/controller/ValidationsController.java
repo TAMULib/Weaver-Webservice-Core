@@ -20,7 +20,7 @@ import edu.tamu.weaver.utility.EntityUtility;
 import edu.tamu.weaver.validation.validators.InputValidator;
 import edu.tamu.weaver.validation.validators.Validator;
 
-@RestController
+@RestController("wvrValidationsController")
 @RequestMapping("/validations")
 public class ValidationsController {
 

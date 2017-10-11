@@ -73,7 +73,6 @@ import wro4j.http.handler.CustomRequestHandler;
  *
  */
 @Configuration
-@ComponentScan(basePackages = { "edu.tamu.framework.config", "edu.tamu.framework.interceptor", "edu.tamu.framework.controller" })
 @EnableJpaRepositories(basePackages = { "edu.tamu.framework.model.repo" })
 @EntityScan(basePackages = { "edu.tamu.framework.model" })
 public class CoreWebAppConfig extends WebMvcConfigurerAdapter {

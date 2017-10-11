@@ -1,13 +1,4 @@
-/* 
- * OrderedEntityService.java 
- * 
- * Version: 
- *     $Id$ 
- * 
- * Revisions: 
- *     $Log$ 
- */
-package edu.tamu.framework.service;
+package edu.tamu.weaver.data.service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,10 +17,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
-import edu.tamu.framework.model.BaseOrderedEntity;
+import edu.tamu.weaver.data.model.OrderedBaseEntity;
 
-@Service
-@Deprecated
+@Service("wvrOrderedEntityService")
 public class OrderedEntityService {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -124,10 +114,9 @@ public class OrderedEntityService {
     /**
      * SELECT * FROM ${clazz} WHERE ${whereProp} = ${whereVal} ORDER BY ${property} ASC
      * 
-     * for every row(boe) that is of {@link BaseOrderedEntity}:
+     * for every row(boe) that is of {@link OrderedBaseEntity}:
      * 
-     * boe.setOrder(i+1) -- where i is the index of the position in the result-list from the SELECT
-     * statement above as we iterate through that list.
+     * boe.setOrder(i+1) -- where i is the index of the position in the result-list from the SELECT statement above as we iterate through that list.
      * 
      * @param clazz
      *            -- the entity class
@@ -136,8 +125,7 @@ public class OrderedEntityService {
      * @param whereProp
      *            -- the property to filter by (ex. "guarantor" for {@link Embargo})
      * @param whereVal
-     *            -- the property value to filter by (ex. {@link EmbargoGuarantor}.DEFAULT for
-     *            guarantor for {@link Embargo})
+     *            -- the property value to filter by (ex. {@link EmbargoGuarantor}.DEFAULT for guarantor for {@link Embargo})
      */
     @SuppressWarnings("unchecked")
     public synchronized void sort(Class<?> clazz, String property, String whereProp, Object whereVal) {
@@ -152,13 +140,13 @@ public class OrderedEntityService {
         cq.orderBy(cb.asc(e.get(property)));
         List<Object> orderedResults = entityManager.createQuery(cq).getResultList();
         for (int i = 0; i < orderedResults.size(); i++) {
-            if (orderedResults.get(i) instanceof BaseOrderedEntity) {
-                BaseOrderedEntity boe = (BaseOrderedEntity) orderedResults.get(i); // cast it safely
+            if (orderedResults.get(i) instanceof OrderedBaseEntity) {
+                OrderedBaseEntity boe = (OrderedBaseEntity) orderedResults.get(i); // cast it safely
                 boe.setPosition((long) i + 1); // i+1 because i starts at 0, order positions start
                                                // at 1
                 entityManager.persist(boe); // persist the new order
             } else {
-                String err = "Could not sort [" + clazz.getName() + "]! It doesn't extend " + BaseOrderedEntity.class.getName() + "!";
+                String err = "Could not sort [" + clazz.getName() + "]! It doesn't extend " + OrderedBaseEntity.class.getName() + "!";
                 logger.error(err);
                 break;
             }
@@ -171,7 +159,7 @@ public class OrderedEntityService {
 
     @SuppressWarnings("unchecked")
     public synchronized void remove(Object repo, Class<?> clazz, Long position, String whereProp, Object whereVal) {
-        Long id = ((BaseOrderedEntity) findByPosition(clazz, position)).getId();
+        Long id = ((OrderedBaseEntity) findByPosition(clazz, position)).getId();
         ((JpaRepository<Object, Long>) repo).delete(id);
         {
             CriteriaBuilder cb = entityManager.getCriteriaBuilder();
