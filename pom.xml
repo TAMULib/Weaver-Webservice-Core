@@ -15,7 +15,7 @@
 
   <modules>
     <module>weaver-legacy-core</module>
-    <module>weaver-temp-core</module>
+    <module>weaver-shim-core</module>
 
     <module>weaver-core</module>
     <module>weaver-data</module>

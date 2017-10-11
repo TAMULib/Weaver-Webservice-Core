@@ -3,11 +3,11 @@
 
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>weaver-temp-core</artifactId>
+  <artifactId>weaver-shim-core</artifactId>
 
-  <name>Weaver Temp Core</name>
+  <name>Weaver Shim Core</name>
 
-  <description>Temp Core for Weaver</description>
+  <description>Shim Core for Weaver</description>
 
   <parent>
     <groupId>edu.tamu.framework</groupId>
