@@ -2,9 +2,7 @@ package edu.tamu.weaver.data.model.repo.impl;
 
 import static edu.tamu.weaver.response.ApiAction.CREATE;
 import static edu.tamu.weaver.response.ApiAction.DELETE;
-import static edu.tamu.weaver.response.ApiAction.READ;
 import static edu.tamu.weaver.response.ApiAction.UPDATE;
-import static edu.tamu.weaver.response.ApiStatus.ERROR;
 import static edu.tamu.weaver.response.ApiStatus.SUCCESS;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +32,7 @@ public abstract class AbstractWeaverRepoImpl<M extends WeaverEntity, R extends W
 
     @Override
     public M read(Long id) {
-        M model = weaverRepo.findOne(id);
-        simpMessagingTemplate.convertAndSend(getChannel(), new ApiResponse(model != null ? SUCCESS : ERROR, READ, model));
-        return model;
+        return weaverRepo.findOne(id);
     }
 
     @Override
