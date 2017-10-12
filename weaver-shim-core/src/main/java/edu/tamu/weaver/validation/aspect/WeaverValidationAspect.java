@@ -29,13 +29,13 @@ import edu.tamu.weaver.validation.validators.BusinessValidator;
 import edu.tamu.weaver.validation.validators.MethodValidator;
 
 @Aspect
-@Component("wvrValidationAspect")
+@Component
 public class WeaverValidationAspect {
 
     @Autowired
     private PlatformTransactionManager platformTransactionManager;
 
-    @Around(value = "execution(* *(..)) && @annotation(edu.tamu.weaver.validation.aspect.annotation.WeaverValidation)")
+    @Around(value = "execution(* *(..)) && @annotation(edu.tamu.weaver.validation.aspect.annotation.WeaverValidation) && !@annotation(edu.tamu.framework.aspect.annotation.ApiMapping)")
     public ApiResponse validate(ProceedingJoinPoint joinPoint) throws Throwable {
         ApiResponse response;
 

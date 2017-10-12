@@ -398,7 +398,7 @@ public abstract class CoreControllerAspect<U extends AbstractCoreUser> {
                     arguments[index] = ensureCompleteModel(pData != null ? objectMapper.convertValue(objectMapper.readTree(pData), objectMapper.constructType(argTypes[index])) : null);
                 }
                     break;
-                case "ApiValidatedModel": {
+                case "WeaverValidatedModel": {
                     String pData = headerData != null ? headerData : data;
                     arguments[index] = ensureCompleteModel(pData != null ? objectMapper.convertValue(objectMapper.readTree(pData), objectMapper.constructType(argTypes[index])) : null);
                     preProcessObject.validation = validateModel((ValidatingEntity) arguments[index], method);

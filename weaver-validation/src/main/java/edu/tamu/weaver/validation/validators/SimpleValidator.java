@@ -3,6 +3,7 @@ package edu.tamu.weaver.validation.validators;
 public class SimpleValidator<T> extends BaseValidator<T> {
 
     public SimpleValidator() {
+
     }
 
     public SimpleValidator(T type, String message) {
