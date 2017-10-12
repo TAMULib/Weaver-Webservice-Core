@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import edu.tamu.weaver.response.ApiResponse;
 import edu.tamu.weaver.utility.EntityUtility;
+import edu.tamu.weaver.validation.validators.BaseModelValidator;
 import edu.tamu.weaver.validation.validators.InputValidator;
-import edu.tamu.weaver.validation.validators.Validator;
 
 @RestController("wvrValidationsController")
 @RequestMapping("/validations")
@@ -79,7 +79,7 @@ public class ValidationsController {
 
                 Map<String, Map<String, InputValidator>> validations = new HashMap<String, Map<String, InputValidator>>();
 
-                for (Entry<String, List<InputValidator>> entry : ((Validator) validator).getInputValidators().entrySet()) {
+                for (Entry<String, List<InputValidator>> entry : ((BaseModelValidator) validator).getInputValidators().entrySet()) {
                     String key = entry.getKey();
                     List<InputValidator> inputValidators = entry.getValue();
                     Map<String, InputValidator> inputValidatorMap = new HashMap<String, InputValidator>();
