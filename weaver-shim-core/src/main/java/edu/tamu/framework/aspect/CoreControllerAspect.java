@@ -120,7 +120,7 @@ public abstract class CoreControllerAspect<U extends AbstractCoreUser> {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Around("execution(* *.*.*.controller.*.*(..)) && !@annotation(edu.tamu.framework.aspect.annotation.SkipAop) && @annotation(edu.tamu.framework.aspect.annotation.ApiValidation) && @annotation(auth)")
+    @Around("execution(* *.*.*.controller.*.*(..)) && !@annotation(edu.tamu.framework.aspect.annotation.SkipAop) && @annotation(edu.tamu.weaver.validation.aspect.annotation.WeaverValidation) && @annotation(auth)")
     public ApiResponse transactionallyPolpulateCredentialsAndAuthorize(ProceedingJoinPoint joinPoint, Auth auth) throws Throwable {
         List<ApiResponse> apiresponses = new ArrayList<ApiResponse>();
         createTransactionTemplate().execute(new TransactionCallbackWithoutResult() {
@@ -137,12 +137,12 @@ public abstract class CoreControllerAspect<U extends AbstractCoreUser> {
         return apiresponses.get(0);
     }
 
-    @Around("execution(* *.*.*.controller.*.*(..)) && !@annotation(edu.tamu.framework.aspect.annotation.SkipAop) && !@annotation(edu.tamu.framework.aspect.annotation.ApiValidation) && @annotation(auth)")
+    @Around("execution(* *.*.*.controller.*.*(..)) && !@annotation(edu.tamu.framework.aspect.annotation.SkipAop) && !@annotation(edu.tamu.weaver.validation.aspect.annotation.WeaverValidation) && @annotation(auth)")
     public ApiResponse polpulateCredentialsAndAuthorize(ProceedingJoinPoint joinPoint, Auth auth) throws Throwable {
         return authorizeAndProceed(joinPoint, auth);
     }
 
-    @Around("execution(* *.*.*.controller.*.*(..)) && !@annotation(edu.tamu.framework.aspect.annotation.SkipAop) && @annotation(edu.tamu.framework.aspect.annotation.ApiValidation) && !@annotation(edu.tamu.framework.aspect.annotation.Auth)")
+    @Around("execution(* *.*.*.controller.*.*(..)) && !@annotation(edu.tamu.framework.aspect.annotation.SkipAop) && @annotation(edu.tamu.weaver.validation.aspect.annotation.WeaverValidation) && !@annotation(edu.tamu.framework.aspect.annotation.Auth)")
     public ApiResponse transactionallyPopulateCredentials(ProceedingJoinPoint joinPoint) throws Throwable {
         List<ApiResponse> apiresponses = new ArrayList<ApiResponse>();
         createTransactionTemplate().execute(new TransactionCallbackWithoutResult() {
@@ -159,7 +159,7 @@ public abstract class CoreControllerAspect<U extends AbstractCoreUser> {
         return apiresponses.get(0);
     }
 
-    @Around("execution(* *.*.*.controller.*.*(..)) && !@annotation(edu.tamu.framework.aspect.annotation.SkipAop) && !@annotation(edu.tamu.framework.aspect.annotation.ApiValidation) && !@annotation(edu.tamu.framework.aspect.annotation.Auth)")
+    @Around("execution(* *.*.*.controller.*.*(..)) && !@annotation(edu.tamu.framework.aspect.annotation.SkipAop) && !@annotation(edu.tamu.weaver.validation.aspect.annotation.WeaverValidation) && !@annotation(edu.tamu.framework.aspect.annotation.Auth)")
     public ApiResponse populateCredentials(ProceedingJoinPoint joinPoint) throws Throwable {
         return proceed(joinPoint);
     }
