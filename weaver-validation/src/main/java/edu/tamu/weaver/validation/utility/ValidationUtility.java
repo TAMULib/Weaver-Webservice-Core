@@ -197,10 +197,8 @@ public class ValidationUtility {
 
                 Boolean isSystemRequired = (Boolean) getValueForProperty(model, SYSTEM_COLUMN_NAME);
 
-                if (isSystemRequired != null) {
-                    if (isSystemRequired) {
-                        model = (U) createNewFromSystemDefault(model);
-                    }
+                if (isSystemRequired != null && isSystemRequired) {
+                    model = (U) createNewFromSystemDefault(model);
                 } else {
                     if (uniqueConstraintPropertyChange(model)) {
                         UniqueConstraintViolation uniqueConstraintViolation = validateUniqueConstraints(model);
