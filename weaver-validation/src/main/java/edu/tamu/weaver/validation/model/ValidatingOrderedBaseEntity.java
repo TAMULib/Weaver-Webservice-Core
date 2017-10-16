@@ -10,7 +10,7 @@ import edu.tamu.weaver.validation.results.ValidationResults;
 import edu.tamu.weaver.validation.validators.Validator;
 
 @MappedSuperclass
-public abstract class ValidatingOderedBaseEntity extends OrderedBaseEntity implements ValidatingEntity {
+public abstract class ValidatingOrderedBaseEntity extends OrderedBaseEntity implements ValidatingEntity {
 
     @Transient
     @JsonIgnore
