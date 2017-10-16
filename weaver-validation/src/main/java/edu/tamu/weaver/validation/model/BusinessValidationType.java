@@ -7,9 +7,7 @@ public enum BusinessValidationType {
     READ("Unable to read model"),
     UPDATE("Unable to update model"),
     DELETE("Unable to delete model"),
-    RESET("Unable to reset model"),
-    EXISTS("Model already exists"),
-    NONEXISTS("Model does not exist");
+    RESET("Unable to reset model");
     // @formatter:on
 
     String message;

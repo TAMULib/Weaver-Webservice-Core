@@ -7,13 +7,14 @@ import static edu.tamu.weaver.utility.EntityUtility.createNewFromSystemDefault;
 import static edu.tamu.weaver.utility.EntityUtility.getFieldForProperty;
 import static edu.tamu.weaver.utility.EntityUtility.getValueForProperty;
 import static edu.tamu.weaver.utility.EntityUtility.getValueFromPath;
+import static edu.tamu.weaver.utility.EntityUtility.queryAllWithClass;
 import static edu.tamu.weaver.utility.EntityUtility.queryById;
 import static edu.tamu.weaver.utility.EntityUtility.queryByPosition;
 import static edu.tamu.weaver.utility.EntityUtility.queryByProperty;
 import static edu.tamu.weaver.utility.EntityUtility.queryWithClassById;
 import static edu.tamu.weaver.utility.EntityUtility.recursivelyFindField;
 import static edu.tamu.weaver.utility.EntityUtility.recursivelyFindTableAnnotation;
-import static edu.tamu.weaver.utility.EntityUtility.*;
+import static edu.tamu.weaver.utility.EntityUtility.recursivelyFindUniqueColumn;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -135,6 +136,18 @@ public class ValidationUtility {
             boolean invalid = false;
 
             String message = null;
+
+            // check if model exists
+
+            Long id = ((WeaverEntity) model).getId();
+
+            if (id != null) {
+                if (queryById(model, id).size() != 0) {
+                    message = model.getClass().getSimpleName() + " with id " + id + " already exists";
+                    results.addMessage(BUSINESS_MESSAGE_KEY, validator.getType().toString(), message);
+                    results.setValid(false);
+                }
+            }
 
             // check if unique constraints will be violated!!
 
@@ -391,38 +404,6 @@ public class ValidationUtility {
             if (invalid) {
                 results.addMessage(BUSINESS_MESSAGE_KEY, validator.getType().toString(), message);
                 results.setValid(false);
-            }
-
-        }
-            break;
-        case EXISTS: {
-
-            // check if model exists
-
-            Long id = ((WeaverEntity) model).getId();
-
-            if (id != null) {
-                if (queryById(model, id).size() != 0) {
-                    String message = model.getClass().getSimpleName() + " with id " + id + " already exists";
-                    results.addMessage(BUSINESS_MESSAGE_KEY, validator.getType().toString(), message);
-                    results.setValid(false);
-                }
-            }
-
-        }
-            break;
-        case NONEXISTS: {
-
-            // check if model does not exist
-
-            Long id = ((WeaverEntity) model).getId();
-
-            if (id != null) {
-                if (queryById(model, id).size() == 0) {
-                    String message = model.getClass().getSimpleName() + " with id " + id + " does not exist";
-                    results.addMessage(BUSINESS_MESSAGE_KEY, validator.getType().toString(), message);
-                    results.setValid(false);
-                }
             }
 
         }
