@@ -56,6 +56,7 @@ import edu.tamu.framework.util.JwtUtility;
  * @author <a href="mailto:wwelling@library.tamu.edu">William Welling</a>
  *
  */
+@Deprecated
 @Component
 public abstract class CoreStompInterceptor<U extends AbstractCoreUser> extends ChannelInterceptorAdapter {
 
