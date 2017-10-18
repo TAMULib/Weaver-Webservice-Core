@@ -1,10 +1,13 @@
 package edu.tamu.weaver.data.model.repo.impl;
 
+import static edu.tamu.weaver.response.ApiAction.BROADCAST;
 import static edu.tamu.weaver.response.ApiAction.CREATE;
 import static edu.tamu.weaver.response.ApiAction.DELETE;
 import static edu.tamu.weaver.response.ApiAction.READ;
 import static edu.tamu.weaver.response.ApiAction.UPDATE;
 import static edu.tamu.weaver.response.ApiStatus.SUCCESS;
+
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -48,6 +51,11 @@ public abstract class AbstractWeaverRepoImpl<M extends WeaverEntity, R extends W
         Long id = model.getId();
         weaverRepo.delete(id);
         simpMessagingTemplate.convertAndSend(getChannel(), new ApiResponse(SUCCESS, DELETE, model));
+    }
+    
+    @Override
+    public void broadcast(List<M> repo) {
+        simpMessagingTemplate.convertAndSend(getChannel(), new ApiResponse(SUCCESS, BROADCAST, repo));
     }
     
     @Override

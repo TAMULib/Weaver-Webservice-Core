@@ -10,5 +10,5 @@ package edu.tamu.weaver.response;
  *
  */
 public enum ApiAction {
-    CREATE, READ, UPDATE, DELETE, REMOVE, REORDER, SORT
+    CREATE, READ, UPDATE, DELETE, REMOVE, REORDER, SORT, BROADCAST
 }
