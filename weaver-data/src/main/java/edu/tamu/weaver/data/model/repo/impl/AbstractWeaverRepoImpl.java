@@ -2,6 +2,7 @@ package edu.tamu.weaver.data.model.repo.impl;
 
 import static edu.tamu.weaver.response.ApiAction.CREATE;
 import static edu.tamu.weaver.response.ApiAction.DELETE;
+import static edu.tamu.weaver.response.ApiAction.READ;
 import static edu.tamu.weaver.response.ApiAction.UPDATE;
 import static edu.tamu.weaver.response.ApiStatus.SUCCESS;
 
@@ -47,6 +48,16 @@ public abstract class AbstractWeaverRepoImpl<M extends WeaverEntity, R extends W
         Long id = model.getId();
         weaverRepo.delete(id);
         simpMessagingTemplate.convertAndSend(getChannel(), new ApiResponse(SUCCESS, DELETE, model));
+    }
+    
+    @Override
+    public void broadcast(M model) {
+    	simpMessagingTemplate.convertAndSend(getChannel(), new ApiResponse(SUCCESS, READ, model));
+    }
+    
+    @Override
+    public void broadcast(Long id) {
+    	broadcast(read(id));
     }
 
 }
