@@ -40,6 +40,7 @@ import edu.tamu.framework.util.JwtUtility;
  * @author <a href="mailto:wwelling@library.tamu.edu">William Welling</a>
  *
  */
+@Deprecated
 public class Jwt {
 
     // over-encapsulation, Should be Map<String, String> headers
