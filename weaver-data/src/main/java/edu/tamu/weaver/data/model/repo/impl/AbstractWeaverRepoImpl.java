@@ -10,6 +10,7 @@ import static edu.tamu.weaver.response.ApiStatus.SUCCESS;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import edu.tamu.weaver.data.model.WeaverEntity;
@@ -22,6 +23,7 @@ public abstract class AbstractWeaverRepoImpl<M extends WeaverEntity, R extends W
     @Autowired
     protected R weaverRepo;
 
+    @Lazy
     @Autowired
     protected SimpMessagingTemplate simpMessagingTemplate;
 
