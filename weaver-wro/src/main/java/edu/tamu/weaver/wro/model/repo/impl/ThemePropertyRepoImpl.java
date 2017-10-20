@@ -15,7 +15,7 @@ public class ThemePropertyRepoImpl extends AbstractWeaverRepoImpl<ThemeProperty,
     
     @Override
     protected String getChannel() {
-        return "/channel/theme/property";
+        return "/channel/theme-property";
     }
 
 }
