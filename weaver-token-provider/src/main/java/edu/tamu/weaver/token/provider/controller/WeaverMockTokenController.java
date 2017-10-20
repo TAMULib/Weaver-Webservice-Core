@@ -1,4 +1,4 @@
-package edu.tamu.weaver.token.controller;
+package edu.tamu.weaver.token.provider.controller;
 
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;

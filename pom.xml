@@ -26,6 +26,8 @@
     <module>weaver-user</module>
     <module>weaver-validation</module>
 
+    <module>weaver-token-provider</module>
+
     <module>weaver-email</module>
     <module>weaver-reporting</module>
     <module>weaver-admin</module>
