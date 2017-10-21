@@ -29,6 +29,8 @@ public class AuthConstants {
     public final static byte[] ERROR_RESPONSE;
 
     public final static byte[] UNAUTHORIZED_RESPONSE;
+    
+    public final static ApiResponse UNAUTHORIZED_API_RESPONSE = new ApiResponse(UNAUTHORIZED);
 
     static {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -52,7 +54,7 @@ public class AuthConstants {
 
         byte[] unauthorizedResponse = new byte[0];
         try {
-            unauthorizedResponse = objectMapper.writeValueAsBytes(new ApiResponse(UNAUTHORIZED));
+            unauthorizedResponse = objectMapper.writeValueAsBytes(UNAUTHORIZED_API_RESPONSE);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         } finally {
