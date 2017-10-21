@@ -20,8 +20,8 @@ import ro.isdc.wro.model.resource.processor.factory.ConfigurableProcessorsFactor
 import wro4j.http.handler.CustomRequestHandler;
 
 @Configuration
-@EnableJpaRepositories(basePackages = { "edu.tamu.weaver.theme.model.repo" })
-@EntityScan(basePackages = { "edu.tamu.weaver.theme.model" })
+@EntityScan(basePackages = { "edu.tamu.weaver.wro.model" })
+@EnableJpaRepositories(basePackages = { "edu.tamu.weaver.wro.model.repo" })
 public class WroConfiguration {
 
     @Lazy

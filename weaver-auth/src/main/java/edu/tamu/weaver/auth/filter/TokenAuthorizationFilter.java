@@ -20,16 +20,16 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.stereotype.Component;
 
+import edu.tamu.weaver.auth.model.AbstractWeaverUserDetails;
 import edu.tamu.weaver.auth.model.repo.AbstractWeaverUserRepo;
 import edu.tamu.weaver.auth.service.AbstractWeaverUserDetailsService;
 import edu.tamu.weaver.auth.service.RestAccessManagerService;
 import edu.tamu.weaver.auth.service.TokenAuthenticationService;
 import edu.tamu.weaver.token.exception.ExpiredTokenException;
 import edu.tamu.weaver.token.exception.TokenException;
-import edu.tamu.weaver.user.model.AbstractWeaverUser;
 
 @Component
-public class TokenAuthorizationFilter<U extends AbstractWeaverUser, R extends AbstractWeaverUserRepo<U>, S extends AbstractWeaverUserDetailsService<U, R>> extends BasicAuthenticationFilter {
+public class TokenAuthorizationFilter<U extends AbstractWeaverUserDetails, R extends AbstractWeaverUserRepo<U>, S extends AbstractWeaverUserDetailsService<U, R>> extends BasicAuthenticationFilter {
 
     @Autowired
     private RestAccessManagerService restAccessManagerService;

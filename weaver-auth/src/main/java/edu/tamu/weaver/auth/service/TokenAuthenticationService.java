@@ -12,15 +12,15 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import edu.tamu.weaver.auth.model.AbstractWeaverUserDetails;
 import edu.tamu.weaver.auth.model.Credentials;
 import edu.tamu.weaver.auth.model.repo.AbstractWeaverUserRepo;
 import edu.tamu.weaver.token.exception.ExpiredTokenException;
 import edu.tamu.weaver.token.exception.InvalidTokenException;
 import edu.tamu.weaver.token.service.TokenService;
-import edu.tamu.weaver.user.model.AbstractWeaverUser;
 
 @Service
-public class TokenAuthenticationService<U extends AbstractWeaverUser, R extends AbstractWeaverUserRepo<U>, S extends AbstractWeaverUserDetailsService<U, R>> {
+public class TokenAuthenticationService<U extends AbstractWeaverUserDetails, R extends AbstractWeaverUserRepo<U>, S extends AbstractWeaverUserDetailsService<U, R>> {
 
     private static final Logger LOG = LoggerFactory.getLogger(TokenAuthenticationService.class);
 

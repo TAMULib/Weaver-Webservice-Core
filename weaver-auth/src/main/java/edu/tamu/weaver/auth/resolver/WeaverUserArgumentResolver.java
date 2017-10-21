@@ -32,12 +32,11 @@ public final class WeaverUserArgumentResolver<U extends AbstractWeaverUser, R ex
         if (authentication == null) {
             return null;
         }
-        Object principal = authentication.getPrincipal();
         Optional<U> user = userRepo.findByUsername(authentication.getName());
-        if (user.isPresent()) {
-            principal = user.get();
+        if (!user.isPresent()) {
+            return null;
         }
-        return principal;
+        return user.get();
     }
 
 }

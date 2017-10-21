@@ -5,6 +5,10 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +32,7 @@ public class TokenController {
     protected TokenService tokenService;
 
     @RequestMapping("/token")
-    public RedirectView token(@RequestParam() Map<String, String> params, @RequestHeader() Map<String, String> headers) throws InvalidKeyException, JsonProcessingException, NoSuchAlgorithmException, IllegalStateException, UnsupportedEncodingException {
+    public RedirectView token(@RequestParam() Map<String, String> params, @RequestHeader() Map<String, String> headers) throws InvalidKeyException, JsonProcessingException, NoSuchAlgorithmException, IllegalStateException, UnsupportedEncodingException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
         LOG.debug("params: " + params);
         String referer = params.get("referer");
         if (referer == null) {
@@ -37,7 +41,7 @@ public class TokenController {
         }
         RedirectView redirect = new RedirectView();
         redirect.setContextRelative(false);
-        redirect.setUrl(referer + "?jwt=" + tokenService.makeToken(headers));
+        redirect.setUrl(referer + "?jwt=" + tokenService.makeToken(headers).getTokenAsString());
         return redirect;
     }
 

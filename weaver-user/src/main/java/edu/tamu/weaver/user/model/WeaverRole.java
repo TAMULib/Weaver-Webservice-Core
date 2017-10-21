@@ -10,22 +10,5 @@ package edu.tamu.weaver.user.model;
  *
  */
 public enum WeaverRole implements IRole {
-
-    ROLE_ANONYMOUS(0), ROLE_USER(1), ROLE_MANAGER(2), ROLE_ADMIN(3);
-
-    private int value;
-
-    WeaverRole(int value) {
-        this.value = value;
-    }
-
-    public int getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return this.name();
-    }
-
+    ROLE_ADMIN, ROLE_MANAGER, ROLE_USER, ROLE_ANONYMOUS
 }

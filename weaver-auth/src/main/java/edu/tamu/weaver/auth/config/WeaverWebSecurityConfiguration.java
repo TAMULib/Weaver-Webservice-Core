@@ -16,14 +16,14 @@ import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 
 import edu.tamu.weaver.auth.filter.TokenAuthorizationFilter;
+import edu.tamu.weaver.auth.model.AbstractWeaverUserDetails;
 import edu.tamu.weaver.auth.model.repo.AbstractWeaverUserRepo;
 import edu.tamu.weaver.auth.service.AbstractWeaverUserDetailsService;
-import edu.tamu.weaver.user.model.AbstractWeaverUser;
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
-public abstract class WeaverWebSecurityConfiguration<U extends AbstractWeaverUser, R extends AbstractWeaverUserRepo<U>, S extends AbstractWeaverUserDetailsService<U, R>> extends WebSecurityConfigurerAdapter {
+public abstract class WeaverWebSecurityConfiguration<U extends AbstractWeaverUserDetails, R extends AbstractWeaverUserRepo<U>, S extends AbstractWeaverUserDetailsService<U, R>> extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private S userDetailsService;

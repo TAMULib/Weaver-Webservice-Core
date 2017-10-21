@@ -5,14 +5,15 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.token.TokenService;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import edu.tamu.weaver.auth.service.CryptoService;
 import edu.tamu.weaver.email.service.EmailSender;
 import edu.tamu.weaver.response.ApiResponse;
+import edu.tamu.weaver.token.service.TokenService;
 
 public abstract class WeaverAuthController {
 
@@ -23,6 +24,9 @@ public abstract class WeaverAuthController {
 
     @Autowired
     protected TokenService tokenService;
+    
+    @Autowired
+    protected CryptoService cryptoService;
 
     @Autowired
     protected EmailSender emailSender;

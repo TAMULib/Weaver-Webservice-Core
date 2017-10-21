@@ -7,10 +7,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+import edu.tamu.weaver.auth.model.AbstractWeaverUserDetails;
 import edu.tamu.weaver.auth.model.repo.AbstractWeaverUserRepo;
-import edu.tamu.weaver.user.model.AbstractWeaverUser;
 
-public abstract class AbstractWeaverUserDetailsService<U extends AbstractWeaverUser, R extends AbstractWeaverUserRepo<U>> implements UserDetailsService {
+public abstract class AbstractWeaverUserDetailsService<U extends AbstractWeaverUserDetails, R extends AbstractWeaverUserRepo<U>> implements UserDetailsService {
 
     @Autowired
     protected R userRepo;

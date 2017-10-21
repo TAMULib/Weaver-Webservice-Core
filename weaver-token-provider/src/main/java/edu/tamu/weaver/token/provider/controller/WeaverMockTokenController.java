@@ -6,6 +6,10 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+
 import org.apache.log4j.Logger;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,7 +48,7 @@ public abstract class WeaverMockTokenController extends TokenController {
 
     @Override
     @RequestMapping("/token")
-    public RedirectView token(@RequestParam() Map<String, String> params, @RequestHeader() Map<String, String> headers) throws InvalidKeyException, JsonProcessingException, NoSuchAlgorithmException, IllegalStateException, UnsupportedEncodingException {
+    public RedirectView token(@RequestParam() Map<String, String> params, @RequestHeader() Map<String, String> headers) throws InvalidKeyException, JsonProcessingException, NoSuchAlgorithmException, IllegalStateException, UnsupportedEncodingException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
         LOG.debug("params: " + params);
         String referer = params.get("referer");
         if (referer == null) {
@@ -58,7 +62,7 @@ public abstract class WeaverMockTokenController extends TokenController {
             mock = "user";
         }
         Map<String, String> claims = MOCK_CLAIMS.get(mock);
-        redirect.setUrl(referer + "?jwt=" + tokenService.makeToken(claims));
+        redirect.setUrl(referer + "?jwt=" + tokenService.makeToken(claims).getTokenAsString());
         return redirect;
     }
 

@@ -9,6 +9,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 import edu.tamu.weaver.auth.annotation.WeaverCredentials;
+import edu.tamu.weaver.auth.model.Credentials;
 import edu.tamu.weaver.utility.AnnotationUtility;
 
 public final class WeaverCredentialsArgumentResolver implements HandlerMethodArgumentResolver {
@@ -22,7 +23,10 @@ public final class WeaverCredentialsArgumentResolver implements HandlerMethodArg
         if (authentication == null) {
             return null;
         }
-        return authentication.getCredentials();
+        if (!(authentication.getCredentials() instanceof Credentials)) {
+            return null;
+        }
+        return (Credentials) authentication.getCredentials();
     }
 
 }
