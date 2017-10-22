@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import edu.tamu.weaver.data.model.WeaverEntity;
@@ -35,6 +36,7 @@ public class WeaverValidationAspect {
     @Autowired
     private PlatformTransactionManager platformTransactionManager;
 
+    @Transactional
     @Around(value = "execution(* *(..)) && @annotation(edu.tamu.weaver.validation.aspect.annotation.WeaverValidation)")
     public ApiResponse validate(ProceedingJoinPoint joinPoint) throws Throwable {
         ApiResponse response;
