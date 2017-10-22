@@ -10,16 +10,16 @@ import edu.tamu.weaver.email.service.WeaverEmailService;
 
 @Configuration
 @Profile(value = { "!test" })
-public class WeaverEmailConfig {
+public abstract class WeaverEmailConfig {
 
     @Value("${app.email.host:relay.tamu.edu}")
-    private String defaultHost;
+    protected String defaultHost;
 
     @Value("${app.email.from:noreply@library.tamu.edu}")
-    private String defaultFrom;
+    protected String defaultFrom;
 
     @Value("${app.email.replyTo:dev@library.tamu.edu}")
-    private String defaultReplyTo;
+    protected String defaultReplyTo;
 
     @Bean
     public EmailSender emailSender() {
