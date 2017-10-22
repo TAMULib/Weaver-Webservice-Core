@@ -46,8 +46,9 @@ public class TokenController {
     }
 
     @RequestMapping("/refresh")
-    public Token refresh(@RequestHeader() Map<String, String> headers) throws InvalidKeyException, JsonProcessingException, NoSuchAlgorithmException, IllegalStateException, UnsupportedEncodingException {
+    public Token refresh(@RequestParam() Map<String, String> params, @RequestHeader() Map<String, String> headers) throws InvalidKeyException, JsonProcessingException, NoSuchAlgorithmException, IllegalStateException, UnsupportedEncodingException {
         LOG.debug("Refresh token requested.");
+        // NOTE: this only works with shibboleth payload in the headers
         return tokenService.makeToken(headers);
     }
 

@@ -18,6 +18,8 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import edu.tamu.weaver.token.model.Token;
+
 public abstract class WeaverMockTokenController extends TokenController {
 
     private static final Logger LOG = Logger.getLogger(WeaverMockTokenController.class);
@@ -64,6 +66,16 @@ public abstract class WeaverMockTokenController extends TokenController {
         Map<String, String> claims = MOCK_CLAIMS.get(mock);
         redirect.setUrl(referer + "?jwt=" + tokenService.makeToken(claims).getTokenAsString());
         return redirect;
+    }
+
+    @RequestMapping("/refresh")
+    public Token refresh(@RequestParam() Map<String, String> params, @RequestHeader() Map<String, String> headers) throws InvalidKeyException, JsonProcessingException, NoSuchAlgorithmException, IllegalStateException, UnsupportedEncodingException {
+        LOG.debug("Refresh token requested.");
+        String token = params.get("token");
+        if (token == null) {
+            throw new RuntimeException("Cannot refresh without token!");
+        }
+        return tokenService.makeToken(tokenService.validateJwt(params.get("token")));
     }
 
     protected void setMockClaims(String mock, Map<String, String> claims) {
