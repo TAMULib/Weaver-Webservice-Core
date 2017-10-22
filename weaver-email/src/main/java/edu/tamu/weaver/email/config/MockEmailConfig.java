@@ -12,8 +12,8 @@ import edu.tamu.weaver.email.service.MockEmailService;
 @Profile(value = { "test" })
 public class MockEmailConfig extends WeaverEmailConfig {
 
-    @Override
     @Bean
+    @Override
     public EmailSender emailSender() {
         return new MockEmailService();
     }

@@ -5,20 +5,20 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
-import edu.tamu.weaver.email.service.WeaverEmailService;
 import edu.tamu.weaver.email.service.EmailSender;
+import edu.tamu.weaver.email.service.WeaverEmailService;
 
 @Configuration
 @Profile(value = { "!test" })
 public class WeaverEmailConfig {
 
-    @Value("${email.host:'relay.tamu.edu'}")
+    @Value("${app.email.host:relay.tamu.edu}")
     private String defaultHost;
 
-    @Value("${email.from:'noreply@library.tamu.edu'}")
+    @Value("${app.email.from:noreply@library.tamu.edu}")
     private String defaultFrom;
 
-    @Value("${email.replyTo:'dev@library.tamu.edu'}")
+    @Value("${app.email.replyTo:dev@library.tamu.edu}")
     private String defaultReplyTo;
 
     @Bean
