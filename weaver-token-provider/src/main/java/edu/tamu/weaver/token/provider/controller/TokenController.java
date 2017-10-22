@@ -23,7 +23,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import edu.tamu.weaver.token.model.Token;
 import edu.tamu.weaver.token.service.TokenService;
 
-@RestController("${token.path:'/auth'}")
+@RestController
+@RequestMapping("/auth")
 public class TokenController {
 
     private static final Logger LOG = LoggerFactory.getLogger(TokenController.class);
