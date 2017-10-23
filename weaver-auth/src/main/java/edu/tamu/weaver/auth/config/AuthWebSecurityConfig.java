@@ -11,6 +11,8 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
@@ -23,7 +25,7 @@ import edu.tamu.weaver.auth.service.AbstractWeaverUserDetailsService;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
-public abstract class WeaverWebSecurityConfiguration<U extends AbstractWeaverUserDetails, R extends AbstractWeaverUserRepo<U>, S extends AbstractWeaverUserDetailsService<U, R>> extends WebSecurityConfigurerAdapter {
+public abstract class AuthWebSecurityConfig<U extends AbstractWeaverUserDetails, R extends AbstractWeaverUserRepo<U>, S extends AbstractWeaverUserDetailsService<U, R>> extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private S userDetailsService;
@@ -34,6 +36,11 @@ public abstract class WeaverWebSecurityConfiguration<U extends AbstractWeaverUse
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
+    }
+
+    @Bean
+    public SecurityContext securityContext() {
+        return SecurityContextHolder.getContext();
     }
 
     @Bean
