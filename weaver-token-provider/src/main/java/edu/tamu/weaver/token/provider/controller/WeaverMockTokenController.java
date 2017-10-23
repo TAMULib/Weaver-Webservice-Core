@@ -45,7 +45,7 @@ public abstract class WeaverMockTokenController extends TokenController {
 
     @Override
     @RequestMapping("/token")
-    public RedirectView token(@RequestParam() Map<String, String> params, @RequestHeader() Map<String, String> headers) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
+    public RedirectView token(@RequestParam Map<String, String> params, @RequestHeader Map<String, String> headers) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
         LOG.debug("params: " + params);
         String referer = params.get("referer");
         if (referer == null) {
@@ -64,7 +64,7 @@ public abstract class WeaverMockTokenController extends TokenController {
 
     @Override
     @RequestMapping("/refresh")
-    public String refresh(@RequestParam() Map<String, String> params, @RequestHeader() Map<String, String> headers) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
+    public String refresh(@RequestParam Map<String, String> params, @RequestHeader Map<String, String> headers) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
         LOG.debug("Refresh token requested.");
         String token = params.get("token");
         if (token == null) {

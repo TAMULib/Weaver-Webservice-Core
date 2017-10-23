@@ -41,7 +41,7 @@ public class TokenController {
     protected TokenService tokenService;
 
     @RequestMapping("/token")
-    public RedirectView token(@RequestParam() Map<String, String> params, @RequestHeader() Map<String, String> headers) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
+    public RedirectView token(@RequestParam Map<String, String> params, @RequestHeader Map<String, String> headers) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
         LOG.debug("params: " + params);
         String referer = params.get("referer");
         if (referer == null) {
@@ -55,19 +55,12 @@ public class TokenController {
     }
 
     @RequestMapping("/refresh")
-    public String refresh(@RequestParam() Map<String, String> params, @RequestHeader() Map<String, String> headers) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
+    public String refresh(@RequestParam Map<String, String> params, @RequestHeader Map<String, String> headers) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
         LOG.debug("Refresh token requested.");
-        String token;
-        String expiredToken = params.get("token");
-        if (expiredToken != null) {
-            token = tokenService.refreshToken(expiredToken);
-        } else {
-            LOG.warn("Crafting token from headers! Ensure refresh end point is behind shibboleth!");
-            // NOTE: this only works with shibboleth payload in the headers
-            // if not behind service provider a token can be crafted without authentication!!!!!
-            token = craftToken(headers);
-        }
-        return token;
+        LOG.warn("Crafting token from headers! Ensure refresh end point is behind shibboleth!");
+        // NOTE: this only works with shibboleth payload in the headers
+        // if not behind service provider a token can be crafted without authentication!!!!!
+        return craftToken(headers);
     }
 
     protected String craftToken(Map<String, String> headers) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {

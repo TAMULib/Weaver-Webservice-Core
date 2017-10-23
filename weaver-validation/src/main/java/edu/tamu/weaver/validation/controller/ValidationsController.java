@@ -1,4 +1,3 @@
-
 package edu.tamu.weaver.validation.controller;
 
 import static edu.tamu.weaver.response.ApiStatus.INVALID;
@@ -20,7 +19,7 @@ import edu.tamu.weaver.utility.EntityUtility;
 import edu.tamu.weaver.validation.validators.BaseModelValidator;
 import edu.tamu.weaver.validation.validators.InputValidator;
 
-@RestController("wvrValidationsController")
+@RestController
 @RequestMapping("/validations")
 public class ValidationsController {
 

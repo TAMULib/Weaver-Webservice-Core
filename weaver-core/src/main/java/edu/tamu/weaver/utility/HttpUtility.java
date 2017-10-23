@@ -22,7 +22,7 @@ import org.springframework.beans.factory.annotation.Value;
  */
 public class HttpUtility {
 
-    @Value("${http.timeout:60000}")
+    @Value("${app.http.timeout:60000}")
     private static int DEFAULT_TIMEOUT;
 
     public static String makeHttpRequest(String urlString, String method) throws IOException {
