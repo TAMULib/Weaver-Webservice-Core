@@ -30,7 +30,6 @@
 
     <module>weaver-email</module>
     <module>weaver-reporting</module>
-    <module>weaver-admin</module>
     <module>weaver-cli</module>
     <module>weaver-wro</module>
 
