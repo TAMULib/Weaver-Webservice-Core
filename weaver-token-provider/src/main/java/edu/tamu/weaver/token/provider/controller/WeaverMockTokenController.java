@@ -1,6 +1,5 @@
 package edu.tamu.weaver.token.provider.controller;
 
-import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
@@ -15,10 +14,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.view.RedirectView;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-
-import edu.tamu.weaver.token.model.Token;
 
 public abstract class WeaverMockTokenController extends TokenController {
 
@@ -50,32 +45,32 @@ public abstract class WeaverMockTokenController extends TokenController {
 
     @Override
     @RequestMapping("/token")
-    public RedirectView token(@RequestParam() Map<String, String> params, @RequestHeader() Map<String, String> headers) throws InvalidKeyException, JsonProcessingException, NoSuchAlgorithmException, IllegalStateException, UnsupportedEncodingException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
+    public RedirectView token(@RequestParam() Map<String, String> params, @RequestHeader() Map<String, String> headers) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
         LOG.debug("params: " + params);
         String referer = params.get("referer");
         if (referer == null) {
             LOG.debug("No referer in params!!");
             throw new RuntimeException("No referer in params!!");
         }
-        RedirectView redirect = new RedirectView();
-        redirect.setContextRelative(false);
         String mock = params.get("mock");
         if (mock == null) {
             mock = "user";
         }
-        Map<String, String> claims = MOCK_CLAIMS.get(mock);
-        redirect.setUrl(referer + "?jwt=" + tokenService.makeToken(claims).getTokenAsString());
+        RedirectView redirect = new RedirectView();
+        redirect.setContextRelative(false);
+        redirect.setUrl(referer + "?jwt=" + craftToken(MOCK_CLAIMS.get(mock)));
         return redirect;
     }
 
+    @Override
     @RequestMapping("/refresh")
-    public Token refresh(@RequestParam() Map<String, String> params, @RequestHeader() Map<String, String> headers) throws InvalidKeyException, JsonProcessingException, NoSuchAlgorithmException, IllegalStateException, UnsupportedEncodingException {
+    public String refresh(@RequestParam() Map<String, String> params, @RequestHeader() Map<String, String> headers) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
         LOG.debug("Refresh token requested.");
         String token = params.get("token");
         if (token == null) {
             throw new RuntimeException("Cannot refresh without token!");
         }
-        return tokenService.makeToken(tokenService.validateJwt(params.get("token")));
+        return tokenService.refreshToken(token);
     }
 
     protected void setMockClaims(String mock, Map<String, String> claims) {

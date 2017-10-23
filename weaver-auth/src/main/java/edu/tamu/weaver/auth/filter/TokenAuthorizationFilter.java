@@ -15,6 +15,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
@@ -25,11 +27,12 @@ import edu.tamu.weaver.auth.model.repo.AbstractWeaverUserRepo;
 import edu.tamu.weaver.auth.service.AbstractWeaverUserDetailsService;
 import edu.tamu.weaver.auth.service.RestAccessManagerService;
 import edu.tamu.weaver.auth.service.TokenAuthenticationService;
-import edu.tamu.weaver.token.exception.ExpiredTokenException;
-import edu.tamu.weaver.token.exception.TokenException;
+import io.jsonwebtoken.ExpiredJwtException;
 
 @Component
 public class TokenAuthorizationFilter<U extends AbstractWeaverUserDetails, R extends AbstractWeaverUserRepo<U>, S extends AbstractWeaverUserDetailsService<U, R>> extends BasicAuthenticationFilter {
+
+    private static final Logger LOG = LoggerFactory.getLogger(TokenAuthorizationFilter.class);
 
     @Autowired
     private RestAccessManagerService restAccessManagerService;
@@ -50,10 +53,11 @@ public class TokenAuthorizationFilter<U extends AbstractWeaverUserDetails, R ext
                 if (token != null) {
                     try {
                         tokenAuthenticationService.authenticate(token);
-                    } catch (TokenException exception) {
+                    } catch (Exception exception) {
+                        LOG.info(exception.getMessage());
                         response.setContentType(APPLICATION_JSON.toString());
                         response.setCharacterEncoding(DEFAULT_CHARSET);
-                        if (exception instanceof ExpiredTokenException) {
+                        if (exception instanceof ExpiredJwtException) {
                             response.getOutputStream().write(EXPIRED_RESPONSE);
                         } else {
                             response.getOutputStream().write(ERROR_RESPONSE);

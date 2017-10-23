@@ -1,6 +1,9 @@
 package edu.tamu.weaver.auth.model;
 
+import java.util.HashMap;
 import java.util.Map;
+
+import io.jsonwebtoken.Claims;
 
 /**
  * Credentials object.
@@ -26,26 +29,51 @@ public class Credentials {
     private Map<String, String> allCredentials;
 
     public Credentials() {
-
+        allCredentials = new HashMap<String, String>();
     }
 
     /**
      * Constructor
      * 
-     * @param token
-     *            Map<String, String>
+     * @param claims
+     *            Claims
      * 
      */
-    public Credentials(Map<String, String> token) {
-        this.lastName = token.get("lastName");
-        this.firstName = token.get("firstName");
-        this.netid = token.get("netid");
-        this.uin = token.get("uin");
-        this.exp = token.get("exp");
-        this.email = token.get("email");
-        this.role = token.get("role");
-        this.affiliation = token.get("affiliation");
-        this.allCredentials = token;
+    public Credentials(Claims claims) {
+        this();
+        this.lastName = String.valueOf(claims.get("lastName"));
+        this.firstName = String.valueOf(claims.get("firstName"));
+        this.netid = String.valueOf(claims.get("netid"));
+        this.uin = String.valueOf(claims.get("uin"));
+        this.exp = String.valueOf(claims.get("exp"));
+        this.email = String.valueOf(claims.get("email"));
+        this.role = String.valueOf(claims.get("role"));
+        this.affiliation = String.valueOf(claims.get("affiliation"));
+        claims.entrySet().forEach(entry -> {
+            this.allCredentials.put(entry.getKey(), String.valueOf(entry.getValue()));
+        });
+    }
+
+    /**
+     * Constructor
+     * 
+     * @param claims
+     *            Map<String, Object>
+     * 
+     */
+    public Credentials(Map<String, Object> claims) {
+        this();
+        this.lastName = String.valueOf(claims.get("lastName"));
+        this.firstName = String.valueOf(claims.get("firstName"));
+        this.netid = String.valueOf(claims.get("netid"));
+        this.uin = String.valueOf(claims.get("uin"));
+        this.exp = String.valueOf(claims.get("exp"));
+        this.email = String.valueOf(claims.get("email"));
+        this.role = String.valueOf(claims.get("role"));
+        this.affiliation = String.valueOf(claims.get("affiliation"));
+        claims.entrySet().forEach(entry -> {
+            this.allCredentials.put(entry.getKey(), String.valueOf(entry.getValue()));
+        });
     }
 
     /**
