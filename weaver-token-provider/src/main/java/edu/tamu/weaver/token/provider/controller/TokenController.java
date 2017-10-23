@@ -23,7 +23,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import edu.tamu.weaver.token.service.TokenService;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("${auth.path:}")
 public class TokenController {
 
     private static final Logger LOG = LoggerFactory.getLogger(TokenController.class);
