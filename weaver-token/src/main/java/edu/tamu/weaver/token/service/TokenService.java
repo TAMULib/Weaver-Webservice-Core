@@ -49,6 +49,10 @@ public class TokenService {
         key = new SecretKeySpec(secret.getBytes(), "AES");
     }
 
+    public String createToken(Map<String, Object> claims) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+        return createToken("aggie", claims);
+    }
+
     public String createToken(String subject, Map<String, Object> claims) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         Calendar calendar = Calendar.getInstance();
         Date now = calendar.getTime();
