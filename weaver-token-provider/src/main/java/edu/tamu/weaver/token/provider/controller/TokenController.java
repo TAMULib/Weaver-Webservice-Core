@@ -57,7 +57,6 @@ public class TokenController {
     @RequestMapping("/refresh")
     public String refresh(@RequestParam Map<String, String> params, @RequestHeader Map<String, String> headers) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
         LOG.debug("Refresh token requested.");
-        LOG.warn("Crafting token from headers! Ensure refresh end point is behind shibboleth!");
         // NOTE: this only works with shibboleth payload in the headers
         // if not behind service provider a token can be crafted without authentication!!!!!
         return craftToken(headers);
