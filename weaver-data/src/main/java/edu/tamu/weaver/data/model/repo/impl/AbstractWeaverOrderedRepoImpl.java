@@ -6,6 +6,7 @@ import static edu.tamu.weaver.response.ApiAction.SORT;
 import static edu.tamu.weaver.response.ApiStatus.SUCCESS;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import edu.tamu.weaver.data.model.WeaverOrderedEntity;
 import edu.tamu.weaver.data.model.repo.WeaverOrderedRepo;
@@ -19,18 +20,21 @@ public abstract class AbstractWeaverOrderedRepoImpl<M extends WeaverOrderedEntit
     private OrderedEntityService orderedEntityService;
 
     @Override
+    @Transactional
     public void reorder(Long src, Long dest) {
         orderedEntityService.reorder(getModelClass(), src, dest);
         simpMessagingTemplate.convertAndSend(getChannel(), new ApiResponse(SUCCESS, REORDER, weaverRepo.findAllByOrderByPositionAsc()));
     }
 
     @Override
+    @Transactional
     public void sort(String column) {
         orderedEntityService.sort(getModelClass(), column);
         simpMessagingTemplate.convertAndSend(getChannel(), new ApiResponse(SUCCESS, SORT, weaverRepo.findAllByOrderByPositionAsc()));
     }
 
     @Override
+    @Transactional
     public void remove(M model) {
         orderedEntityService.remove(weaverRepo, getModelClass(), ((WeaverOrderedEntity) model).getPosition());
         simpMessagingTemplate.convertAndSend(getChannel(), new ApiResponse(SUCCESS, REMOVE, weaverRepo.findAllByOrderByPositionAsc()));

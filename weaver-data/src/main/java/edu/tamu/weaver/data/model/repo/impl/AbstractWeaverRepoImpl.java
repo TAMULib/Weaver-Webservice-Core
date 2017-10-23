@@ -54,20 +54,20 @@ public abstract class AbstractWeaverRepoImpl<M extends WeaverEntity, R extends W
         weaverRepo.delete(id);
         simpMessagingTemplate.convertAndSend(getChannel(), new ApiResponse(SUCCESS, DELETE, model));
     }
-    
+
     @Override
     public void broadcast(List<M> repo) {
         simpMessagingTemplate.convertAndSend(getChannel(), new ApiResponse(SUCCESS, BROADCAST, repo));
     }
-    
+
     @Override
     public void broadcast(M model) {
-    	simpMessagingTemplate.convertAndSend(getChannel(), new ApiResponse(SUCCESS, READ, model));
+        simpMessagingTemplate.convertAndSend(getChannel(), new ApiResponse(SUCCESS, READ, model));
     }
-    
+
     @Override
     public void broadcast(Long id) {
-    	broadcast(read(id));
+        broadcast(read(id));
     }
 
 }

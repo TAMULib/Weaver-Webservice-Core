@@ -54,6 +54,7 @@ import edu.tamu.framework.model.jwt.Jwt;
  *
  */
 @Service
+@Deprecated
 public class JwtUtility {
 
     @Value("${auth.security.jwt.secret-key}")
