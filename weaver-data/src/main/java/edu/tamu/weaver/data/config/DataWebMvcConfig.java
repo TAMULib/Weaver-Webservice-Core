@@ -2,10 +2,14 @@ package edu.tamu.weaver.data.config;
 
 import java.util.List;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.xml.transform.Source;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.ResourceHttpMessageConverter;
@@ -25,6 +29,13 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 @EnableWebMvc
 @Configuration
 public class DataWebMvcConfig extends WebMvcConfigurerAdapter {
+
+    @Bean
+    @Primary
+    @Autowired
+    public EntityManager entityManager(EntityManagerFactory entityManagerFactory) {
+        return entityManagerFactory.createEntityManager();
+    }
 
     /**
      * Set object mapper to jackson converter bean.
