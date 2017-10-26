@@ -3,7 +3,6 @@ package edu.tamu.weaver.token.service;
 import static java.util.Calendar.MINUTE;
 
 import java.security.InvalidKeyException;
-import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
 import java.util.Date;
@@ -33,6 +32,8 @@ public class TokenService {
 
     private final static String TYPE_HEADER_VALUE = "JWT";
 
+    private final static String ENCRYPTION_AND_PADDING_SCHEME = "AES/CBC/PKCS5Padding";
+
     @Value("${auth.security.jwt.secret:verysecretsecret}")
     private String secret;
 
@@ -42,7 +43,7 @@ public class TokenService {
     @Value("${auth.security.jwt.duration:2}")
     private int duration;
 
-    private Key key;
+    private SecretKeySpec key;
 
     @PostConstruct
     private void setup() {
@@ -69,7 +70,7 @@ public class TokenService {
                 .signWith(SignatureAlgorithm.HS512, secret)
                 .compact();
         // @formatter:on
-        Cipher cipher = Cipher.getInstance("AES");
+        Cipher cipher = Cipher.getInstance(ENCRYPTION_AND_PADDING_SCHEME);
         cipher.init(Cipher.ENCRYPT_MODE, key);
         return Base64.encodeBase64URLSafeString(cipher.doFinal(jwt.getBytes()));
     }
@@ -92,7 +93,7 @@ public class TokenService {
     }
 
     public Claims parse(String jwe) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
-        Cipher cipher = Cipher.getInstance("AES");
+        Cipher cipher = Cipher.getInstance(ENCRYPTION_AND_PADDING_SCHEME);
         cipher.init(Cipher.DECRYPT_MODE, key);
         String jwt = new String(cipher.doFinal(Base64.decodeBase64(jwe)));
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(jwt).getBody();
