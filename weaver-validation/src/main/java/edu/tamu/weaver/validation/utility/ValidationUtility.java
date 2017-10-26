@@ -31,8 +31,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.springframework.stereotype.Service;
-
 import edu.tamu.weaver.context.SpringContext;
 import edu.tamu.weaver.data.model.WeaverEntity;
 import edu.tamu.weaver.validation.model.ValidatingBaseEntity;
@@ -42,7 +40,6 @@ import edu.tamu.weaver.validation.validators.BusinessValidator;
 import edu.tamu.weaver.validation.validators.InputValidator;
 import edu.tamu.weaver.validation.validators.MethodValidator;
 
-@Service
 public class ValidationUtility {
 
     // TODO: improve regex accordingly
