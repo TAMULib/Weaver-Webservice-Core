@@ -39,6 +39,7 @@ public class TokenAuthorizationFilter<U extends AbstractWeaverUserDetails, R ext
     @Autowired
     private RestAccessManagerService restAccessManagerService;
 
+    @Lazy
     @Autowired
     private TokenAuthenticationService<U, R, S> tokenAuthenticationService;
 
