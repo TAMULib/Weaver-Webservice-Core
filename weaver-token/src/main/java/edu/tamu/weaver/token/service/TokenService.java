@@ -3,6 +3,7 @@ package edu.tamu.weaver.token.service;
 import static java.util.Calendar.MINUTE;
 
 import java.security.InvalidKeyException;
+import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
 import java.util.Date;
@@ -32,7 +33,7 @@ public class TokenService {
 
     private final static String TYPE_HEADER_VALUE = "JWT";
 
-    private final static String ENCRYPTION_AND_PADDING_SCHEME = "AES/CBC/PKCS5Padding";
+    private final static String ENCRYPTION_ALGORITHM = "AES";
 
     @Value("${auth.security.jwt.secret:verysecretsecret}")
     private String secret;
@@ -40,14 +41,14 @@ public class TokenService {
     @Value("${auth.security.jwt.issuer:localhost}")
     private String issuer;
 
-    @Value("${auth.security.jwt.duration:2}")
+    @Value("${auth.security.jwt.duration:5}")
     private int duration;
 
-    private SecretKeySpec key;
+    private Key key;
 
     @PostConstruct
     private void setup() {
-        key = new SecretKeySpec(secret.getBytes(), "AES");
+        key = new SecretKeySpec(secret.getBytes(), ENCRYPTION_ALGORITHM);
     }
 
     public String createToken(Map<String, Object> claims) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
@@ -70,7 +71,7 @@ public class TokenService {
                 .signWith(SignatureAlgorithm.HS512, secret)
                 .compact();
         // @formatter:on
-        Cipher cipher = Cipher.getInstance(ENCRYPTION_AND_PADDING_SCHEME);
+        Cipher cipher = Cipher.getInstance(ENCRYPTION_ALGORITHM);
         cipher.init(Cipher.ENCRYPT_MODE, key);
         return Base64.encodeBase64URLSafeString(cipher.doFinal(jwt.getBytes()));
     }
@@ -93,7 +94,7 @@ public class TokenService {
     }
 
     public Claims parse(String jwe) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
-        Cipher cipher = Cipher.getInstance(ENCRYPTION_AND_PADDING_SCHEME);
+        Cipher cipher = Cipher.getInstance(ENCRYPTION_ALGORITHM);
         cipher.init(Cipher.DECRYPT_MODE, key);
         String jwt = new String(cipher.doFinal(Base64.decodeBase64(jwe)));
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(jwt).getBody();

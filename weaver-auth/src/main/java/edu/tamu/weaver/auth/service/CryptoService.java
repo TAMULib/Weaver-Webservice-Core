@@ -19,9 +19,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class CryptoService {
 
-    public final static String ENCRYPTION_ALGORITHM = "AES";
+    private final static String ENCRYPTION_ALGORITHM = "AES";
 
-    public final static String RAW_DATA_DELIMETER = ":";
+    private final static String RAW_DATA_DELIMETER = ":";
 
     @Value("${app.security.secret:verysecretsecret}")
     private String secret;
