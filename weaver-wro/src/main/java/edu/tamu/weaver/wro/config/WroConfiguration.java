@@ -3,13 +3,11 @@ package edu.tamu.weaver.wro.config;
 import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import edu.tamu.weaver.wro.manager.factory.CustomConfigurableWroManagerFactory;
 import edu.tamu.weaver.wro.service.ThemeManagerService;
@@ -20,8 +18,6 @@ import ro.isdc.wro.model.resource.processor.factory.ConfigurableProcessorsFactor
 import wro4j.http.handler.CustomRequestHandler;
 
 @Configuration
-@EntityScan(basePackages = { "edu.tamu.weaver.wro.model" })
-@EnableJpaRepositories(basePackages = { "edu.tamu.weaver.wro.model.repo" })
 public class WroConfiguration {
 
     @Lazy
