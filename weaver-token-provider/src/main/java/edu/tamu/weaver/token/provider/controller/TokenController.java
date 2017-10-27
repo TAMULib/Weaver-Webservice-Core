@@ -1,5 +1,7 @@
 package edu.tamu.weaver.token.provider.controller;
 
+import static edu.tamu.weaver.response.ApiStatus.SUCCESS;
+
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
 
+import edu.tamu.weaver.response.ApiResponse;
 import edu.tamu.weaver.token.service.TokenService;
 
 @RestController
@@ -55,11 +58,11 @@ public class TokenController {
     }
 
     @RequestMapping("/refresh")
-    public String refresh(@RequestParam Map<String, String> params, @RequestHeader Map<String, String> headers) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
+    public ApiResponse refresh(@RequestParam Map<String, String> params, @RequestHeader Map<String, String> headers) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
         LOG.debug("Refresh token requested.");
         // NOTE: this only works with shibboleth payload in the headers
         // if not behind service provider a token can be crafted without authentication!!!!!
-        return craftToken(headers);
+        return new ApiResponse(SUCCESS, "Token refresh successful.", craftToken(headers));
     }
 
     protected String craftToken(Map<String, String> headers) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {

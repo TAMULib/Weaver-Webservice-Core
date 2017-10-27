@@ -1,5 +1,7 @@
 package edu.tamu.weaver.token.provider.controller;
 
+import static edu.tamu.weaver.response.ApiStatus.SUCCESS;
+
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
@@ -14,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.view.RedirectView;
+
+import edu.tamu.weaver.response.ApiResponse;
 
 public abstract class WeaverMockTokenController extends TokenController {
 
@@ -64,13 +68,13 @@ public abstract class WeaverMockTokenController extends TokenController {
 
     @Override
     @RequestMapping("/refresh")
-    public String refresh(@RequestParam Map<String, String> params, @RequestHeader Map<String, String> headers) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
+    public ApiResponse refresh(@RequestParam Map<String, String> params, @RequestHeader Map<String, String> headers) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
         LOG.debug("Refresh token requested.");
         String token = params.get("token");
         if (token == null) {
             throw new RuntimeException("Cannot refresh without token!");
         }
-        return tokenService.refreshToken(token);
+        return new ApiResponse(SUCCESS, "Token refresh successful.", tokenService.refreshToken(token));
     }
 
     protected void setMockClaims(String mock, Map<String, String> claims) {
