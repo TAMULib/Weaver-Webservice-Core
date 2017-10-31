@@ -12,6 +12,7 @@ package edu.tamu.framework.validation;
 import java.util.HashMap;
 import java.util.Map;
 
+@Deprecated
 public class ValidationResults {
 
     private boolean valid;

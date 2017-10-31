@@ -87,6 +87,7 @@ import edu.tamu.framework.validation.ValidationResults;
  * @author <a href="mailto:wwelling@library.tamu.edu">William Welling</a>
  *
  */
+@Deprecated
 @Component
 @Aspect
 public abstract class CoreControllerAspect<U extends AbstractCoreUser> {

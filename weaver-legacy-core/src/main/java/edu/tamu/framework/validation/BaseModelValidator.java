@@ -18,6 +18,7 @@ import java.util.Map.Entry;
 import edu.tamu.framework.model.ValidatingBase;
 import edu.tamu.framework.util.ValidationUtility;
 
+@Deprecated
 public abstract class BaseModelValidator implements Validator {
 
     private Map<String, List<InputValidator>> inputValidators = new HashMap<String, List<InputValidator>>();

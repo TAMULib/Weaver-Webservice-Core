@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author <a href="mailto:wwelling@library.tamu.edu">William Welling</a>
  * 
  */
+@Deprecated
 public class JwtClaim {
 
     private Map<String, String> claim;

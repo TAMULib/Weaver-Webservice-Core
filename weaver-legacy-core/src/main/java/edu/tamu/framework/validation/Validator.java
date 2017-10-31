@@ -14,6 +14,7 @@ import java.util.Map;
 
 import edu.tamu.framework.model.ValidatingBase;
 
+@Deprecated
 public interface Validator {
 
     public <U extends ValidatingBase> ValidationResults validate(U model);

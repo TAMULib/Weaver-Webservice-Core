@@ -13,6 +13,7 @@ import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
+@Deprecated
 public abstract class BaseOrderedEntity extends BaseEntity {
 
     @Column(nullable = true)

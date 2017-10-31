@@ -49,6 +49,7 @@ import edu.tamu.framework.validation.InputValidator;
 import edu.tamu.framework.validation.MethodValidator;
 import edu.tamu.framework.validation.ValidationResults;
 
+@Deprecated
 @Service
 public class ValidationUtility {
 

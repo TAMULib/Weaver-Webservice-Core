@@ -33,6 +33,7 @@ import org.springframework.stereotype.Component;
  * @author <a href="mailto:wwelling@library.tamu.edu">William Welling</a>
  *
  */
+@Deprecated
 @Component
 public class CoreCorsFilter implements Filter {
 

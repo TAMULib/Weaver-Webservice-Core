@@ -15,6 +15,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
 @Component
+@Deprecated
 public class SpringContext implements ApplicationContextAware {
 
     private static final String ERR_MSG = "Spring utility class not initialized";

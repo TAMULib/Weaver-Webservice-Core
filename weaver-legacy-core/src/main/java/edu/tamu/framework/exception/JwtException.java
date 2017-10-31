@@ -12,6 +12,7 @@ package edu.tamu.framework.exception;
 /**
  * JSON web token exception
  */
+@Deprecated
 public class JwtException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;

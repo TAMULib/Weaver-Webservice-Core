@@ -29,6 +29,7 @@ import edu.tamu.framework.model.ApiResponse;
 import edu.tamu.framework.validation.InputValidator;
 import edu.tamu.framework.validation.Validator;
 
+@Deprecated
 @Controller
 @ApiMapping("/validations")
 public class ValidationsController {

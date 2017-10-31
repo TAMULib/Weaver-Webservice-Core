@@ -17,6 +17,7 @@ import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
+@Deprecated
 public abstract class BaseEntity extends ValidatingBase implements Comparable<BaseEntity> {
 
     @Id

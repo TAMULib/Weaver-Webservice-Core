@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import edu.tamu.framework.model.BaseOrderedEntity;
 
 @Service
+@Deprecated
 public class OrderedEntityService {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());

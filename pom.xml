@@ -15,6 +15,24 @@
 
   <modules>
     <module>weaver-legacy-core</module>
+    <module>weaver-shim-core</module>
+
+    <module>weaver-core</module>
+    <module>weaver-data</module>
+
+    <module>weaver-initializer</module>
+    <module>weaver-auth</module>
+    <module>weaver-token</module>
+    <module>weaver-user</module>
+    <module>weaver-validation</module>
+
+    <module>weaver-token-provider</module>
+
+    <module>weaver-email</module>
+    <module>weaver-reporting</module>
+    <module>weaver-cli</module>
+    <module>weaver-wro</module>
+
   </modules>
 
   <packaging>pom</packaging>
@@ -31,7 +49,7 @@
       <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-dependencies</artifactId>
-        <version>1.4.3.RELEASE</version>
+        <version>1.5.7.RELEASE</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -63,7 +81,7 @@
         <plugin>
           <groupId>org.springframework.boot</groupId>
           <artifactId>spring-boot-maven-plugin</artifactId>
-          <version>1.5.2.RELEASE</version>
+          <version>1.5.7.RELEASE</version>
           <configuration>
             <addResources>false</addResources>
           </configuration>

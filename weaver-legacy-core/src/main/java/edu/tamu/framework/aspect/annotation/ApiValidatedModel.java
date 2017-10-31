@@ -25,6 +25,7 @@ import java.lang.annotation.Target;
  * @author <a href="mailto:wwelling@library.tamu.edu">William Welling</a>
  *
  */
+@Deprecated
 @Target({ ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented

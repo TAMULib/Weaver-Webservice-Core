@@ -31,6 +31,7 @@ import edu.tamu.framework.model.ApiResponse;
  * @author <a href="mailto:wwelling@library.tamu.edu">William Welling</a>
  *
  */
+@Deprecated
 @Service
 public class StompService {
 

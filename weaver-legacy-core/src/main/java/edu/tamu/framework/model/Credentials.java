@@ -30,6 +30,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author <a href="mailto:wwelling@library.tamu.edu">William Welling</a>
  *
  */
+@Deprecated
 public class Credentials extends ValidatingBase implements UserDetails {
 
     private static final long serialVersionUID = -7790519788243591978L;

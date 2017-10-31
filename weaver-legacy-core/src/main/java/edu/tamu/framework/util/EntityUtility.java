@@ -32,6 +32,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import edu.tamu.framework.SpringContext;
 import edu.tamu.framework.model.ValidatingBase;
 
+@Deprecated
 @Service
 public class EntityUtility {
 

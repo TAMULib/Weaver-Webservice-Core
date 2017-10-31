@@ -24,6 +24,7 @@ import edu.tamu.framework.util.AuthUtility;
 import edu.tamu.framework.util.EmailSender;
 import edu.tamu.framework.util.JwtUtility;
 
+@Deprecated
 public abstract class CoreAuthController {
 
     protected final static String EMAIL_VERIFICATION_TYPE = "EMAIL_VERIFICATION";

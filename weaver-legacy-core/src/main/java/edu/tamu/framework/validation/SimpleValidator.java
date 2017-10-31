@@ -9,6 +9,7 @@
  */
 package edu.tamu.framework.validation;
 
+@Deprecated
 public class SimpleValidator<T> extends BaseValidator<T> {
 
     public SimpleValidator() {
