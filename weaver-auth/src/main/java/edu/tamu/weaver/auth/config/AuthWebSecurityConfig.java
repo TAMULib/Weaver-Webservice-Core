@@ -27,8 +27,8 @@ public abstract class AuthWebSecurityConfig<U extends AbstractWeaverUserDetails,
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Override
-    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
     }
 

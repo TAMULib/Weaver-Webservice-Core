@@ -5,6 +5,7 @@ import static edu.tamu.weaver.auth.model.AccessDecision.ALLOW_ANONYMOUS;
 import static edu.tamu.weaver.auth.model.AccessDecision.REQUIRES_AUTHENTICATION;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.access.method.AbstractMethodSecurityMetadataSource;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 
@@ -14,6 +15,7 @@ public abstract class AbstractAccessManagerService<R, S, M> implements AccessMan
 
     protected final static AnonymousAuthenticationToken ANONYMOUS_AUTHENTICATION = new AnonymousAuthenticationToken("access", "anonymous", ANONYMOUS_AUTHORITIES);
 
+    @Lazy
     @Autowired
     protected AbstractMethodSecurityMetadataSource abstractMethodSecurityMetadataSource;
 
