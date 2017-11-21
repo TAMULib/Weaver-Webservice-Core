@@ -29,9 +29,11 @@ public class TokenAuthenticationService<U extends AbstractWeaverUserDetails, R e
     @Autowired
     private S userDetailsService;
 
+    @Lazy
     @Autowired
     private TokenService tokenService;
 
+    @Lazy
     @Autowired
     private UserCredentialsService<U, R> userCredentialsService;
 
