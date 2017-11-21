@@ -14,14 +14,12 @@ import javax.persistence.criteria.Root;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 import edu.tamu.weaver.data.model.OrderedBaseEntity;
 
 @Service
-@DependsOn("entityManagerFactory")
 public class OrderedEntityService {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
