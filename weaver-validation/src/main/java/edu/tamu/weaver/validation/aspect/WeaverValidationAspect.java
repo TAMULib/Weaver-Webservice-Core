@@ -10,12 +10,8 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import edu.tamu.weaver.data.model.WeaverEntity;
 import edu.tamu.weaver.response.ApiResponse;
@@ -30,11 +26,8 @@ import edu.tamu.weaver.validation.validators.BusinessValidator;
 import edu.tamu.weaver.validation.validators.MethodValidator;
 
 @Aspect
-@Component("wvrValidationAspect")
+@Component
 public class WeaverValidationAspect {
-
-    @Autowired
-    private PlatformTransactionManager platformTransactionManager;
 
     @Transactional
     @Around(value = "execution(* *(..)) && @annotation(edu.tamu.weaver.validation.aspect.annotation.WeaverValidation)")
@@ -78,14 +71,6 @@ public class WeaverValidationAspect {
             index++;
         }
         return validationResults;
-    }
-
-    @SuppressWarnings("unused")
-    private TransactionTemplate createTransactionTemplate() {
-        TransactionTemplate transactionTemplate = new TransactionTemplate(platformTransactionManager);
-        transactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-        transactionTemplate.setIsolationLevel(TransactionDefinition.ISOLATION_SERIALIZABLE);
-        return transactionTemplate;
     }
 
     @SuppressWarnings("unused")
