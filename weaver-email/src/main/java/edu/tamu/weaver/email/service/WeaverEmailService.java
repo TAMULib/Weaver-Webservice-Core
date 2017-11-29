@@ -7,9 +7,7 @@ import javax.mail.internet.MimeMessage;
 
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.stereotype.Service;
 
-@Service
 public class WeaverEmailService extends JavaMailSenderImpl implements EmailSender {
 
     private String from;
