@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
@@ -31,12 +32,15 @@ import edu.tamu.weaver.wro.model.repo.ThemePropertyRepo;
 @Component
 public class ThemeManagerService {
 
+    @Lazy
     @Autowired
     private CoreThemeRepo coreThemeRepo;
 
+    @Lazy
     @Autowired
     private ThemePropertyNameRepo themePropertyNameRepo;
 
+    @Lazy
     @Autowired
     private ThemePropertyRepo themePropertyRepo;
 
