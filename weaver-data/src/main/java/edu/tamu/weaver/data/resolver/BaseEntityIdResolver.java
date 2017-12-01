@@ -1,20 +1,21 @@
 package edu.tamu.weaver.data.resolver;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
+import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.ObjectIdGenerator;
 import com.fasterxml.jackson.annotation.ObjectIdResolver;
 
+@Component
 public class BaseEntityIdResolver implements ObjectIdResolver {
 
+    @PersistenceContext
     private EntityManager entityManager;
 
     public BaseEntityIdResolver() {
 
-    }
-
-    public BaseEntityIdResolver(final EntityManager entityManager) {
-        this.entityManager = entityManager;
     }
 
     @Override
@@ -28,13 +29,13 @@ public class BaseEntityIdResolver implements ObjectIdResolver {
     }
 
     @Override
-    public ObjectIdResolver newForDeserialization(final Object context) {
-        return this;
+    public boolean canUseFor(final ObjectIdResolver resolverType) {
+        return getClass().isAssignableFrom(resolverType.getClass());
     }
 
     @Override
-    public boolean canUseFor(final ObjectIdResolver resolverType) {
-        return false;
+    public ObjectIdResolver newForDeserialization(final Object context) {
+        return this;
     }
 
 }
