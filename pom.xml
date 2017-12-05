@@ -17,7 +17,6 @@
     <module>weaver-core</module>
     <module>weaver-data</module>
 
-    <module>weaver-initializer</module>
     <module>weaver-auth</module>
     <module>weaver-token</module>
     <module>weaver-user</module>
