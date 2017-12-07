@@ -10,13 +10,13 @@ import org.slf4j.LoggerFactory;
 
 import ro.isdc.wro.http.handler.ReloadCacheRequestHandler;
 
-public class CustomRequestHandler extends ReloadCacheRequestHandler {
+public class WeaverRequestHandler extends ReloadCacheRequestHandler {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CustomRequestHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(WeaverRequestHandler.class);
 
     @Override
     public void handle(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
-        LOG.debug("CustomRequestHandler is reloading the cache");
+        LOG.debug("WeaverRequestHandler is reloading the cache");
         super.handle(request, response);
     }
 
