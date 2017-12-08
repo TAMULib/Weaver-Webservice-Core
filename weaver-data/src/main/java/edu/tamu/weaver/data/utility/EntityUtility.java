@@ -1,4 +1,4 @@
-package edu.tamu.weaver.utility;
+package edu.tamu.weaver.data.utility;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
