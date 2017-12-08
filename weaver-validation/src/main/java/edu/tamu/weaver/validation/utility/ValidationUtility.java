@@ -1,20 +1,20 @@
 package edu.tamu.weaver.validation.utility;
 
-import static edu.tamu.weaver.utility.EntityUtility.NAME_COLUMN_NAME;
-import static edu.tamu.weaver.utility.EntityUtility.PASSWORD_COLUMN_NAME;
-import static edu.tamu.weaver.utility.EntityUtility.SYSTEM_COLUMN_NAME;
-import static edu.tamu.weaver.utility.EntityUtility.createNewFromSystemDefault;
-import static edu.tamu.weaver.utility.EntityUtility.getFieldForProperty;
-import static edu.tamu.weaver.utility.EntityUtility.getValueForProperty;
-import static edu.tamu.weaver.utility.EntityUtility.getValueFromPath;
-import static edu.tamu.weaver.utility.EntityUtility.queryAllWithClass;
-import static edu.tamu.weaver.utility.EntityUtility.queryById;
-import static edu.tamu.weaver.utility.EntityUtility.queryByPosition;
-import static edu.tamu.weaver.utility.EntityUtility.queryByProperty;
-import static edu.tamu.weaver.utility.EntityUtility.queryWithClassById;
-import static edu.tamu.weaver.utility.EntityUtility.recursivelyFindField;
-import static edu.tamu.weaver.utility.EntityUtility.recursivelyFindTableAnnotation;
-import static edu.tamu.weaver.utility.EntityUtility.recursivelyFindUniqueColumn;
+import static edu.tamu.weaver.data.utility.EntityUtility.NAME_COLUMN_NAME;
+import static edu.tamu.weaver.data.utility.EntityUtility.PASSWORD_COLUMN_NAME;
+import static edu.tamu.weaver.data.utility.EntityUtility.SYSTEM_COLUMN_NAME;
+import static edu.tamu.weaver.data.utility.EntityUtility.createNewFromSystemDefault;
+import static edu.tamu.weaver.data.utility.EntityUtility.getFieldForProperty;
+import static edu.tamu.weaver.data.utility.EntityUtility.getValueForProperty;
+import static edu.tamu.weaver.data.utility.EntityUtility.getValueFromPath;
+import static edu.tamu.weaver.data.utility.EntityUtility.queryAllWithClass;
+import static edu.tamu.weaver.data.utility.EntityUtility.queryById;
+import static edu.tamu.weaver.data.utility.EntityUtility.queryByPosition;
+import static edu.tamu.weaver.data.utility.EntityUtility.queryByProperty;
+import static edu.tamu.weaver.data.utility.EntityUtility.queryWithClassById;
+import static edu.tamu.weaver.data.utility.EntityUtility.recursivelyFindField;
+import static edu.tamu.weaver.data.utility.EntityUtility.recursivelyFindTableAnnotation;
+import static edu.tamu.weaver.data.utility.EntityUtility.recursivelyFindUniqueColumn;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;

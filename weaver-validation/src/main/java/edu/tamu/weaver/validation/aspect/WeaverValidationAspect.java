@@ -14,8 +14,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import edu.tamu.weaver.data.model.WeaverEntity;
+import edu.tamu.weaver.data.utility.EntityUtility;
 import edu.tamu.weaver.response.ApiResponse;
-import edu.tamu.weaver.utility.EntityUtility;
 import edu.tamu.weaver.validation.aspect.annotation.WeaverValidatedModel;
 import edu.tamu.weaver.validation.aspect.annotation.WeaverValidation;
 import edu.tamu.weaver.validation.model.ValidatingEntity;
