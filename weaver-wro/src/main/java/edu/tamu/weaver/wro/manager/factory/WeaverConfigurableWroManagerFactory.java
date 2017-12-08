@@ -44,7 +44,7 @@ public class WeaverConfigurableWroManagerFactory extends ConfigurableWroManagerF
 
 	@Override
 	protected WroModelFactory newModelFactory() {
-		return new WeaverWroModelFactory(themeManagerService.getCssResources());
+		return new WeaverWroModelFactory(getThemeManagerService().getCssResources());
 	}
 	
 	protected void setProperties(Properties properties) {

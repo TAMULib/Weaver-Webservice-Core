@@ -20,7 +20,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import edu.tamu.weaver.utility.HttpUtility;
 import edu.tamu.weaver.wro.model.CoreTheme;
 import edu.tamu.weaver.wro.model.ThemeProperty;
 import edu.tamu.weaver.wro.model.ThemePropertyName;
@@ -29,7 +28,7 @@ import edu.tamu.weaver.wro.model.repo.ThemePropertyNameRepo;
 import edu.tamu.weaver.wro.model.repo.ThemePropertyRepo;
 
 @Component
-public class WeaverThemeManagerService implements ThemeManagerService {
+public class RepoThemeManagerService extends SimpleThemeManagerService {
 
     @Autowired
     private CoreThemeRepo coreThemeRepo;
@@ -48,18 +47,12 @@ public class WeaverThemeManagerService implements ThemeManagerService {
     @Value("${theme.manager:false}")
     private Boolean useThemeManager;
 
-    @Value("${theme.default.css:''}")
-    private String[] defaultCssGroup;
-
     @Value("${theme.defaults.location:''}")
     private String themeDefaultsFile;
     
-    @Value("${theme.cacheReloadUrl:'http://localhost:9000/wro/wroAPI/reloadCache'}")
-    private String cacheReloadUrl;
-
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public WeaverThemeManagerService() {
+    public RepoThemeManagerService() {
     }
 
     @PostConstruct
@@ -143,16 +136,7 @@ public class WeaverThemeManagerService implements ThemeManagerService {
         currentTheme.getThemeProperties().forEach(tp -> {
             logger.debug(tp.getThemePropertyName().getName() + ": " + tp.getValue());
         });
-        this.reloadCache();
-    }
-
-    // tell WRO to reset its resource cache
-    private void reloadCache() {
-        try {
-            HttpUtility.makeHttpRequest(cacheReloadUrl, "GET");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        reloadCache();
     }
 
     public String getFormattedProperties() {
@@ -177,10 +161,6 @@ public class WeaverThemeManagerService implements ThemeManagerService {
         if (hadTheme) {
             this.reloadCache();
         }
-    }
-
-    public String[] getCssResources() {
-        return this.defaultCssGroup;
     }
 
 }

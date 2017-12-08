@@ -1,8 +1,13 @@
 package edu.tamu.weaver.wro.config;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Properties;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,8 +33,12 @@ public class WeaverWroConfiguration {
     
     private ThemeManagerService themeManagerService;
     
-    @Autowired
     private ResourcePatternResolver resourcePatternResolver;
+    
+    @Value("${theme.managerService:edu.tamu.weaver.wro.service.SimpleThemeManagerService}")
+    private String themeManagerServiceClassName;
+    
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     
     @Bean
     public FilterRegistrationBean webResourceOptimizer(Environment env) {
@@ -44,8 +53,33 @@ public class WeaverWroConfiguration {
         fr.addUrlPatterns("/"+getWroEndpoint()+"/*");
         return fr;
     }
-
+    
+    @Bean
+    public ThemeManagerService setThemeManagerServiceBean() {
+    	logger.debug("Creating ThemeManagerService Bean with configured class: "+themeManagerServiceClassName);
+    	Class<?> clazz;
+		try {
+			clazz = Class.forName(themeManagerServiceClassName);
+	    	Constructor<?> constructor;
+			try {
+				constructor = clazz.getConstructor();
+		    	return (ThemeManagerService) constructor.newInstance();
+		    } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				e.printStackTrace();
+				logger.error("Could not create ThemeManagerService Bean with class: "+themeManagerServiceClassName, e);
+			}
+		} catch (ClassNotFoundException e1) {
+			logger.error("Could not find ThemeManagerService implementation class: "+themeManagerServiceClassName, e1);
+		}
+		return null;
+    }
+    
     protected Properties buildWroProperties(Environment env) {
+    	Properties props = buildDefaultWroProperties(env);
+        return props;
+    }
+    
+    private Properties buildDefaultWroProperties(Environment env) {
         Properties prop = new Properties();
         for (ConfigConstants c : ConfigConstants.values()) {
             addProperty(env, prop, c.name());
@@ -56,21 +90,31 @@ public class WeaverWroConfiguration {
         return prop;
     }
 
-    private void addProperty(Environment env, Properties to, String name) {
+    protected void addProperty(Environment env, Properties to, String name) {
         String value = env.getProperty(getPropertyPrefix() + "." + name);
         if (value != null) {
             to.put(name, value);
         }
     }
     
-    @Lazy
     @Autowired
-    protected void setThemeManagerService(ThemeManagerService themeManagerService) {
+    @Lazy
+    public void setThemeManagerService(ThemeManagerService themeManagerService) {
     	this.themeManagerService = themeManagerService;
     }
     
     public ThemeManagerService getThemeManagerService() {
     	return themeManagerService;
+    }
+    
+    @Lazy
+    @Autowired
+    protected void setResourcePatternResolver(ResourcePatternResolver resourcePatternResolver) {
+    	this.resourcePatternResolver = resourcePatternResolver;
+    }
+    
+    public ResourcePatternResolver getResourcePatternResolver() {
+    	return resourcePatternResolver;
     }
     
     protected void setPropertyPrefix(String propertyPrefix) {
@@ -96,5 +140,4 @@ public class WeaverWroConfiguration {
     protected RequestHandler getRequestHandler() {
     	return new WeaverRequestHandler();
     }
-
 }
