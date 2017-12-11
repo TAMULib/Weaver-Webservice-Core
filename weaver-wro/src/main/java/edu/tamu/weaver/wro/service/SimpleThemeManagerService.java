@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import edu.tamu.weaver.utility.HttpUtility;
 import edu.tamu.weaver.wro.model.CoreTheme;
 
-public class SimpleThemeManagerService implements ThemeManagerService {
+public class SimpleThemeManagerService implements ThemeManager {
     @Value("${theme.cacheReloadUrl:http://localhost:9000/wro/wroAPI/reloadCache}")
     private String cacheReloadUrl;
     

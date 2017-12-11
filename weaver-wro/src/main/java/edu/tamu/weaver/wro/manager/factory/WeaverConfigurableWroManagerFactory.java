@@ -8,7 +8,7 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 import edu.tamu.weaver.wro.resource.locator.SassClassPathUriLocator;
 import edu.tamu.weaver.wro.model.factory.WeaverWroModelFactory;
 import edu.tamu.weaver.wro.processor.RepoPostProcessor;
-import edu.tamu.weaver.wro.service.ThemeManagerService;
+import edu.tamu.weaver.wro.service.ThemeManager;
 import ro.isdc.wro.manager.factory.ConfigurableWroManagerFactory;
 import ro.isdc.wro.model.factory.WroModelFactory;
 import ro.isdc.wro.model.resource.locator.ClasspathUriLocator;
@@ -20,13 +20,13 @@ import ro.isdc.wro.model.resource.processor.ResourcePostProcessor;
 
 public class WeaverConfigurableWroManagerFactory extends ConfigurableWroManagerFactory {
 
-	private ThemeManagerService themeManagerService;
+	private ThemeManager themeManagerService;
 
 	private Properties properties;
 	
 	private ResourcePatternResolver resourcePatternResolver;
 
-	public WeaverConfigurableWroManagerFactory(Properties props, ThemeManagerService themeManagerService, ResourcePatternResolver resourcePatternResolver) {
+	public WeaverConfigurableWroManagerFactory(Properties props, ThemeManager themeManagerService, ResourcePatternResolver resourcePatternResolver) {
 		setProperties(props);
 		setThemeManagerService(themeManagerService);
 		this.resourcePatternResolver = resourcePatternResolver;
@@ -55,11 +55,11 @@ public class WeaverConfigurableWroManagerFactory extends ConfigurableWroManagerF
 		return properties;
 	}
 	
-	protected void setThemeManagerService(ThemeManagerService themeManagerService) {
+	protected void setThemeManagerService(ThemeManager themeManagerService) {
 		this.themeManagerService = themeManagerService;
 	}
 
-	protected ThemeManagerService getThemeManagerService() {
+	protected ThemeManager getThemeManagerService() {
 		return themeManagerService;
 	}
 	

@@ -16,7 +16,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
 import edu.tamu.weaver.wro.manager.factory.WeaverConfigurableWroManagerFactory;
-import edu.tamu.weaver.wro.service.ThemeManagerService;
+import edu.tamu.weaver.wro.service.ThemeManager;
 import ro.isdc.wro.config.jmx.ConfigConstants;
 import ro.isdc.wro.http.ConfigurableWroFilter;
 import ro.isdc.wro.http.handler.RequestHandler;
@@ -31,7 +31,7 @@ public class WeaverWroConfiguration {
     private String propertyPrefix = "wro";
     private String wroEndpoint = propertyPrefix;
     
-    private ThemeManagerService themeManagerService;
+    private ThemeManager themeManagerService;
     
     private ResourcePatternResolver resourcePatternResolver;
     
@@ -55,23 +55,23 @@ public class WeaverWroConfiguration {
     }
     
     @Bean
-    public ThemeManagerService setThemeManagerServiceBean() {
+    public ThemeManager setThemeManagerServiceBean() {
     	logger.debug("Creating ThemeManagerService Bean with configured class: "+themeManagerServiceClassName);
     	Class<?> clazz;
-		try {
-			clazz = Class.forName(themeManagerServiceClassName);
-	    	Constructor<?> constructor;
-			try {
-				constructor = clazz.getConstructor();
-		    	return (ThemeManagerService) constructor.newInstance();
-		    } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				e.printStackTrace();
-				logger.error("Could not create ThemeManagerService Bean with class: "+themeManagerServiceClassName, e);
-			}
-		} catch (ClassNotFoundException e1) {
-			logger.error("Could not find ThemeManagerService implementation class: "+themeManagerServiceClassName, e1);
-		}
-		return null;
+    	try {
+    		clazz = Class.forName(themeManagerServiceClassName);
+    		Constructor<?> constructor;
+    		try {
+    			constructor = clazz.getConstructor();
+    			return (ThemeManager) constructor.newInstance();
+    		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+    			e.printStackTrace();
+    			logger.error("Could not create ThemeManagerService Bean with class: "+themeManagerServiceClassName, e);
+    		}
+    	} catch (ClassNotFoundException e1) {
+    		logger.error("Could not find ThemeManagerService implementation class: "+themeManagerServiceClassName, e1);
+    	}
+    	return null;
     }
     
     protected Properties buildWroProperties(Environment env) {
@@ -99,11 +99,11 @@ public class WeaverWroConfiguration {
     
     @Autowired
     @Lazy
-    public void setThemeManagerService(ThemeManagerService themeManagerService) {
+    public void setThemeManagerService(ThemeManager themeManagerService) {
     	this.themeManagerService = themeManagerService;
     }
     
-    public ThemeManagerService getThemeManagerService() {
+    public ThemeManager getThemeManagerService() {
     	return themeManagerService;
     }
     

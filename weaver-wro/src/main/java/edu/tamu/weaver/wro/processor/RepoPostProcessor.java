@@ -6,7 +6,7 @@ import java.io.Writer;
 
 import org.apache.commons.io.IOUtils;
 
-import edu.tamu.weaver.wro.service.ThemeManagerService;
+import edu.tamu.weaver.wro.service.ThemeManager;
 import ro.isdc.wro.model.resource.ResourceType;
 import ro.isdc.wro.model.resource.SupportedResourceType;
 import ro.isdc.wro.model.resource.processor.ResourcePostProcessor;
@@ -14,9 +14,9 @@ import ro.isdc.wro.model.resource.processor.ResourcePostProcessor;
 @SupportedResourceType(ResourceType.CSS)
 public class RepoPostProcessor implements ResourcePostProcessor {
 
-	private ThemeManagerService themeManagerService;
+	private ThemeManager themeManagerService;
 
-	public RepoPostProcessor(ThemeManagerService themeManagerService) {
+	public RepoPostProcessor(ThemeManager themeManagerService) {
 		super();
 		this.themeManagerService = themeManagerService;
 	}
