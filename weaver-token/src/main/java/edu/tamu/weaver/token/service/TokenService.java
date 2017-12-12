@@ -18,7 +18,9 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.binary.Base64;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
@@ -43,6 +45,15 @@ public class TokenService {
 
     @Value("${auth.security.jwt.duration:5}")
     private int duration;
+
+    @Value("${shib.keys:netid,uin,lastName,firstName,email}")
+    private String[] shibKeys;
+
+    @Value("${shib.subject:netid}")
+    private String shibSubject;
+
+    @Autowired
+    private Environment env;
 
     private Key key;
 
@@ -108,6 +119,15 @@ public class TokenService {
             claims = e.getClaims();
         }
         return claims;
+    }
+
+    public String craftToken(Map<String, String> headers) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
+        Map<String, Object> claims = new HashMap<String, Object>();
+        for (String k : shibKeys) {
+            claims.put(k, headers.get(env.getProperty("shib." + k, "")) != null ? headers.get(env.getProperty("shib." + k, "")) : headers.get(k));
+        }
+        String subject = (String) claims.get(shibSubject);
+        return createToken(subject, claims);
     }
 
 }

@@ -62,7 +62,7 @@ public abstract class WeaverMockTokenController extends TokenController {
         }
         RedirectView redirect = new RedirectView();
         redirect.setContextRelative(false);
-        redirect.setUrl(referer + "?jwt=" + craftToken(MOCK_CLAIMS.get(mock)));
+        redirect.setUrl(referer + "?jwt=" + tokenService.craftToken(MOCK_CLAIMS.get(mock)));
         return redirect;
     }
 
