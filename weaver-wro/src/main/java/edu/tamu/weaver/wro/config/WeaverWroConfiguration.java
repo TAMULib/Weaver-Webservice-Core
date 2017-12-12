@@ -38,6 +38,9 @@ public class WeaverWroConfiguration {
     @Value("${theme.managerService:edu.tamu.weaver.wro.service.SimpleThemeManagerService}")
     private String themeManagerServiceClassName;
     
+    @Value("${theme.cssGroupName:app}")
+    private String cssGroupName;
+    
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     
     @Bean

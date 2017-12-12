@@ -9,10 +9,11 @@ import ro.isdc.wro.model.resource.ResourceType;
 public class WeaverWroModelFactory implements WroModelFactory {
 
 	private String[] defaultResources;
-	private String groupName = "app";
+	private String groupName;
 
-	public WeaverWroModelFactory(String[] defaultResources) {
+	public WeaverWroModelFactory(String[] defaultResources,String groupName) {
 		setDefaultResources(defaultResources);
+		this.groupName = groupName;
 	}
 
 	public WroModel create() {
