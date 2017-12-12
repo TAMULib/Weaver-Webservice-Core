@@ -3,6 +3,7 @@ package edu.tamu.weaver.wro.service;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -14,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -27,7 +27,6 @@ import edu.tamu.weaver.wro.model.repo.CoreThemeRepo;
 import edu.tamu.weaver.wro.model.repo.ThemePropertyNameRepo;
 import edu.tamu.weaver.wro.model.repo.ThemePropertyRepo;
 
-@Component
 public class RepoThemeManagerService extends SimpleThemeManagerService {
 
     @Autowired
@@ -44,9 +43,6 @@ public class RepoThemeManagerService extends SimpleThemeManagerService {
 
     private CoreTheme currentTheme;
 
-    @Value("${theme.manager:false}")
-    private Boolean useThemeManager;
-
     @Value("${theme.defaults.location:''}")
     private String themeDefaultsFile;
     
@@ -57,56 +53,54 @@ public class RepoThemeManagerService extends SimpleThemeManagerService {
 
     @PostConstruct
     public void setUp() {
-        if (useThemeManager) {
-            if (coreThemeRepo.count() == 0 && !themeDefaultsFile.equals("")) {
-                logger.debug("Prepping Defaults :" + coreThemeRepo.count() + "");
-                ClassPathResource themeDefaultsRaw = new ClassPathResource(themeDefaultsFile);
-                JsonNode themeDefaults = null;
-                try {
-                    themeDefaults = objectMapper.readTree(new FileInputStream(themeDefaultsRaw.getFile()));
-                } catch (JsonProcessingException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (FileNotFoundException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                Iterator<JsonNode> itProps = themeDefaults.get("propertyNames").elements();
-                while (itProps.hasNext()) {
-                    JsonNode entry = itProps.next();
-                    logger.debug("Creating Theme Property: " + entry.textValue() + "");
-                    themePropertyNameRepo.create(entry.textValue());
-                }
+        if (coreThemeRepo.count() == 0 && !themeDefaultsFile.equals("")) {
+            logger.debug("Prepping Defaults :" + coreThemeRepo.count() + "");
+            ClassPathResource themeDefaultsRaw = new ClassPathResource(themeDefaultsFile);
+            JsonNode themeDefaults = null;
+            try {
+                themeDefaults = objectMapper.readTree(new FileInputStream(themeDefaultsRaw.getFile()));
+            } catch (JsonProcessingException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (FileNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            Iterator<JsonNode> itProps = themeDefaults.get("propertyNames").elements();
+            while (itProps.hasNext()) {
+                JsonNode entry = itProps.next();
+                logger.debug("Creating Theme Property: " + entry.textValue() + "");
+                themePropertyNameRepo.create(entry.textValue());
+            }
 
-                Iterator<Entry<String, JsonNode>> it = themeDefaults.get("themes").fields();
-                Long activateId = 0L;
-                while (it.hasNext()) {
-                    Map.Entry<String, JsonNode> entry = (Map.Entry<String, JsonNode>) it.next();
-                    if (entry.getValue().isArray()) {
-                        logger.debug("New Props for: " + entry.getKey());
-                        if (coreThemeRepo.getByName(entry.getKey()) == null) {
-                            CoreTheme newTheme = coreThemeRepo.create(entry.getKey());
-                            if (activateId == 0) {
-                                activateId = newTheme.getId();
-                            }
-                            JsonNode defaultProperties = entry.getValue();
-                            for (ThemePropertyName propertyName : themePropertyNameRepo.findAll()) {
-                                String value = defaultProperties.findValue(propertyName.getName()).asText();
-                                if (!value.isEmpty()) {
-                                    coreThemeRepo.updateThemeProperty(newTheme.getId(), themePropertyRepo.findThemePropertyByThemePropertyNameAndThemeId(propertyName, newTheme.getId()).getId(), value);
-                                }
+            Iterator<Entry<String, JsonNode>> it = themeDefaults.get("themes").fields();
+            Long activateId = 0L;
+            while (it.hasNext()) {
+                Map.Entry<String, JsonNode> entry = (Map.Entry<String, JsonNode>) it.next();
+                if (entry.getValue().isArray()) {
+                    logger.debug("New Props for: " + entry.getKey());
+                    if (coreThemeRepo.getByName(entry.getKey()) == null) {
+                        CoreTheme newTheme = coreThemeRepo.create(entry.getKey());
+                        if (activateId == 0) {
+                            activateId = newTheme.getId();
+                        }
+                        JsonNode defaultProperties = entry.getValue();
+                        for (ThemePropertyName propertyName : themePropertyNameRepo.findAll()) {
+                            String value = defaultProperties.findValue(propertyName.getName()).asText();
+                            if (!value.isEmpty()) {
+                                coreThemeRepo.updateThemeProperty(newTheme.getId(), themePropertyRepo.findThemePropertyByThemePropertyNameAndThemeId(propertyName, newTheme.getId()).getId(), value);
                             }
                         }
                     }
                 }
-                CoreTheme defaultTheme = coreThemeRepo.findOne(activateId);
-                this.setCurrentTheme(defaultTheme);
-            } else {
-                this.setCurrentTheme(coreThemeRepo.findByActiveTrue());
             }
+            CoreTheme defaultTheme = coreThemeRepo.findOne(activateId);
+            this.setCurrentTheme(defaultTheme);
+        } else {
+            this.setCurrentTheme(coreThemeRepo.findByActiveTrue());
         }
     }
 
@@ -139,19 +133,15 @@ public class RepoThemeManagerService extends SimpleThemeManagerService {
         reloadCache();
     }
 
-    public String getFormattedProperties() {
-        StringBuilder formattedProperties = new StringBuilder();
-        StringBuilder formattedComments = new StringBuilder();
-        formattedComments.append("/* The ThemeManagerService added the following SASS vars:\n\n");
+    @Override
+    public Map<String,String> getThemeProperties() {
+    	Map<String,String> themeProperties = new HashMap<String,String>();
         if (this.getCurrentTheme() != null) {
             for (ThemeProperty p : this.getCurrentTheme().getThemeProperties()) {
-                formattedProperties.append("$" + p.getThemePropertyName().getName() + ": " + p.getValue() + ";\n");
-                formattedComments.append("* $" + p.getThemePropertyName().getName() + ": " + p.getValue() + ";\n");
+            	themeProperties.put(p.getThemePropertyName().getName(),p.getValue());
             }
-            formattedComments.append("*/\n\n");
-            return formattedComments + formattedProperties.toString();
         }
-        return formattedComments.toString() + " n/a\n*/\n";
+        return themeProperties;
     }
 
     public void setCurrentTheme(CoreTheme theme) {

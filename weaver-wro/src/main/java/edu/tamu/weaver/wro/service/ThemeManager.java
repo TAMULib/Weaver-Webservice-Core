@@ -1,11 +1,22 @@
 package edu.tamu.weaver.wro.service;
 
-import edu.tamu.weaver.wro.model.CoreTheme;
+import java.util.Map;
 
 public interface ThemeManager {
-	public void setUp();
-	public CoreTheme getCurrentTheme();
-	public void refreshCurrentTheme();
-	public String getFormattedProperties();
-	public String[] getCssResources();
+    /*
+     * Get a map of all theme properties (name -> value)
+     * @return Map<String,String>
+     */
+    public Map<String,String> getThemeProperties();
+    
+    /*
+     * Trigger a re-processing of all theme resources
+     */
+    public void refreshCurrentTheme();
+    
+    /*
+     * Get an array of all the CSS derivable file locations
+     * @return String[] A string array of file locations
+     */
+    public String[] getCssResources();
 }

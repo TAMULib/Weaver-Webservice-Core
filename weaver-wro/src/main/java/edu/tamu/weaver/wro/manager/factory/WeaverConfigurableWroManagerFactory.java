@@ -39,7 +39,7 @@ public class WeaverConfigurableWroManagerFactory extends ConfigurableWroManagerF
 
 	@Override
 	protected void contributePostProcessors(Map<String, ResourcePostProcessor> map) {
-		map.put("repoPostProcessor", new RepoPostProcessor(getThemeManagerService()));
+	    map.put("repoPostProcessor", new RepoPostProcessor(getThemeManagerService()));
 	}
 
 	@Override
