@@ -7,7 +7,7 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.service;
+package edu.tamu.weaver.service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
-import edu.tamu.framework.model.BaseOrderedEntity;
+import edu.tamu.weaver.model.BaseOrderedEntity;
 
 @Service
 @Deprecated

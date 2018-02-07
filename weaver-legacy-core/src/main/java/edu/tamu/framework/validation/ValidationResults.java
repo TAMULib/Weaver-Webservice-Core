@@ -7,7 +7,7 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.validation;
+package edu.tamu.weaver.validation;
 
 import java.util.HashMap;
 import java.util.Map;

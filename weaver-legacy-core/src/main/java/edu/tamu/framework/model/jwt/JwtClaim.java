@@ -7,7 +7,7 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.model.jwt;
+package edu.tamu.weaver.model.jwt;
 
 import java.util.Map;
 

@@ -7,12 +7,12 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.model;
+package edu.tamu.weaver.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import edu.tamu.framework.enums.ApiResponseType;
+import edu.tamu.weaver.enums.ApiResponseType;
 
 /**
  * Abstract class for an API response.

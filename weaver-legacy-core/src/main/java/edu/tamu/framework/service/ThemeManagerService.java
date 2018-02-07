@@ -7,7 +7,7 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.service;
+package edu.tamu.weaver.service;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -29,13 +29,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import edu.tamu.framework.model.CoreTheme;
-import edu.tamu.framework.model.ThemeProperty;
-import edu.tamu.framework.model.ThemePropertyName;
-import edu.tamu.framework.model.repo.CoreThemeRepo;
-import edu.tamu.framework.model.repo.ThemePropertyNameRepo;
-import edu.tamu.framework.model.repo.ThemePropertyRepo;
-import edu.tamu.framework.util.HttpUtility;
+import edu.tamu.weaver.model.CoreTheme;
+import edu.tamu.weaver.model.ThemeProperty;
+import edu.tamu.weaver.model.ThemePropertyName;
+import edu.tamu.weaver.model.repo.CoreThemeRepo;
+import edu.tamu.weaver.model.repo.ThemePropertyNameRepo;
+import edu.tamu.weaver.model.repo.ThemePropertyRepo;
+import edu.tamu.weaver.util.HttpUtility;
 
 @Component
 public class ThemeManagerService {

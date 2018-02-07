@@ -7,7 +7,7 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.events;
+package edu.tamu.weaver.events;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +17,7 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.web.socket.config.WebSocketMessageBrokerStats;
 import org.springframework.web.socket.messaging.SessionConnectEvent;
 
-import edu.tamu.framework.service.StompService;
+import edu.tamu.weaver.service.StompService;
 
 /**
  * 

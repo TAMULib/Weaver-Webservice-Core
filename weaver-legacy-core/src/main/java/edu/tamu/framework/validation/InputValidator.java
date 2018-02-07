@@ -7,9 +7,9 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.validation;
+package edu.tamu.weaver.validation;
 
-import edu.tamu.framework.enums.InputValidationType;
+import edu.tamu.weaver.enums.InputValidationType;
 
 @Deprecated
 public class InputValidator extends SimpleValidator<InputValidationType> {

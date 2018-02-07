@@ -7,7 +7,7 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.validation;
+package edu.tamu.weaver.validation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import edu.tamu.framework.model.ValidatingBase;
-import edu.tamu.framework.util.ValidationUtility;
+import edu.tamu.weaver.model.ValidatingBase;
+import edu.tamu.weaver.util.ValidationUtility;
 
 @Deprecated
 public abstract class BaseModelValidator implements Validator {

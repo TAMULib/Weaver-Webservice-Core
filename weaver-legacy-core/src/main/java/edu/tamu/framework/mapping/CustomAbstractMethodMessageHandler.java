@@ -1,4 +1,4 @@
-package edu.tamu.framework.mapping;
+package edu.tamu.weaver.mapping;
 
 /*
  * Copyright 2002-2015 the original author or authors.
@@ -54,8 +54,8 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 
-import edu.tamu.framework.mapping.support.CustomHandlerMethodArgumentResolverComposite;
-import edu.tamu.framework.mapping.support.CustomInvocableHandlerMethod;
+import edu.tamu.weaver.mapping.support.CustomHandlerMethodArgumentResolverComposite;
+import edu.tamu.weaver.mapping.support.CustomInvocableHandlerMethod;
 
 /**
  * Abstract base class for HandlerMethod-based message handling. Provides most

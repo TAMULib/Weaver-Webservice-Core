@@ -7,7 +7,7 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.model.repo;
+package edu.tamu.weaver.model.repo;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +15,7 @@ import java.util.Map;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Repository;
 
-import edu.tamu.framework.model.Symlink;
+import edu.tamu.weaver.model.Symlink;
 
 /**
  * Symlink repo.

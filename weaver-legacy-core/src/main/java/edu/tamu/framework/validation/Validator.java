@@ -7,12 +7,12 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.validation;
+package edu.tamu.weaver.validation;
 
 import java.util.List;
 import java.util.Map;
 
-import edu.tamu.framework.model.ValidatingBase;
+import edu.tamu.weaver.model.ValidatingBase;
 
 @Deprecated
 public interface Validator {

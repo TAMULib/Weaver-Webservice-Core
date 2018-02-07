@@ -1,4 +1,4 @@
-package edu.tamu.framework.mapping.support;
+package edu.tamu.weaver.mapping.support;
 
 /*
  * Copyright 2002-2016 the original author or authors.

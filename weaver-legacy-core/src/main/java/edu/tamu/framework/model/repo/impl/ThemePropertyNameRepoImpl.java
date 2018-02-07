@@ -7,12 +7,12 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.model.repo.impl;
+package edu.tamu.weaver.model.repo.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import edu.tamu.framework.model.ThemePropertyName;
-import edu.tamu.framework.model.repo.ThemePropertyNameRepo;
+import edu.tamu.weaver.model.ThemePropertyName;
+import edu.tamu.weaver.model.repo.ThemePropertyNameRepo;
 
 public class ThemePropertyNameRepoImpl {
 

@@ -1,4 +1,4 @@
-package edu.tamu.framework.wro4j.processors;
+package edu.tamu.weaver.wro4j.processors;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -6,7 +6,7 @@ import java.io.Writer;
 
 import org.apache.commons.io.IOUtils;
 
-import edu.tamu.framework.service.ThemeManagerService;
+import edu.tamu.weaver.service.ThemeManagerService;
 import ro.isdc.wro.model.resource.ResourceType;
 import ro.isdc.wro.model.resource.SupportedResourceType;
 import ro.isdc.wro.model.resource.processor.ResourcePostProcessor;

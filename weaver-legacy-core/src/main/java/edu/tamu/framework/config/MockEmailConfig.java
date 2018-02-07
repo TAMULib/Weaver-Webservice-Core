@@ -7,14 +7,14 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.config;
+package edu.tamu.weaver.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
-import edu.tamu.framework.util.EmailSender;
-import edu.tamu.framework.util.MockEmailUtility;
+import edu.tamu.weaver.util.EmailSender;
+import edu.tamu.weaver.util.MockEmailUtility;
 
 @Configuration
 @Profile(value = { "test" })

@@ -7,15 +7,15 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.aspect;
+package edu.tamu.weaver.aspect;
 
-import static edu.tamu.framework.enums.ApiResponseType.ERROR;
-import static edu.tamu.framework.enums.ApiResponseType.INVALID;
-import static edu.tamu.framework.enums.ApiResponseType.WARNING;
-import static edu.tamu.framework.util.EntityUtility.getValueForProperty;
-import static edu.tamu.framework.util.EntityUtility.queryWithClassById;
-import static edu.tamu.framework.util.EntityUtility.recursivelyFindJsonIdentityReference;
-import static edu.tamu.framework.util.EntityUtility.setValueForProperty;
+import static edu.tamu.weaver.enums.ApiResponseType.ERROR;
+import static edu.tamu.weaver.enums.ApiResponseType.INVALID;
+import static edu.tamu.weaver.enums.ApiResponseType.WARNING;
+import static edu.tamu.weaver.util.EntityUtility.getValueForProperty;
+import static edu.tamu.weaver.util.EntityUtility.queryWithClassById;
+import static edu.tamu.weaver.util.EntityUtility.recursivelyFindJsonIdentityReference;
+import static edu.tamu.weaver.util.EntityUtility.setValueForProperty;
 
 import java.io.ByteArrayInputStream;
 import java.lang.annotation.Annotation;
@@ -55,27 +55,27 @@ import org.springframework.web.context.request.RequestContextHolder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import edu.tamu.framework.aspect.annotation.ApiMapping;
-import edu.tamu.framework.aspect.annotation.ApiValidation;
-import edu.tamu.framework.aspect.annotation.Auth;
-import edu.tamu.framework.enums.ApiResponseType;
-import edu.tamu.framework.model.AbstractCoreUser;
-import edu.tamu.framework.model.ApiResponse;
-import edu.tamu.framework.model.BaseEntity;
-import edu.tamu.framework.model.Credentials;
-import edu.tamu.framework.model.HttpRequest;
-import edu.tamu.framework.model.ValidatingBase;
-import edu.tamu.framework.model.WebSocketRequest;
-import edu.tamu.framework.service.HttpRequestService;
-import edu.tamu.framework.service.RoleService;
-import edu.tamu.framework.service.SecurityContextService;
-import edu.tamu.framework.service.StompService;
-import edu.tamu.framework.service.WebSocketRequestService;
-import edu.tamu.framework.util.ValidationUtility;
-import edu.tamu.framework.validation.BaseModelValidator;
-import edu.tamu.framework.validation.BusinessValidator;
-import edu.tamu.framework.validation.MethodValidator;
-import edu.tamu.framework.validation.ValidationResults;
+import edu.tamu.weaver.aspect.annotation.ApiMapping;
+import edu.tamu.weaver.aspect.annotation.ApiValidation;
+import edu.tamu.weaver.aspect.annotation.Auth;
+import edu.tamu.weaver.enums.ApiResponseType;
+import edu.tamu.weaver.model.AbstractCoreUser;
+import edu.tamu.weaver.model.ApiResponse;
+import edu.tamu.weaver.model.BaseEntity;
+import edu.tamu.weaver.model.Credentials;
+import edu.tamu.weaver.model.HttpRequest;
+import edu.tamu.weaver.model.ValidatingBase;
+import edu.tamu.weaver.model.WebSocketRequest;
+import edu.tamu.weaver.service.HttpRequestService;
+import edu.tamu.weaver.service.RoleService;
+import edu.tamu.weaver.service.SecurityContextService;
+import edu.tamu.weaver.service.StompService;
+import edu.tamu.weaver.service.WebSocketRequestService;
+import edu.tamu.weaver.util.ValidationUtility;
+import edu.tamu.weaver.validation.BaseModelValidator;
+import edu.tamu.weaver.validation.BusinessValidator;
+import edu.tamu.weaver.validation.MethodValidator;
+import edu.tamu.weaver.validation.ValidationResults;
 
 /**
  * Core Controller Aspect
@@ -124,7 +124,7 @@ public abstract class CoreControllerAspect<U extends AbstractCoreUser> {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Around("execution(* *.*.*.controller.*.*(..)) && !@annotation(edu.tamu.framework.aspect.annotation.SkipAop) && @annotation(edu.tamu.framework.aspect.annotation.ApiValidation) && @annotation(auth)")
+    @Around("execution(* *.*.*.controller.*.*(..)) && !@annotation(edu.tamu.weaver.aspect.annotation.SkipAop) && @annotation(edu.tamu.weaver.aspect.annotation.ApiValidation) && @annotation(auth)")
     public ApiResponse transactionallyPolpulateCredentialsAndAuthorize(ProceedingJoinPoint joinPoint, Auth auth) throws Throwable {
         List<ApiResponse> apiresponses = new ArrayList<ApiResponse>();
         createTransactionTemplate().execute(new TransactionCallbackWithoutResult() {
@@ -141,12 +141,12 @@ public abstract class CoreControllerAspect<U extends AbstractCoreUser> {
         return apiresponses.get(0);
     }
 
-    @Around("execution(* *.*.*.controller.*.*(..)) && !@annotation(edu.tamu.framework.aspect.annotation.SkipAop) && !@annotation(edu.tamu.framework.aspect.annotation.ApiValidation) && @annotation(auth)")
+    @Around("execution(* *.*.*.controller.*.*(..)) && !@annotation(edu.tamu.weaver.aspect.annotation.SkipAop) && !@annotation(edu.tamu.weaver.aspect.annotation.ApiValidation) && @annotation(auth)")
     public ApiResponse polpulateCredentialsAndAuthorize(ProceedingJoinPoint joinPoint, Auth auth) throws Throwable {
         return authorizeAndProceed(joinPoint, auth);
     }
 
-    @Around("execution(* *.*.*.controller.*.*(..)) && !@annotation(edu.tamu.framework.aspect.annotation.SkipAop) && @annotation(edu.tamu.framework.aspect.annotation.ApiValidation) && !@annotation(edu.tamu.framework.aspect.annotation.Auth)")
+    @Around("execution(* *.*.*.controller.*.*(..)) && !@annotation(edu.tamu.weaver.aspect.annotation.SkipAop) && @annotation(edu.tamu.weaver.aspect.annotation.ApiValidation) && !@annotation(edu.tamu.weaver.aspect.annotation.Auth)")
     public ApiResponse transactionallyPopulateCredentials(ProceedingJoinPoint joinPoint) throws Throwable {
         List<ApiResponse> apiresponses = new ArrayList<ApiResponse>();
         createTransactionTemplate().execute(new TransactionCallbackWithoutResult() {
@@ -163,7 +163,7 @@ public abstract class CoreControllerAspect<U extends AbstractCoreUser> {
         return apiresponses.get(0);
     }
 
-    @Around("execution(* *.*.*.controller.*.*(..)) && !@annotation(edu.tamu.framework.aspect.annotation.SkipAop) && !@annotation(edu.tamu.framework.aspect.annotation.ApiValidation) && !@annotation(edu.tamu.framework.aspect.annotation.Auth)")
+    @Around("execution(* *.*.*.controller.*.*(..)) && !@annotation(edu.tamu.weaver.aspect.annotation.SkipAop) && !@annotation(edu.tamu.weaver.aspect.annotation.ApiValidation) && !@annotation(edu.tamu.weaver.aspect.annotation.Auth)")
     public ApiResponse populateCredentials(ProceedingJoinPoint joinPoint) throws Throwable {
         return proceed(joinPoint);
     }

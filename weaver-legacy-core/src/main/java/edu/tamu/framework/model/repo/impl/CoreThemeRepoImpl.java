@@ -7,7 +7,7 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.model.repo.impl;
+package edu.tamu.weaver.model.repo.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,13 +19,13 @@ import javax.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import edu.tamu.framework.model.CoreTheme;
-import edu.tamu.framework.model.ThemeProperty;
-import edu.tamu.framework.model.ThemePropertyName;
-import edu.tamu.framework.model.repo.CoreThemeRepo;
-import edu.tamu.framework.model.repo.ThemePropertyNameRepo;
-import edu.tamu.framework.model.repo.ThemePropertyRepo;
-import edu.tamu.framework.model.repo.custom.CoreThemeRepoCustom;
+import edu.tamu.weaver.model.CoreTheme;
+import edu.tamu.weaver.model.ThemeProperty;
+import edu.tamu.weaver.model.ThemePropertyName;
+import edu.tamu.weaver.model.repo.CoreThemeRepo;
+import edu.tamu.weaver.model.repo.ThemePropertyNameRepo;
+import edu.tamu.weaver.model.repo.ThemePropertyRepo;
+import edu.tamu.weaver.model.repo.custom.CoreThemeRepoCustom;
 
 public class CoreThemeRepoImpl implements CoreThemeRepoCustom {
 

@@ -7,9 +7,9 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.validation;
+package edu.tamu.weaver.validation;
 
-import edu.tamu.framework.enums.MethodValidationType;
+import edu.tamu.weaver.enums.MethodValidationType;
 
 @Deprecated
 public class MethodValidator extends SimpleValidator<MethodValidationType> {

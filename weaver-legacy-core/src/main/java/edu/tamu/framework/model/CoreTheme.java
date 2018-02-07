@@ -7,7 +7,7 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.model;
+package edu.tamu.weaver.model;
 
 import java.util.HashSet;
 import java.util.Set;

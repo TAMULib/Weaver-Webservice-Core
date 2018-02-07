@@ -7,7 +7,7 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.enums;
+package edu.tamu.weaver.enums;
 
 @Deprecated
 public enum MethodValidationType {

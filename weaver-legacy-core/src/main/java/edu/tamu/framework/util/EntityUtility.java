@@ -7,7 +7,7 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.util;
+package edu.tamu.weaver.util;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -29,8 +29,8 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 
-import edu.tamu.framework.SpringContext;
-import edu.tamu.framework.model.ValidatingBase;
+import edu.tamu.weaver.SpringContext;
+import edu.tamu.weaver.model.ValidatingBase;
 
 @Deprecated
 @Service

@@ -7,7 +7,7 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.resolver;
+package edu.tamu.weaver.resolver;
 
 import javax.persistence.EntityManager;
 

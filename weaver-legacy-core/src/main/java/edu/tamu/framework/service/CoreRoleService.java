@@ -7,12 +7,12 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.service;
+package edu.tamu.weaver.service;
 
 import org.springframework.stereotype.Service;
 
-import edu.tamu.framework.enums.CoreRole;
-import edu.tamu.framework.model.IRole;
+import edu.tamu.weaver.enums.CoreRole;
+import edu.tamu.weaver.model.IRole;
 
 @Service
 public abstract class CoreRoleService implements RoleService {

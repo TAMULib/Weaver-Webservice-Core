@@ -7,10 +7,10 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.interceptor;
+package edu.tamu.weaver.interceptor;
 
-import static edu.tamu.framework.enums.ApiResponseType.ERROR;
-import static edu.tamu.framework.enums.ApiResponseType.REFRESH;
+import static edu.tamu.weaver.enums.ApiResponseType.ERROR;
+import static edu.tamu.weaver.enums.ApiResponseType.REFRESH;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,16 +35,16 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 
-import edu.tamu.framework.mapping.WebSocketRequestMappingHandler;
-import edu.tamu.framework.mapping.condition.WebSocketRequestCondition;
-import edu.tamu.framework.model.AbstractCoreUser;
-import edu.tamu.framework.model.ApiResponse;
-import edu.tamu.framework.model.Credentials;
-import edu.tamu.framework.model.WebSocketRequest;
-import edu.tamu.framework.service.SecurityContextService;
-import edu.tamu.framework.service.StompService;
-import edu.tamu.framework.service.WebSocketRequestService;
-import edu.tamu.framework.util.JwtUtility;
+import edu.tamu.weaver.mapping.WebSocketRequestMappingHandler;
+import edu.tamu.weaver.mapping.condition.WebSocketRequestCondition;
+import edu.tamu.weaver.model.AbstractCoreUser;
+import edu.tamu.weaver.model.ApiResponse;
+import edu.tamu.weaver.model.Credentials;
+import edu.tamu.weaver.model.WebSocketRequest;
+import edu.tamu.weaver.service.SecurityContextService;
+import edu.tamu.weaver.service.StompService;
+import edu.tamu.weaver.service.WebSocketRequestService;
+import edu.tamu.weaver.util.JwtUtility;
 
 /**
  * Stomp interceptor. Checks command, decodes and verifies token, either returns error message to frontend or continues to controller.

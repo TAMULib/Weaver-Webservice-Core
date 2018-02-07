@@ -1,11 +1,11 @@
-package edu.tamu.framework.wro4j.manager.factory;
+package edu.tamu.weaver.wro4j.manager.factory;
 
 import java.util.Map;
 import java.util.Properties;
 
-import edu.tamu.framework.service.ThemeManagerService;
-import edu.tamu.framework.wro4j.model.factory.CustomWroModelFactory;
-import edu.tamu.framework.wro4j.processors.RepoPostProcessor;
+import edu.tamu.weaver.service.ThemeManagerService;
+import edu.tamu.weaver.wro4j.model.factory.CustomWroModelFactory;
+import edu.tamu.weaver.wro4j.processors.RepoPostProcessor;
 import ro.isdc.wro.manager.factory.ConfigurableWroManagerFactory;
 import ro.isdc.wro.model.factory.WroModelFactory;
 import ro.isdc.wro.model.resource.processor.ResourcePostProcessor;

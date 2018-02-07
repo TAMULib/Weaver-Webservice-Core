@@ -7,7 +7,7 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.util;
+package edu.tamu.weaver.util;
 
 import javax.mail.MessagingException;
 

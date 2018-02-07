@@ -1,4 +1,4 @@
-package edu.tamu.framework.mapping.info;
+package edu.tamu.weaver.mapping.info;
 
 /*
  * Copyright 2002-2016 the original author or authors.
@@ -20,7 +20,7 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.MessageCondition;
 import org.springframework.messaging.simp.SimpMessageTypeMessageCondition;
 
-import edu.tamu.framework.mapping.condition.WebSocketRequestCondition;
+import edu.tamu.weaver.mapping.condition.WebSocketRequestCondition;
 
 /**
  * Custom simp message mapping info. Mostly duplication of Spring's

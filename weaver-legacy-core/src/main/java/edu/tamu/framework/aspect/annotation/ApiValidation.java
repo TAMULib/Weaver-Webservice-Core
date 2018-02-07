@@ -7,7 +7,7 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.aspect.annotation;
+package edu.tamu.weaver.aspect.annotation;
 
 import static java.lang.annotation.ElementType.METHOD;
 
@@ -16,8 +16,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import edu.tamu.framework.enums.BusinessValidationType;
-import edu.tamu.framework.enums.MethodValidationType;
+import edu.tamu.weaver.enums.BusinessValidationType;
+import edu.tamu.weaver.enums.MethodValidationType;
 
 @Deprecated
 @Target({ METHOD })

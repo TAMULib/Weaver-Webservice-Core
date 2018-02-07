@@ -7,7 +7,7 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.util;
+package edu.tamu.weaver.util;
 
 import static org.apache.commons.codec.binary.Base64.decodeBase64;
 import static org.apache.commons.codec.binary.Base64.encodeBase64URLSafeString;
@@ -40,8 +40,8 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import edu.tamu.framework.exception.JwtException;
-import edu.tamu.framework.model.jwt.Jwt;
+import edu.tamu.weaver.exception.JwtException;
+import edu.tamu.weaver.model.jwt.Jwt;
 
 /**
  * JSON Web Token Utility.

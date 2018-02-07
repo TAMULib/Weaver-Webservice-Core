@@ -7,7 +7,7 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.mapping;
+package edu.tamu.weaver.mapping;
 
 /*
  * Copyright 2002-2016 the original author or authors.
@@ -42,8 +42,8 @@ import org.springframework.web.servlet.mvc.condition.RequestMethodsRequestCondit
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMapping;
 
-import edu.tamu.framework.aspect.annotation.ApiMapping;
-import edu.tamu.framework.mapping.condition.RestRequestCondition;
+import edu.tamu.weaver.aspect.annotation.ApiMapping;
+import edu.tamu.weaver.mapping.condition.RestRequestCondition;
 
 // TODO: Duplicate Spring's Request Mapping handler. 
 

@@ -7,9 +7,9 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.enums;
+package edu.tamu.weaver.enums;
 
-import edu.tamu.framework.model.IRole;
+import edu.tamu.weaver.model.IRole;
 
 /**
  * 

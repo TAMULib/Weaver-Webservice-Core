@@ -7,7 +7,7 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.interceptor;
+package edu.tamu.weaver.interceptor;
 
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -23,13 +23,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import edu.tamu.framework.exception.JwtException;
-import edu.tamu.framework.model.AbstractCoreUser;
-import edu.tamu.framework.model.Credentials;
-import edu.tamu.framework.model.HttpRequest;
-import edu.tamu.framework.service.HttpRequestService;
-import edu.tamu.framework.service.SecurityContextService;
-import edu.tamu.framework.util.JwtUtility;
+import edu.tamu.weaver.exception.JwtException;
+import edu.tamu.weaver.model.AbstractCoreUser;
+import edu.tamu.weaver.model.Credentials;
+import edu.tamu.weaver.model.HttpRequest;
+import edu.tamu.weaver.service.HttpRequestService;
+import edu.tamu.weaver.service.SecurityContextService;
+import edu.tamu.weaver.util.JwtUtility;
 
 /**
  * REST interceptor. Intercepts AJAX request to decode and verify token before allowing controller to process request.

@@ -7,7 +7,7 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.model.jwt;
+package edu.tamu.weaver.model.jwt;
 
 import static org.apache.commons.codec.binary.Base64.encodeBase64URLSafeString;
 
@@ -28,7 +28,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import edu.tamu.framework.util.JwtUtility;
+import edu.tamu.weaver.util.JwtUtility;
 
 /**
  * JSON Web Token.

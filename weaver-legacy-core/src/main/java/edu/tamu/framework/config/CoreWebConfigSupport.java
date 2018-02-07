@@ -7,7 +7,7 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.config;
+package edu.tamu.weaver.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -17,8 +17,8 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
-import edu.tamu.framework.mapping.RestRequestMappingHandler;
-import edu.tamu.framework.mapping.WebSocketRequestMappingHandler;
+import edu.tamu.weaver.mapping.RestRequestMappingHandler;
+import edu.tamu.weaver.mapping.WebSocketRequestMappingHandler;
 
 /**
  * Core Web MVC configuration support.

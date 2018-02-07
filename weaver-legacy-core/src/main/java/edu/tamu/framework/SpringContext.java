@@ -7,7 +7,7 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework;
+package edu.tamu.weaver;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;

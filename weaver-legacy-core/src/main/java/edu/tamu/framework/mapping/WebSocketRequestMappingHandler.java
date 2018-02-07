@@ -7,7 +7,7 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.mapping;
+package edu.tamu.weaver.mapping;
 
 /*
  * Copyright 2002-2016 the original author or authors.
@@ -82,10 +82,10 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import edu.tamu.framework.aspect.annotation.ApiMapping;
-import edu.tamu.framework.mapping.condition.WebSocketRequestCondition;
-import edu.tamu.framework.mapping.info.CustomSimpMessageMappingInfo;
-import edu.tamu.framework.mapping.support.CustomPayloadArgumentResolver;
+import edu.tamu.weaver.aspect.annotation.ApiMapping;
+import edu.tamu.weaver.mapping.condition.WebSocketRequestCondition;
+import edu.tamu.weaver.mapping.info.CustomSimpMessageMappingInfo;
+import edu.tamu.weaver.mapping.support.CustomPayloadArgumentResolver;
 
 public class WebSocketRequestMappingHandler extends CustomAbstractMethodMessageHandler<CustomSimpMessageMappingInfo> implements SmartLifecycle {
 

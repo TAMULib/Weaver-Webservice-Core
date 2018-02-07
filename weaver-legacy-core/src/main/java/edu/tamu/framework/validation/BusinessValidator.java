@@ -7,9 +7,9 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.validation;
+package edu.tamu.weaver.validation;
 
-import edu.tamu.framework.enums.BusinessValidationType;
+import edu.tamu.weaver.enums.BusinessValidationType;
 
 @Deprecated
 public class BusinessValidator extends SimpleValidator<BusinessValidationType> {

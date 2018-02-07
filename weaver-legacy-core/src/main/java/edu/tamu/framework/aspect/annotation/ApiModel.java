@@ -7,7 +7,7 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.aspect.annotation;
+package edu.tamu.weaver.aspect.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

@@ -1,4 +1,4 @@
-package edu.tamu.framework.service;
+package edu.tamu.weaver.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,8 +12,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Service;
 
-import edu.tamu.framework.model.AbstractCoreUser;
-import edu.tamu.framework.model.Credentials;
+import edu.tamu.weaver.model.AbstractCoreUser;
+import edu.tamu.weaver.model.Credentials;
 
 @Service
 public class SecurityContextService<U extends AbstractCoreUser> {

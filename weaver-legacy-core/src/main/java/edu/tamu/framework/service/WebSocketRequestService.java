@@ -7,7 +7,7 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.service;
+package edu.tamu.weaver.service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,8 +17,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.PathMatcher;
 
-import edu.tamu.framework.model.AbstractCoreUser;
-import edu.tamu.framework.model.WebSocketRequest;
+import edu.tamu.weaver.model.AbstractCoreUser;
+import edu.tamu.weaver.model.WebSocketRequest;
 
 /**
  * Websocket request service. Stores, retrieves, and removes current requests. Used to marshel websocket requests between interceptor and aspect.

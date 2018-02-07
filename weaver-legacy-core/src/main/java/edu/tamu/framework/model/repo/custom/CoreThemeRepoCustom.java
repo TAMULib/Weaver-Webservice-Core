@@ -7,10 +7,10 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.model.repo.custom;
+package edu.tamu.weaver.model.repo.custom;
 
-import edu.tamu.framework.model.CoreTheme;
-import edu.tamu.framework.model.ThemeProperty;
+import edu.tamu.weaver.model.CoreTheme;
+import edu.tamu.weaver.model.ThemeProperty;
 
 public interface CoreThemeRepoCustom {
 

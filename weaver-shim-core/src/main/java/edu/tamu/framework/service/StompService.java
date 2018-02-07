@@ -7,7 +7,7 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.service;
+package edu.tamu.weaver.service;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

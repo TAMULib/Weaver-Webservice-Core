@@ -7,7 +7,7 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.model;
+package edu.tamu.weaver.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

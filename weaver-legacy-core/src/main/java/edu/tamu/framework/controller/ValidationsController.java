@@ -7,11 +7,11 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.controller;
+package edu.tamu.weaver.controller;
 
-import static edu.tamu.framework.enums.ApiResponseType.INVALID;
-import static edu.tamu.framework.enums.ApiResponseType.SUCCESS;
-import static edu.tamu.framework.util.EntityUtility.recursivelyFindField;
+import static edu.tamu.weaver.enums.ApiResponseType.INVALID;
+import static edu.tamu.weaver.enums.ApiResponseType.SUCCESS;
+import static edu.tamu.weaver.util.EntityUtility.recursivelyFindField;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -23,11 +23,11 @@ import java.util.Map.Entry;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 
-import edu.tamu.framework.aspect.annotation.ApiMapping;
-import edu.tamu.framework.aspect.annotation.ApiVariable;
-import edu.tamu.framework.model.ApiResponse;
-import edu.tamu.framework.validation.InputValidator;
-import edu.tamu.framework.validation.Validator;
+import edu.tamu.weaver.aspect.annotation.ApiMapping;
+import edu.tamu.weaver.aspect.annotation.ApiVariable;
+import edu.tamu.weaver.model.ApiResponse;
+import edu.tamu.weaver.validation.InputValidator;
+import edu.tamu.weaver.validation.Validator;
 
 @Deprecated
 @Controller

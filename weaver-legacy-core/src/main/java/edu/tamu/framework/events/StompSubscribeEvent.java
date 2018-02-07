@@ -7,7 +7,7 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.events;
+package edu.tamu.weaver.events;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

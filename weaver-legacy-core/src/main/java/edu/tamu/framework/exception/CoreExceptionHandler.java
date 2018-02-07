@@ -7,7 +7,7 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.exception;
+package edu.tamu.weaver.exception;
 
 import java.util.HashMap;
 import java.util.Map;

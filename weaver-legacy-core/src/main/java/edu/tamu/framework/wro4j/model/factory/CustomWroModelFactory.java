@@ -1,4 +1,4 @@
-package edu.tamu.framework.wro4j.model.factory;
+package edu.tamu.weaver.wro4j.model.factory;
 
 import ro.isdc.wro.model.WroModel;
 import ro.isdc.wro.model.factory.WroModelFactory;

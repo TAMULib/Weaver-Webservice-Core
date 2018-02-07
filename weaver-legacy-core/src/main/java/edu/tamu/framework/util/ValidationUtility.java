@@ -7,22 +7,22 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.util;
+package edu.tamu.weaver.util;
 
-import static edu.tamu.framework.util.EntityUtility.NAME_COLUMN_NAME;
-import static edu.tamu.framework.util.EntityUtility.PASSWORD_COLUMN_NAME;
-import static edu.tamu.framework.util.EntityUtility.SYSTEM_COLUMN_NAME;
-import static edu.tamu.framework.util.EntityUtility.createNewFromSystemDefault;
-import static edu.tamu.framework.util.EntityUtility.getFieldForProperty;
-import static edu.tamu.framework.util.EntityUtility.getValueForProperty;
-import static edu.tamu.framework.util.EntityUtility.getValueFromPath;
-import static edu.tamu.framework.util.EntityUtility.queryById;
-import static edu.tamu.framework.util.EntityUtility.queryByPosition;
-import static edu.tamu.framework.util.EntityUtility.queryByProperty;
-import static edu.tamu.framework.util.EntityUtility.queryWithClassById;
-import static edu.tamu.framework.util.EntityUtility.recursivelyFindField;
-import static edu.tamu.framework.util.EntityUtility.recursivelyFindTableAnnotation;
-import static edu.tamu.framework.util.EntityUtility.recursivelyFindUniqueColumn;
+import static edu.tamu.weaver.util.EntityUtility.NAME_COLUMN_NAME;
+import static edu.tamu.weaver.util.EntityUtility.PASSWORD_COLUMN_NAME;
+import static edu.tamu.weaver.util.EntityUtility.SYSTEM_COLUMN_NAME;
+import static edu.tamu.weaver.util.EntityUtility.createNewFromSystemDefault;
+import static edu.tamu.weaver.util.EntityUtility.getFieldForProperty;
+import static edu.tamu.weaver.util.EntityUtility.getValueForProperty;
+import static edu.tamu.weaver.util.EntityUtility.getValueFromPath;
+import static edu.tamu.weaver.util.EntityUtility.queryById;
+import static edu.tamu.weaver.util.EntityUtility.queryByPosition;
+import static edu.tamu.weaver.util.EntityUtility.queryByProperty;
+import static edu.tamu.weaver.util.EntityUtility.queryWithClassById;
+import static edu.tamu.weaver.util.EntityUtility.recursivelyFindField;
+import static edu.tamu.weaver.util.EntityUtility.recursivelyFindTableAnnotation;
+import static edu.tamu.weaver.util.EntityUtility.recursivelyFindUniqueColumn;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -41,13 +41,13 @@ import javax.persistence.criteria.Root;
 
 import org.springframework.stereotype.Service;
 
-import edu.tamu.framework.SpringContext;
-import edu.tamu.framework.model.BaseEntity;
-import edu.tamu.framework.model.ValidatingBase;
-import edu.tamu.framework.validation.BusinessValidator;
-import edu.tamu.framework.validation.InputValidator;
-import edu.tamu.framework.validation.MethodValidator;
-import edu.tamu.framework.validation.ValidationResults;
+import edu.tamu.weaver.SpringContext;
+import edu.tamu.weaver.model.BaseEntity;
+import edu.tamu.weaver.model.ValidatingBase;
+import edu.tamu.weaver.validation.BusinessValidator;
+import edu.tamu.weaver.validation.InputValidator;
+import edu.tamu.weaver.validation.MethodValidator;
+import edu.tamu.weaver.validation.ValidationResults;
 
 @Deprecated
 @Service

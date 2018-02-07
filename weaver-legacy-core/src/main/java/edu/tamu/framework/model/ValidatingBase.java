@@ -7,14 +7,14 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.model;
+package edu.tamu.weaver.model;
 
 import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import edu.tamu.framework.validation.ValidationResults;
-import edu.tamu.framework.validation.Validator;
+import edu.tamu.weaver.validation.ValidationResults;
+import edu.tamu.weaver.validation.Validator;
 
 @Deprecated
 public abstract class ValidatingBase {

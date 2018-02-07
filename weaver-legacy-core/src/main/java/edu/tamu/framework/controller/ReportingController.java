@@ -7,9 +7,9 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.controller;
+package edu.tamu.weaver.controller;
 
-import static edu.tamu.framework.enums.ApiResponseType.SUCCESS;
+import static edu.tamu.weaver.enums.ApiResponseType.SUCCESS;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 import java.util.Date;
@@ -21,12 +21,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RestController;
 
-import edu.tamu.framework.aspect.annotation.ApiCredentials;
-import edu.tamu.framework.aspect.annotation.ApiData;
-import edu.tamu.framework.aspect.annotation.ApiMapping;
-import edu.tamu.framework.model.ApiResponse;
-import edu.tamu.framework.model.Credentials;
-import edu.tamu.framework.util.EmailSender;
+import edu.tamu.weaver.aspect.annotation.ApiCredentials;
+import edu.tamu.weaver.aspect.annotation.ApiData;
+import edu.tamu.weaver.aspect.annotation.ApiMapping;
+import edu.tamu.weaver.model.ApiResponse;
+import edu.tamu.weaver.model.Credentials;
+import edu.tamu.weaver.util.EmailSender;
 
 /**
  * 

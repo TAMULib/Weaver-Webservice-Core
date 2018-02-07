@@ -7,7 +7,7 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.config;
+package edu.tamu.weaver.config;
 
 import java.util.List;
 import java.util.Properties;
@@ -47,14 +47,14 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.cfg.MapperConfig;
 import com.fasterxml.jackson.databind.introspect.Annotated;
 
-import edu.tamu.framework.events.StompConnectEvent;
-import edu.tamu.framework.events.StompDisconnectEvent;
-import edu.tamu.framework.events.StompSubscribeEvent;
-import edu.tamu.framework.events.StompUnsubscribeEvent;
-import edu.tamu.framework.resolver.BaseEntityIdResolver;
-import edu.tamu.framework.service.StompService;
-import edu.tamu.framework.service.ThemeManagerService;
-import edu.tamu.framework.wro4j.manager.factory.CustomConfigurableWroManagerFactory;
+import edu.tamu.weaver.events.StompConnectEvent;
+import edu.tamu.weaver.events.StompDisconnectEvent;
+import edu.tamu.weaver.events.StompSubscribeEvent;
+import edu.tamu.weaver.events.StompUnsubscribeEvent;
+import edu.tamu.weaver.resolver.BaseEntityIdResolver;
+import edu.tamu.weaver.service.StompService;
+import edu.tamu.weaver.service.ThemeManagerService;
+import edu.tamu.weaver.wro4j.manager.factory.CustomConfigurableWroManagerFactory;
 import ro.isdc.wro.config.jmx.ConfigConstants;
 import ro.isdc.wro.http.ConfigurableWroFilter;
 import ro.isdc.wro.http.handler.factory.SimpleRequestHandlerFactory;
@@ -72,8 +72,8 @@ import wro4j.http.handler.CustomRequestHandler;
  *
  */
 @Configuration
-@EnableJpaRepositories(basePackages = { "edu.tamu.framework.model.repo" })
-@EntityScan(basePackages = { "edu.tamu.framework.model" })
+@EnableJpaRepositories(basePackages = { "edu.tamu.weaver.model.repo" })
+@EntityScan(basePackages = { "edu.tamu.weaver.model" })
 public class CoreWebAppConfig extends WebMvcConfigurerAdapter {
 
     @PersistenceContext

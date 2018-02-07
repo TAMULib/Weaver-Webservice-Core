@@ -10,23 +10,23 @@
   <description>Reporting for Weaver</description>
 
   <parent>
-    <groupId>edu.tamu.framework</groupId>
+    <groupId>edu.tamu.weaver</groupId>
     <artifactId>weaver-webservice-parent</artifactId>
-    <version>1.3.x-SNAPSHOT</version>
+    <version>1.3.0</version>
   </parent>
 
   <dependencies>
 
     <dependency>
-      <groupId>edu.tamu.framework</groupId>
+      <groupId>edu.tamu.weaver</groupId>
       <artifactId>weaver-core</artifactId>
-      <version>1.3.x-SNAPSHOT</version>
+      <version>1.3.0</version>
     </dependency>
 
     <dependency>
-      <groupId>edu.tamu.framework</groupId>
+      <groupId>edu.tamu.weaver</groupId>
       <artifactId>weaver-email</artifactId>
-      <version>1.3.x-SNAPSHOT</version>
+      <version>1.3.0</version>
     </dependency>
 
     <dependency>

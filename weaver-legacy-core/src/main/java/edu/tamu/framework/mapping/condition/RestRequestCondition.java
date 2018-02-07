@@ -7,7 +7,7 @@
  * Revisions: 
  *     $Log$ 
  */
-package edu.tamu.framework.mapping.condition;
+package edu.tamu.weaver.mapping.condition;
 
 /*
  * Copyright 2002-2016 the original author or authors.
