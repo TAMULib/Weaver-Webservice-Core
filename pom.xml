@@ -5,7 +5,7 @@
 
   <groupId>edu.tamu.weaver</groupId>
 
-  <artifactId>weaver-webservice-parent</artifactId>
+  <artifactId>webservice-parent</artifactId>
 
   <version>2.0.0</version>
 
@@ -14,20 +14,20 @@
   <description>Parent Freamwork for Weaver</description>
 
   <modules>
-    <module>weaver-core</module>
-    <module>weaver-data</module>
+    <module>core</module>
+    <module>data</module>
 
-    <module>weaver-auth</module>
-    <module>weaver-token</module>
-    <module>weaver-user</module>
-    <module>weaver-validation</module>
+    <module>auth</module>
+    <module>token</module>
+    <module>user</module>
+    <module>validation</module>
 
-    <module>weaver-token-provider</module>
+    <module>token-provider</module>
 
-    <module>weaver-email</module>
-    <module>weaver-reporting</module>
-    <module>weaver-cli</module>
-    <module>weaver-wro</module>
+    <module>email</module>
+    <module>reporting</module>
+    <module>cli</module>
+    <module>wro</module>
 
   </modules>
 
