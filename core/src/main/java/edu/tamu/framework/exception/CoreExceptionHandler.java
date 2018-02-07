@@ -22,8 +22,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class CoreExceptionHandler {
 
     @ResponseBody
-    @ExceptionHandler(JWTException.class)
-    public ResponseEntity<Map<String, String>> handleJWTException(JWTException ex) {
+    @ExceptionHandler(JwtException.class)
+    public ResponseEntity<Map<String, String>> handleJWTException(JwtException ex) {
         Map<String, String> errorMap = new HashMap<String, String>();
         errorMap.put("code", ex.getErrCode());
         errorMap.put("message", ex.getErrMsg());

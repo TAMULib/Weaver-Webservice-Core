@@ -21,44 +21,45 @@ package edu.tamu.framework.model;
  */
 public class Symlink {
 
-	public String path;
-	public String target;
+    public String path;
+    public String target;
 
-	public Symlink() { }
+    public Symlink() {
+    }
 
-	public Symlink(String path, String target) {
-		this.path = path;
-		this.target = target;
-	}
+    public Symlink(String path, String target) {
+        this.path = path;
+        this.target = target;
+    }
 
-	/**
-	 * @return the path
-	 */
-	public String getPath() {
-		return path;
-	}
+    /**
+     * @return the path
+     */
+    public String getPath() {
+        return path;
+    }
 
-	/**
-	 * @param path
-	 *            the path to set
-	 */
-	public void setPath(String path) {
-		this.path = path;
-	}
+    /**
+     * @param path
+     *            the path to set
+     */
+    public void setPath(String path) {
+        this.path = path;
+    }
 
-	/**
-	 * @return the target
-	 */
-	public String getTarget() {
-		return target;
-	}
+    /**
+     * @return the target
+     */
+    public String getTarget() {
+        return target;
+    }
 
-	/**
-	 * @param target
-	 *            the target to set
-	 */
-	public void setTarget(String target) {
-		this.target = target;
-	}
+    /**
+     * @param target
+     *            the target to set
+     */
+    public void setTarget(String target) {
+        this.target = target;
+    }
 
 }

@@ -13,9 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Http request. Created and stored in memory when a new request goes through
- * the interceptor. Is retrieved and removed when the aspect point cuts an
- * endpoint.
+ * Http request. Created and stored in memory when a new request goes through the interceptor. Is
+ * retrieved and removed when the aspect point cuts an endpoint.
  * 
  * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
  * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>
@@ -24,97 +23,138 @@ import javax.servlet.http.HttpServletResponse;
  * @author <a href="mailto:wwelling@library.tamu.edu">William Welling</a>
  *
  */
-public class HttpRequest {
+public class HttpRequest<U extends AbstractCoreUser> {
 
-	private HttpServletRequest request;
+    private HttpServletRequest request;
 
-	private HttpServletResponse response;
+    private HttpServletResponse response;
 
-	private String user;
+    private String contextUin;
 
-	private String destination;
+    private U user;
 
-	public HttpRequest(HttpServletRequest request, HttpServletResponse response, String user, String destination) {
-		this.request = request;
-		this.response = response;
-		this.user = user;
-		this.destination = destination;
-	}
+    private String destination;
 
-	/**
-	 * Gets request.
-	 * 
-	 * @return HttpServletRequest
-	 */
-	public HttpServletRequest getRequest() {
-		return request;
-	}
+    private Credentials credentials;
 
-	/**
-	 * Sets request.
-	 * 
-	 * @param request
-	 *            HttpServletRequest
-	 */
-	public void setRequest(HttpServletRequest request) {
-		this.request = request;
-	}
+    public HttpRequest(HttpServletRequest request, HttpServletResponse response, String contextUin, String destination, Credentials credentials) {
+        this.request = request;
+        this.response = response;
+        this.contextUin = contextUin;
+        this.destination = destination;
+        this.credentials = credentials;
+    }
 
-	/**
-	 * Gets response.
-	 * 
-	 * @return HttpServletResponse
-	 */
-	public HttpServletResponse getResponse() {
-		return response;
-	}
+    public HttpRequest(HttpServletRequest request, HttpServletResponse response, String contextUin, String destination, Credentials credentials, U user) {
+        this(request, response, contextUin, destination, credentials);
+        this.user = user;
+    }
 
-	/**
-	 * Sets response.
-	 * 
-	 * @param response
-	 *            HttpServletResponse
-	 */
-	public void setResponse(HttpServletResponse response) {
-		this.response = response;
-	}
+    /**
+     * Gets request.
+     * 
+     * @return HttpServletRequest
+     */
+    public HttpServletRequest getRequest() {
+        return request;
+    }
 
-	/**
-	 * Gets user.
-	 * 
-	 * @return String
-	 */
-	public String getUser() {
-		return user;
-	}
+    /**
+     * Sets request.
+     * 
+     * @param request
+     *            HttpServletRequest
+     */
+    public void setRequest(HttpServletRequest request) {
+        this.request = request;
+    }
 
-	/**
-	 * Sets user.
-	 * 
-	 * @param user
-	 *            String
-	 */
-	public void setUser(String user) {
-		this.user = user;
-	}
+    /**
+     * Gets response.
+     * 
+     * @return HttpServletResponse
+     */
+    public HttpServletResponse getResponse() {
+        return response;
+    }
 
-	/**
-	 * Gets destination.
-	 * 
-	 * @return String
-	 */
-	public String getDestination() {
-		return destination;
-	}
+    /**
+     * Sets response.
+     * 
+     * @param response
+     *            HttpServletResponse
+     */
+    public void setResponse(HttpServletResponse response) {
+        this.response = response;
+    }
 
-	/**
-	 * Sets destination.
-	 * 
-	 * @param destination
-	 *            String
-	 */
-	public void setDestination(String destination) {
-		this.destination = destination;
-	}
+    /**
+     * 
+     * @return
+     */
+    public String getContextUin() {
+        return contextUin;
+    }
+
+    /**
+     * 
+     * @param contextUin
+     */
+    public void setContextUin(String contextUin) {
+        this.contextUin = contextUin;
+    }
+
+    /**
+     * Gets user.
+     * 
+     * @return String
+     */
+    public U getUser() {
+        return user;
+    }
+
+    /**
+     * Sets user.
+     * 
+     * @param user
+     *            String
+     */
+    public void setUser(U user) {
+        this.user = user;
+    }
+
+    /**
+     * Gets destination.
+     * 
+     * @return String
+     */
+    public String getDestination() {
+        return destination;
+    }
+
+    /**
+     * Sets destination.
+     * 
+     * @param destination
+     *            String
+     */
+    public void setDestination(String destination) {
+        this.destination = destination;
+    }
+
+    /**
+     * @return the credentials
+     */
+    public Credentials getCredentials() {
+        return credentials;
+    }
+
+    /**
+     * @param credentials
+     *            the credentials to set
+     */
+    public void setCredentials(Credentials credentials) {
+        this.credentials = credentials;
+    }
 
 }

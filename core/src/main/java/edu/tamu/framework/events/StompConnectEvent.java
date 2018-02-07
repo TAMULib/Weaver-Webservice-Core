@@ -30,26 +30,26 @@ import edu.tamu.framework.service.StompConnectionService;
  */
 public class StompConnectEvent implements ApplicationListener<SessionConnectEvent> {
 
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	@Autowired
-	private StompConnectionService stompConnectionService;
+    @Autowired
+    private StompConnectionService stompConnectionService;
 
-	@Autowired
-	private WebSocketMessageBrokerStats webSocketMessageBrokerStats;
+    @Autowired
+    private WebSocketMessageBrokerStats webSocketMessageBrokerStats;
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onApplicationEvent(SessionConnectEvent event) {
-		StompHeaderAccessor sha = StompHeaderAccessor.wrap(event.getMessage());
-		stompConnectionService.incrementActiveConnections();
-		logger.debug("ApplicationListener: Connect event [sessionId: " + sha.getSessionId() + "]");
-		logger.debug("Timestamp: " + event.getTimestamp());
-		logger.debug("Message: " + event.getMessage());
-		logger.debug("ApplicationListener: Total number of web socket connections: " + stompConnectionService.getActiveConnections());
-		logger.debug(webSocketMessageBrokerStats.getWebSocketSessionStatsInfo());
-	}
-	
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onApplicationEvent(SessionConnectEvent event) {
+        StompHeaderAccessor sha = StompHeaderAccessor.wrap(event.getMessage());
+        stompConnectionService.incrementActiveConnections();
+        logger.debug("ApplicationListener: Connect event [sessionId: " + sha.getSessionId() + "]");
+        logger.debug("Timestamp: " + event.getTimestamp());
+        logger.debug("Message: " + event.getMessage());
+        logger.debug("ApplicationListener: Total number of web socket connections: " + stompConnectionService.getActiveConnections());
+        logger.debug(webSocketMessageBrokerStats.getWebSocketSessionStatsInfo());
+    }
+
 }

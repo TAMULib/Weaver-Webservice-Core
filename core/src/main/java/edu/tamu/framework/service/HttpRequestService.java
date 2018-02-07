@@ -17,11 +17,12 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.PathMatcher;
 
+import edu.tamu.framework.model.AbstractCoreUser;
 import edu.tamu.framework.model.HttpRequest;
 
 /**
- * Http request service. Stores, retrieves, and removes current requests. Used
- * to marshel http requests between interceptor and aspect.
+ * Http request service. Stores, retrieves, and removes current requests. Used to marshel http
+ * requests between interceptor and aspect.
  * 
  * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
  * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>
@@ -31,66 +32,68 @@ import edu.tamu.framework.model.HttpRequest;
  *
  */
 @Service
-public class HttpRequestService {
+public class HttpRequestService<U extends AbstractCoreUser> {
 
     @Autowired
     @Lazy
     private PathMatcher pathMatcher;
-    
-	protected List<HttpRequest> requests = new ArrayList<HttpRequest>();
 
-	/**
-	 * Get all current requests.
-	 * 
-	 * @return List<HttpRequest>
-	 */
-	public List<HttpRequest> getRequests() {
-		return requests;
-	}
+    protected List<HttpRequest<U>> requests = new ArrayList<HttpRequest<U>>();
 
-	/**
-	 * Add request.
-	 * 
-	 * @param request
-	 *            WebSocketRequest
-	 */
-	public synchronized void addRequest(HttpRequest request) {
-		if (request.getDestination() != null && request.getUser() != null) {
-			requests.add(request);
-		}
-	}
+    /**
+     * Get all current requests.
+     * 
+     * @return List<HttpRequest<U>>
+     */
+    public List<HttpRequest<U>> getRequests() {
+        return requests;
+    }
 
-	/**
-	 * Remove request.
-	 * 
-	 * @param request
-	 *            WebSocketRequest
-	 */
-	public synchronized void removeRequest(HttpRequest request) {
-		if (request.getDestination() != null && request.getUser() != null) {
-			requests.remove(request);
-		}
-	}
+    /**
+     * Add request.
+     * 
+     * @param request
+     *            HttpRequest<U>
+     */
+    public synchronized void addRequest(HttpRequest<U> request) {
+        if (request.getDestination() != null && request.getUser() != null) {
+            requests.add(request);
+        }
+    }
 
-	/**
-	 * Get and remove request.
-	 * 
-	 * @param pattern
-	 *            String
-	 * @param user
-	 *            String
-	 * @return WebSocketRequest
-	 */
-	public synchronized HttpRequest getAndRemoveRequestByDestinationAndUser(String pattern, String user) {
-	    if(pattern.charAt(0) != '/') pattern = "/" + pattern;
-		for (int index = 0; index < requests.size(); index++) {
-			HttpRequest request = requests.get(index);
-			if (request.getUser().equals(user) && pathMatcher.match(pattern, request.getDestination())) {
-				requests.remove(index);
-				return request;
-			}
-		}
-		return null;
-	}
+    /**
+     * Remove request.
+     * 
+     * @param request
+     *            HttpRequest<U>
+     */
+    public synchronized void removeRequest(HttpRequest<U> request) {
+        if (request.getDestination() != null && request.getUser() != null) {
+            requests.remove(request);
+        }
+    }
+
+    /**
+     * Get and remove request.
+     * 
+     * @param pattern
+     *            String
+     * @param uin
+     *            Long
+     * @return HttpRequest<U>
+     */
+    public synchronized HttpRequest<U> getAndRemoveRequestByDestinationAndContextUin(String pattern, String uin) {
+        if (pattern.charAt(0) != '/') {
+            pattern = "/" + pattern;
+        }
+        for (int index = 0; index < requests.size(); index++) {
+            HttpRequest<U> request = requests.get(index);
+            if (request.getContextUin().equals(uin) && pathMatcher.match(pattern, request.getDestination())) {
+                requests.remove(index);
+                return request;
+            }
+        }
+        return null;
+    }
 
 }

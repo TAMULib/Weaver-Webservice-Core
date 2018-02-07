@@ -13,6 +13,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import edu.tamu.framework.model.ThemePropertyName;
+import edu.tamu.framework.model.repo.custom.ThemePropertyNameRepoCustom;
 
 /**
  * Application User repository.
@@ -22,7 +23,7 @@ import edu.tamu.framework.model.ThemePropertyName;
  */
 @Repository
 public interface ThemePropertyNameRepo extends JpaRepository<ThemePropertyName, Long>, ThemePropertyNameRepoCustom {
-	
-	public ThemePropertyName getThemePropertyNameByName(String name);
+
+    public ThemePropertyName getThemePropertyNameByName(String name);
 
 }
