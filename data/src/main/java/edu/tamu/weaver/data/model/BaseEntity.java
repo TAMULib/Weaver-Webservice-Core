@@ -8,9 +8,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
+import edu.tamu.weaver.response.ApiView;
+
 @MappedSuperclass
 public abstract class BaseEntity implements WeaverEntity {
 
+    @JsonView(ApiView.Partial.class)
     @Id
     @GeneratedValue(strategy = IDENTITY)
     protected Long id;
