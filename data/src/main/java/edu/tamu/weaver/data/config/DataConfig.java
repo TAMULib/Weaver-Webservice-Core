@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 @Configuration
-public class DataWebMvcConfig {
+public class DataConfig {
 
     /**
      * Object mapper bean.
