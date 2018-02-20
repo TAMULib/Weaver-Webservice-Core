@@ -3,6 +3,8 @@ package edu.tamu.weaver.response;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 /**
  * Abstract class for an API response.
  * 
@@ -15,8 +17,10 @@ import java.util.HashMap;
  */
 public class ApiResponse {
 
+    @JsonView(ApiView.Partial.class)
     private final Meta meta;
 
+    @JsonView(ApiView.Partial.class)
     private HashMap<String, Object> payload;
 
     private ApiResponse() {
