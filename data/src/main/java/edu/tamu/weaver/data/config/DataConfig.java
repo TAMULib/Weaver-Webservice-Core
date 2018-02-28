@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Configuration;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
@@ -29,8 +28,6 @@ public class DataConfig {
 
         objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
         objectMapper.configure(JsonParser.Feature.ALLOW_BACKSLASH_ESCAPING_ANY_CHARACTER, true);
-
-        objectMapper.configure(MapperFeature.DEFAULT_VIEW_INCLUSION, true);
 
         return objectMapper;
     }
