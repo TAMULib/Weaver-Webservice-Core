@@ -124,12 +124,20 @@ public class ApiResponse {
      */
     public class Meta {
 
+        @JsonView(ApiView.Partial.class)
         private ApiStatus status;
+
+        @JsonView(ApiView.Partial.class)
         private ApiAction action;
+
+        @JsonView(ApiView.Partial.class)
         private String message;
+
+        @JsonView(ApiView.Partial.class)
         private String id;
 
         public Meta() {
+
         }
 
         public ApiStatus getStatus() {
