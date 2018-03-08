@@ -98,12 +98,15 @@ public class EntityUtility {
     }
 
     public static Object recursivelyTraversePath(Object object, String[] path) {
-        String property = path[0];
-        if (path.length > 1) {
-            path = Arrays.copyOfRange(path, 1, path.length);
-            return recursivelyTraversePath(getValueForProperty(object, property), path);
+        if (object != null) {
+            String property = path[0];
+            if (path.length > 1) {
+                path = Arrays.copyOfRange(path, 1, path.length);
+                return recursivelyTraversePath(getValueForProperty(object, property), path);
+            }
+            return getValueForProperty(object, property);
         }
-        return getValueForProperty(object, property);
+        throw new RuntimeException("Cannot extrapolate value from null object!");
     }
 
     public static Field getFieldForProperty(Object model, String property) {
@@ -118,7 +121,6 @@ public class EntityUtility {
         Object value = null;
         if (field != null) {
             field.setAccessible(true);
-
             try {
                 value = field.get(model);
             } catch (IllegalArgumentException e) {
@@ -147,7 +149,7 @@ public class EntityUtility {
 
             field.setAccessible(false);
         } else {
-            // TODO: log error
+            throw new RuntimeException("Unable to find field for property " + property);
         }
     }
 
@@ -213,22 +215,14 @@ public class EntityUtility {
 
     public static Field recursivelyFindField(Class<?> clazz, String property) {
         Field field = null;
-
         try {
             field = clazz.getDeclaredField(property);
-        } catch (NoSuchFieldException e) {
-            // e.printStackTrace();
-        } catch (SecurityException e) {
-            // e.printStackTrace();
-        }
-
-        if (field == null) {
+        } catch (NoSuchFieldException | SecurityException e) {
             Class<?> superClazz = clazz.getSuperclass();
             if (superClazz != null) {
-                return recursivelyFindField(superClazz, property);
+                field = recursivelyFindField(superClazz, property);
             }
         }
-
         return field;
     }
 
