@@ -30,7 +30,7 @@ public class DataConfig {
         objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
         objectMapper.configure(JsonParser.Feature.ALLOW_BACKSLASH_ESCAPING_ANY_CHARACTER, true);
 
-        objectMapper.configure(MapperFeature.DEFAULT_VIEW_INCLUSION, true);
+        objectMapper.configure(MapperFeature.DEFAULT_VIEW_INCLUSION, false);
 
         return objectMapper;
     }
