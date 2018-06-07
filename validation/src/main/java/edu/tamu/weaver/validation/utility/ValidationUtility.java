@@ -97,6 +97,8 @@ public class ValidationUtility {
             if (value != null) {
                 Pattern pattern = Pattern.compile((String) validator.getValue());
 
+                boolean invalid = false;
+
                 List<String> values = new ArrayList<String>();
                 if (value instanceof Integer) {
                     values.add(Integer.toString((Integer) value));
@@ -108,6 +110,8 @@ public class ValidationUtility {
                         set.forEach(setValue -> {
                             values.add((String) setValue);
                         });
+                    } else {
+                        invalid = true;
                     }
                 } else if (value instanceof List) {
                     List<Object> list = (List<Object>) value;
@@ -115,18 +119,26 @@ public class ValidationUtility {
                         list.forEach(listValue -> {
                             values.add((String) listValue);
                         });
+                    } else {
+                        invalid = true;
                     }
                 } else {
                     values.add((String) value);
                 }
 
-                for (int i = 0; i < values.size(); i++) {
-                    Matcher matcher = pattern.matcher(values.get(i));
-                    if (!matcher.matches()) {
-                        results.addMessage(validator.getProperty(), validator.getType().toString(), validator.getMessage());
-                        results.setValid(false);
-                        break;
+                if (!invalid) {
+                    for (int i = 0; i < values.size(); i++) {
+                        Matcher matcher = pattern.matcher(values.get(i));
+                        if (!matcher.matches()) {
+                            invalid = true;
+                            break;
+                        }
                     }
+                }
+
+                if (invalid) {
+                    results.addMessage(validator.getProperty(), validator.getType().toString(), validator.getMessage());
+                    results.setValid(false);
                 }
 
             }
