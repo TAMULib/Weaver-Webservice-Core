@@ -9,6 +9,7 @@ public class InputValidator extends SimpleValidator<InputValidationType> {
     private Object value;
 
     public InputValidator() {
+
     }
 
     public InputValidator(InputValidationType type, String message, String property, Object value) {
