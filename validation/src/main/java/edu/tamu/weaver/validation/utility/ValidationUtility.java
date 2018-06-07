@@ -106,14 +106,14 @@ public class ValidationUtility {
                     Set<Object> set = (Set<Object>) value;
                     if (set.size() > 0) {
                         set.forEach(setValue -> {
-                            values.add((String) value);
+                            values.add((String) setValue);
                         });
                     }
                 } else if (value instanceof List) {
                     List<Object> list = (List<Object>) value;
                     if (list.size() > 0) {
-                        list.forEach(setValue -> {
-                            values.add((String) value);
+                        list.forEach(listValue -> {
+                            values.add((String) listValue);
                         });
                     }
                 } else {
