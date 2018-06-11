@@ -54,6 +54,7 @@ public class ValidationUtility {
     public static final String BUSINESS_MESSAGE_KEY = "business";
     public static final String METHOD_MESSAGE_KEY = "method";
 
+    @SuppressWarnings("unchecked")
     public static <U extends ValidatingEntity> ValidationResults validateInputs(InputValidator validator, U model) {
         ValidationResults results = new ValidationResults();
 
@@ -96,20 +97,50 @@ public class ValidationUtility {
             if (value != null) {
                 Pattern pattern = Pattern.compile((String) validator.getValue());
 
-                String valueString = null;
+                boolean invalid = false;
+
+                List<String> values = new ArrayList<String>();
                 if (value instanceof Integer) {
-                    valueString = Integer.toString((Integer) value);
+                    values.add(Integer.toString((Integer) value));
                 } else if (value instanceof Long) {
-                    valueString = Long.toString((Long) value);
+                    values.add(Long.toString((Long) value));
+                } else if (value instanceof Set) {
+                    Set<Object> set = (Set<Object>) value;
+                    if (set.size() > 0) {
+                        set.forEach(setValue -> {
+                            values.add((String) setValue);
+                        });
+                    } else {
+                        invalid = true;
+                    }
+                } else if (value instanceof List) {
+                    List<Object> list = (List<Object>) value;
+                    if (list.size() > 0) {
+                        list.forEach(listValue -> {
+                            values.add((String) listValue);
+                        });
+                    } else {
+                        invalid = true;
+                    }
                 } else {
-                    valueString = (String) value;
+                    values.add((String) value);
                 }
 
-                Matcher matcher = pattern.matcher(valueString);
-                if (!matcher.matches()) {
+                if (!invalid) {
+                    for (int i = 0; i < values.size(); i++) {
+                        Matcher matcher = pattern.matcher(values.get(i));
+                        if (!matcher.matches()) {
+                            invalid = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (invalid) {
                     results.addMessage(validator.getProperty(), validator.getType().toString(), validator.getMessage());
                     results.setValid(false);
                 }
+
             }
 
         }
@@ -121,6 +152,7 @@ public class ValidationUtility {
         }
 
         return results;
+
     }
 
     @SuppressWarnings("unchecked")
