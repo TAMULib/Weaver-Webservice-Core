@@ -1,2 +1,2 @@
-Weaver-Webservice-Core
+Webservice-Core
 ======================
