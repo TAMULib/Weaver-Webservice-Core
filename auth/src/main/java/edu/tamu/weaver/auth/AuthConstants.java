@@ -29,8 +29,10 @@ public class AuthConstants {
     public final static byte[] ERROR_RESPONSE;
 
     public final static byte[] UNAUTHORIZED_RESPONSE;
-    
+
     public final static ApiResponse UNAUTHORIZED_API_RESPONSE = new ApiResponse(UNAUTHORIZED);
+
+    public final static ApiResponse SERVER_ERROR_API_RESPONSE = new ApiResponse(ERROR);
 
     static {
         ObjectMapper objectMapper = new ObjectMapper();
