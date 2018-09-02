@@ -26,7 +26,6 @@
 
     <module>email</module>
     <module>reporting</module>
-    <module>cli</module>
     <module>wro</module>
 
   </modules>
