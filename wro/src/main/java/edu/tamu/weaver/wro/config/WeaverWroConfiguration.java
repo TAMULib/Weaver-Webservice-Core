@@ -71,9 +71,9 @@ public class WeaverWroConfiguration {
     			e.printStackTrace();
     			logger.error("Could not create ThemeManagerService Bean with class: "+themeManagerServiceClassName, e);
     		}
-    	} catch (ClassNotFoundException e1) {
-    		logger.error("Could not find ThemeManagerService implementation class: "+themeManagerServiceClassName, e1);
-    	}
+        } catch (ClassNotFoundException e) {
+            logger.warn("Could not find ThemeManagerService implementation class: " + themeManagerServiceClassName + "! Application must create theme manager bean!");
+        }
     	return null;
     }
     

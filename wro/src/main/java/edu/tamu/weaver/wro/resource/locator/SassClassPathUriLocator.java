@@ -2,11 +2,13 @@ package edu.tamu.weaver.wro.resource.locator;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +34,7 @@ public class SassClassPathUriLocator implements UriLocator {
      */
     public static final String ALIAS = "sassClassPathUri";
 
-	private ResourcePatternResolver resourcePatternResolver;
+    private ResourcePatternResolver resourcePatternResolver;
 
     public SassClassPathUriLocator(ResourcePatternResolver resourcePatternResolver) {
         this.resourcePatternResolver = resourcePatternResolver;
@@ -89,7 +91,14 @@ public class SassClassPathUriLocator implements UriLocator {
         }
 
         if (resource.exists() && resource.isReadable()) {
-            file = Optional.of(resource.getFile());
+            if (resource.getURI().getScheme().equals("jar")) {
+                File tempFile = File.createTempFile("wro", ".tmp");
+                tempFile.deleteOnExit();
+                IOUtils.copy(resource.getInputStream(), new FileOutputStream(tempFile));
+                file = Optional.of(tempFile);
+            } else {
+                file = Optional.of(resource.getFile());
+            }
         }
 
         return file;
