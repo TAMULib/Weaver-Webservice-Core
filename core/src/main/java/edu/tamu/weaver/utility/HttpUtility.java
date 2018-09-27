@@ -8,8 +8,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Value;
-
 /**
  * Http Utility
  * 
@@ -18,12 +16,10 @@ import org.springframework.beans.factory.annotation.Value;
  * @author <a href="mailto:huff@library.tamu.edu">Jeremy Huff</a>
  * @author <a href="mailto:jsavell@library.tamu.edu">Jason Savell</a>
  * @author <a href="mailto:wwelling@library.tamu.edu">William Welling</a>
- *
  */
 public class HttpUtility {
 
-    @Value("${app.http.timeout:60000}")
-    private static int DEFAULT_TIMEOUT;
+    private static int DEFAULT_TIMEOUT = 60000;
 
     public static String makeHttpRequest(String urlString, String method) throws IOException {
         return makeHttpRequest(urlString, method, Optional.empty(), Optional.empty(), DEFAULT_TIMEOUT);
@@ -48,39 +44,43 @@ public class HttpUtility {
     public static String makeHttpRequest(String urlString, String method, Optional<String> message, Optional<String> contentType, int timeout) throws IOException {
         URL url = new URL(urlString);
 
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-        conn.setConnectTimeout(timeout);
-        conn.setReadTimeout(timeout);
+        connection.setConnectTimeout(timeout);
+        connection.setReadTimeout(timeout);
 
-        conn.setRequestMethod(method);
+        connection.setRequestMethod(method);
 
-        conn.setDoOutput(true);
+        connection.setDoOutput(true);
+
+        connection.setRequestProperty("Accept", "*/*");
 
         if (message.isPresent()) {
 
-            conn.setDoInput(true);
+            connection.setDoInput(true);
 
             if (contentType.isPresent()) {
-                conn.setRequestProperty("Content-type", contentType.get());
+                connection.setRequestProperty("Content-type", contentType.get());
             }
 
-            PrintWriter pw = new PrintWriter(conn.getOutputStream());
-            pw.write(message.get());
-            pw.close();
+            PrintWriter printWriter = new PrintWriter(connection.getOutputStream());
+            printWriter.write(message.get());
+            printWriter.close();
         }
 
-        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 
         String inputLine;
 
         StringBuffer strBufRes = new StringBuffer();
 
-        while ((inputLine = in.readLine()) != null) {
+        while ((inputLine = bufferedReader.readLine()) != null) {
             strBufRes.append(inputLine);
         }
 
-        in.close();
+        bufferedReader.close();
+
+        connection.disconnect();
 
         return strBufRes.toString();
     }
