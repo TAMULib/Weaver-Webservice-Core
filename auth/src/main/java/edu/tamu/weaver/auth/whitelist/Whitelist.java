@@ -23,7 +23,7 @@ public class Whitelist {
 
     private static final String HEADER_X_FORWARDED_FOR = "x-forwarded-for";
 
-    @Value("${app.whitelist}")
+    @Value("${app.whitelist:127.0.0.1}")
     private String[] whitelist;
 
     @PostConstruct
