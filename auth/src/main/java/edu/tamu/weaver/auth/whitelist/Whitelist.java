@@ -5,7 +5,6 @@ import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Iterator;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
@@ -24,11 +23,6 @@ public class Whitelist {
 
     @Value("${app.whitelist:127.0.0.1}")
     private String[] whitelist;
-
-    @PostConstruct
-    public void info() {
-        logger.debug("Component whitelist initialized");
-    }
 
     public boolean isAllowed(HttpServletRequest req) throws UnknownHostException {
         String ip = req.getRemoteAddr();
