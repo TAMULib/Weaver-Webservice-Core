@@ -3,7 +3,6 @@ package edu.tamu.weaver.auth.whitelist;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
-import java.util.Enumeration;
 import java.util.Iterator;
 
 import javax.annotation.PostConstruct;
@@ -28,43 +27,34 @@ public class Whitelist {
 
     @PostConstruct
     public void info() {
-        logger.info("Component whitelist initialized");
+        logger.debug("Component whitelist initialized");
     }
 
     public boolean isAllowed(HttpServletRequest req) throws UnknownHostException {
         String ip = req.getRemoteAddr();
-        logger.info("Request ip: " + ip);
+        logger.debug("Request ip: " + ip);
 
         String realIp = req.getHeader(HEADER_X_REAL_IP);
-        logger.info("Request real ip: " + realIp);
+        logger.debug("Request real ip: " + realIp);
 
         String forwardForIps = req.getHeader(HEADER_X_FORWARDED_FOR);
-        logger.info("Request forwarded for ip: " + forwardForIps);
-
-        Enumeration<String> headerNames = req.getHeaderNames();
-        if (headerNames != null) {
-            while (headerNames.hasMoreElements()) {
-                String headerName = headerNames.nextElement();
-                String headerValue = req.getHeader(headerName);
-                logger.info(headerName + ": " + headerValue);
-            }
-        }
+        logger.debug("Request forwarded for ip: " + forwardForIps);
 
         boolean allowed = false;
 
         for (String entry : whitelist) {
             if (ip != null && entry.trim().equals(ip.trim())) {
-                logger.info("Allowing whitelist ip " + entry + " for " + req.getRequestURI());
+                logger.debug("Allowing whitelist ip " + entry + " for " + req.getRequestURI());
                 allowed = true;
                 break;
             }
             if (realIp != null && entry.trim().equals(realIp.trim())) {
-                logger.info("Allowing whitelist real ip " + realIp + " for " + req.getRequestURI());
+                logger.debug("Allowing whitelist real ip " + realIp + " for " + req.getRequestURI());
                 allowed = true;
                 break;
             }
             if (forwardForIps != null && forwardForIps.contains(entry.trim())) {
-                logger.info("Allowing whitelist forwarded for ips " + forwardForIps + " for " + req.getRequestURI());
+                logger.debug("Allowing whitelist forwarded for ips " + forwardForIps + " for " + req.getRequestURI());
                 allowed = true;
                 break;
             }
@@ -77,13 +67,13 @@ public class Whitelist {
             if (realIp != null) {
                 realHost = getHostFromIp(realIp);
                 if (realHost != null) {
-                    logger.info("Request real host: " + realHost);
+                    logger.debug("Request real host: " + realHost);
                 }
             }
 
             for (String entry : whitelist) {
                 if (realHost != null && entry.trim().equals(realHost.trim())) {
-                    logger.info("Allowing whitelist real host " + realHost + " for " + req.getRequestURI());
+                    logger.debug("Allowing whitelist real host " + realHost + " for " + req.getRequestURI());
                     allowed = true;
                     break;
                 }
@@ -97,7 +87,7 @@ public class Whitelist {
 
             for (String entry : whitelist) {
                 if (forwardForHosts != null && forwardForHosts.contains(entry.trim())) {
-                    logger.info("Allowing whitelist forwarded for hosts " + forwardForHosts + " for " + req.getRequestURI());
+                    logger.debug("Allowing whitelist forwarded for hosts " + forwardForHosts + " for " + req.getRequestURI());
                     allowed = true;
                     break;
                 }
