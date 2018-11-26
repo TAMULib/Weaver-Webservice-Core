@@ -8,4 +8,6 @@ public interface RepoThemeManager extends ThemeManager {
      * @return CoreTheme
      */
     public CoreTheme getCurrentTheme();
+    public void updateThemeProperty(Long themeId, Long propertyId, String value);
+    public void setCurrentTheme(CoreTheme theme);
 }

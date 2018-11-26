@@ -20,9 +20,9 @@ import ro.isdc.wro.model.resource.locator.support.LocatorProvider;
 
 /**
  * Custom loader to support SASS files containing imports and loaded by classpath
- * 
+ *
  * Adapted from WRO native SassUriLocator: https://github.com/wro4j/wro4j/pull/1048/files
- * 
+ *
  * @author Jason Savell
  */
 public class SassClassPathUriLocator implements UriLocator {
@@ -51,11 +51,7 @@ public class SassClassPathUriLocator implements UriLocator {
             // scss file have either no extension or scss
             // maybe check for the "_"?
             if ("".equals(extension) || "scss".equals(extension)) {
-                try {
-                    accepted = getScssFile(url).isPresent();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                accepted = getScssFile(url).isPresent();
             }
         }
         if (!accepted) {
@@ -64,7 +60,7 @@ public class SassClassPathUriLocator implements UriLocator {
         return accepted;
     }
 
-    private Optional<File> getScssFile(String url) throws IOException {
+    private Optional<File> getScssFile(String url) {
 
         Optional<File> file = Optional.empty();
 
@@ -91,13 +87,17 @@ public class SassClassPathUriLocator implements UriLocator {
         }
 
         if (resource.exists() && resource.isReadable()) {
-            if (resource.getURI().getScheme().equals("jar")) {
-                File tempFile = File.createTempFile("wro", ".tmp");
-                tempFile.deleteOnExit();
-                IOUtils.copy(resource.getInputStream(), new FileOutputStream(tempFile));
-                file = Optional.of(tempFile);
-            } else {
-                file = Optional.of(resource.getFile());
+            try {
+                if (resource.getURI().getScheme().equals("jar")) {
+                    File tempFile = File.createTempFile("wro", ".tmp");
+                    tempFile.deleteOnExit();
+                    IOUtils.copy(resource.getInputStream(), new FileOutputStream(tempFile));
+                    file = Optional.of(tempFile);
+                } else {
+                    file = Optional.of(resource.getFile());
+                }
+            } catch (IOException e) {
+                //this is fine
             }
         }
 

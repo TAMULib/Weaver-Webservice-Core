@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -27,7 +28,8 @@ import edu.tamu.weaver.wro.model.repo.CoreThemeRepo;
 import edu.tamu.weaver.wro.model.repo.ThemePropertyNameRepo;
 import edu.tamu.weaver.wro.model.repo.ThemePropertyRepo;
 
-public class RepoThemeManagerService extends SimpleThemeManagerService {
+@Service
+public class RepoThemeManagerService extends SimpleThemeManagerService implements RepoThemeManager {
 
     @Autowired
     private CoreThemeRepo coreThemeRepo;
@@ -45,7 +47,7 @@ public class RepoThemeManagerService extends SimpleThemeManagerService {
 
     @Value("${theme.defaults.location:''}")
     private String themeDefaultsFile;
-    
+
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public RepoThemeManagerService() {
@@ -144,6 +146,7 @@ public class RepoThemeManagerService extends SimpleThemeManagerService {
         return themeProperties;
     }
 
+    @Override
     public void setCurrentTheme(CoreTheme theme) {
         Boolean hadTheme = (this.currentTheme != null) ? true : false;
         this.currentTheme = theme;
