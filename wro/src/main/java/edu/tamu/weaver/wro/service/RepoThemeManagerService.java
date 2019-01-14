@@ -45,8 +45,8 @@ public class RepoThemeManagerService extends SimpleThemeManagerService implement
 
     private CoreTheme currentTheme;
 
-    @Value("${theme.defaults.location:''}")
-    private String themeDefaultsFile;
+    @Value("${theme.default.location:''}")
+    private String themeDefaultFile;
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -55,9 +55,9 @@ public class RepoThemeManagerService extends SimpleThemeManagerService implement
 
     @PostConstruct
     public void setUp() {
-        if (coreThemeRepo.count() == 0 && !themeDefaultsFile.equals("")) {
+        if (coreThemeRepo.count() == 0 && !themeDefaultFile.equals("")) {
             logger.debug("Prepping Defaults :" + coreThemeRepo.count() + "");
-            ClassPathResource themeDefaultsRaw = new ClassPathResource(themeDefaultsFile);
+            ClassPathResource themeDefaultsRaw = new ClassPathResource(themeDefaultFile);
             JsonNode themeDefaults = null;
             try {
                 themeDefaults = objectMapper.readTree(new FileInputStream(themeDefaultsRaw.getFile()));
