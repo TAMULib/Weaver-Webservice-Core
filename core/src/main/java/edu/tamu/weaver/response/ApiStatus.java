@@ -18,7 +18,7 @@ public enum ApiStatus {
     WARNING("Your request caused warning"),
     INFO("Your request was processed"),
     INVALID("Your request failed validation"),
-    UNAUTHORIZED("Your are not authorized for request");
+    UNAUTHORIZED("You are not authorized for request");
     // @formatter:on
 
     String message;
