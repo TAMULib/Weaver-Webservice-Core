@@ -21,6 +21,7 @@
     <module>token</module>
     <module>user</module>
     <module>validation</module>
+    <module>messaging</module>
 
     <module>token-provider</module>
 
