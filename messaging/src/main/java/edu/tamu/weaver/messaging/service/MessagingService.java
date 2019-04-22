@@ -8,8 +8,6 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
-import edu.tamu.weaver.messaging.model.MessageActions;
-
 @Service
 public class MessagingService {
 
@@ -20,8 +18,8 @@ public class MessagingService {
         this.jmsTemplate = jmsTemplate;
     }
 
-    public void sendMessage(String destination, Map<String, String> payload, MessageActions action) {
-        Message<Map<String, String>> message = MessageBuilder.withPayload(payload).setHeader("action", action).build();
+    public void sendMessage(String destination, Map<String, String> payload) {
+        Message<Map<String, String>> message = MessageBuilder.withPayload(payload).build();
         this.jmsTemplate.send(destination, message);
     }
 
