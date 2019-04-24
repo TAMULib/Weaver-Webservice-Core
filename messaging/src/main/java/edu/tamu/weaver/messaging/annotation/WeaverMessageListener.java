@@ -19,4 +19,7 @@ public @interface WeaverMessageListener {
 
     @AliasFor(annotation = JmsListener.class, attribute = "destination")
     String destination() default "default";
+    
+    @AliasFor(annotation = JmsListener.class, attribute = "containerFactory")
+    String containerFactory() default "";
 }
