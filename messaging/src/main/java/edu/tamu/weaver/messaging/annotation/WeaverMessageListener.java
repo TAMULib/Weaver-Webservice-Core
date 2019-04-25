@@ -14,12 +14,12 @@ import org.springframework.jms.annotation.JmsListener;
 @Documented
 @JmsListener(destination = "")
 @Retention(RUNTIME)
-@Target({METHOD, TYPE})
+@Target(METHOD)
 public @interface WeaverMessageListener {
 
     @AliasFor(annotation = JmsListener.class, attribute = "destination")
     String destination() default "default";
-    
+
     @AliasFor(annotation = JmsListener.class, attribute = "containerFactory")
     String containerFactory() default "";
 }

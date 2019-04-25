@@ -14,12 +14,12 @@ public class MessagingConfig {
 
     @Value("${spring.activemq.broker-url}")
     private String brokerUrl;
-    
+
     @Bean
     public CachingConnectionFactory cachingConnectionFactory() {
         return new CachingConnectionFactory(defaultActiveMQConnectionFactory());
     }
-    
+
     @Bean
     public JmsTemplate jmsTopicTemplate() {
         JmsTemplate jmsTemplate = new JmsTemplate(cachingConnectionFactory());

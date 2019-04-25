@@ -1,5 +1,5 @@
 package edu.tamu.weaver.messaging.model;
 
-public interface MessageActions {
-
+public enum MessageActions {
+    CREATE, READ, UPDATE, DELETE;
 }
