@@ -27,7 +27,7 @@ public class MessagingConfig {
         return jmsTemplate;
     }
 
-    public ActiveMQConnectionFactory defaultActiveMQConnectionFactory() {
+    private ActiveMQConnectionFactory defaultActiveMQConnectionFactory() {
         ActiveMQConnectionFactory activeMQConnectionFactory = new ActiveMQConnectionFactory();
         activeMQConnectionFactory.setBrokerURL(brokerUrl);
         return activeMQConnectionFactory;
