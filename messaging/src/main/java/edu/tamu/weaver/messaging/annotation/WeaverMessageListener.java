@@ -1,7 +1,6 @@
 package edu.tamu.weaver.messaging.annotation;
 
 import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Documented;
@@ -22,4 +21,5 @@ public @interface WeaverMessageListener {
 
     @AliasFor(annotation = JmsListener.class, attribute = "containerFactory")
     String containerFactory() default "";
+
 }
