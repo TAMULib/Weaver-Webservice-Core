@@ -22,7 +22,7 @@ public class SimpleThemeManagerService implements ThemeManager {
     protected String cssUrl;
 
     @Value("${theme.initialize:true}")
-    Boolean initializeTheme;
+    protected Boolean initializeTheme;
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
