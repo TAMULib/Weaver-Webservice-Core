@@ -21,6 +21,9 @@ public class SimpleThemeManagerService implements ThemeManager {
     @Value("${theme.cssUrl:http://localhost:9000/wro/app.css}")
     protected String cssUrl;
 
+    @Value("${theme.initialize:true}")
+    Boolean initializeTheme;
+
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Override
@@ -37,6 +40,7 @@ public class SimpleThemeManagerService implements ThemeManager {
         }
     }
 
+    @Override
     public String[] getCssResources() {
         return this.defaultCssGroup;
     }
@@ -52,11 +56,13 @@ public class SimpleThemeManagerService implements ThemeManager {
      */
     @EventListener(ApplicationReadyEvent.class)
     public void initializeResources() {
-        logger.debug("Initializing theme...");
-        try {
-            HttpUtility.makeHttpRequest(cssUrl, "GET");
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (initializeTheme) {
+            logger.debug("Initializing theme...");
+            try {
+                HttpUtility.makeHttpRequest(cssUrl, "GET");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
