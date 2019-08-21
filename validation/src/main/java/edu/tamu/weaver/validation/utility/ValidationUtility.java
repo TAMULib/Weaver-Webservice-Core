@@ -2,8 +2,6 @@ package edu.tamu.weaver.validation.utility;
 
 import static edu.tamu.weaver.data.utility.EntityUtility.NAME_COLUMN_NAME;
 import static edu.tamu.weaver.data.utility.EntityUtility.PASSWORD_COLUMN_NAME;
-import static edu.tamu.weaver.data.utility.EntityUtility.SYSTEM_COLUMN_NAME;
-import static edu.tamu.weaver.data.utility.EntityUtility.createNewFromSystemDefault;
 import static edu.tamu.weaver.data.utility.EntityUtility.getFieldForProperty;
 import static edu.tamu.weaver.data.utility.EntityUtility.getValueForProperty;
 import static edu.tamu.weaver.data.utility.EntityUtility.getValueFromPath;
@@ -156,7 +154,8 @@ public class ValidationUtility {
     }
 
     @SuppressWarnings("unchecked")
-    public static <U extends ValidatingEntity> ValidationResults validateBusiness(BusinessValidator validator, U model) {
+    public static <U extends ValidatingEntity> ValidationResults validateBusiness(BusinessValidator validator,
+            U model) {
         ValidationResults results = new ValidationResults();
 
         switch (validator.getType()) {
@@ -196,7 +195,8 @@ public class ValidationUtility {
                     Object value = getValueFromPath(model, validator.getPath());
 
                     if (value.toString().equals(validator.getRestrict())) {
-                        message = "Unable to create due to restrictions! " + model.getClass().getSimpleName() + " " + String.join(".", validator.getPath()) + " cannot be " + validator.getRestrict() + "!";
+                        message = "Unable to create due to restrictions! " + model.getClass().getSimpleName() + " "
+                                + String.join(".", validator.getPath()) + " cannot be " + validator.getRestrict() + "!";
                         invalid = true;
                     }
                 }
@@ -237,16 +237,10 @@ public class ValidationUtility {
 
                 // check if unique constraints will be violated!!
 
-                Boolean isSystemRequired = (Boolean) getValueForProperty(model, SYSTEM_COLUMN_NAME);
-
-                if (isSystemRequired != null && isSystemRequired) {
-                    model = (U) createNewFromSystemDefault(model);
-                } else {
-                    if (uniqueConstraintPropertyChange(model)) {
-                        UniqueConstraintViolation uniqueConstraintViolation = validateUniqueConstraints(model);
-                        invalid = uniqueConstraintViolation.invalid;
-                        message = uniqueConstraintViolation.message;
-                    }
+                if (uniqueConstraintPropertyChange(model)) {
+                    UniqueConstraintViolation uniqueConstraintViolation = validateUniqueConstraints(model);
+                    invalid = uniqueConstraintViolation.invalid;
+                    message = uniqueConstraintViolation.message;
                 }
             }
 
@@ -259,7 +253,8 @@ public class ValidationUtility {
                     Object value = getValueFromPath(model, validator.getPath());
 
                     if (value.toString().equals(validator.getRestrict())) {
-                        message = "Unable to update due to restrictions! " + model.getClass().getSimpleName() + " " + String.join(".", validator.getPath()) + " cannot be " + validator.getRestrict() + "!";
+                        message = "Unable to update due to restrictions! " + model.getClass().getSimpleName() + " "
+                                + String.join(".", validator.getPath()) + " cannot be " + validator.getRestrict() + "!";
                         invalid = true;
                     }
                 }
@@ -295,7 +290,8 @@ public class ValidationUtility {
 
             if (!invalid) {
 
-                // check if relationships from params(columns) will cause foreign key constraints!!
+                // check if relationships from params(columns) will cause foreign key
+                // constraints!!
 
                 U modelToDelete = (U) queryResults.get(0);
 
@@ -310,9 +306,11 @@ public class ValidationUtility {
                             String name = (String) getValueForProperty(model, NAME_COLUMN_NAME);
 
                             if (name != null) {
-                                message = "Could not delete " + model.getClass().getSimpleName() + " " + name + " with id " + ((WeaverEntity) model).getId() + " due to having " + param;
+                                message = "Could not delete " + model.getClass().getSimpleName() + " " + name
+                                        + " with id " + ((WeaverEntity) model).getId() + " due to having " + param;
                             } else {
-                                message = "Could not delete " + model.getClass().getSimpleName() + " with id " + ((WeaverEntity) model).getId() + " due to having " + param;
+                                message = "Could not delete " + model.getClass().getSimpleName() + " with id "
+                                        + ((WeaverEntity) model).getId() + " due to having " + param;
                             }
 
                         }
@@ -323,9 +321,11 @@ public class ValidationUtility {
                             String name = (String) getValueForProperty(model, NAME_COLUMN_NAME);
 
                             if (name != null) {
-                                message = "Could not delete " + model.getClass().getSimpleName() + " " + name + "(" + ((WeaverEntity) model).getId() + ") due to having " + param;
+                                message = "Could not delete " + model.getClass().getSimpleName() + " " + name + "("
+                                        + ((WeaverEntity) model).getId() + ") due to having " + param;
                             } else {
-                                message = "Could not delete " + model.getClass().getSimpleName() + " with id " + ((WeaverEntity) model).getId() + " due to having " + param;
+                                message = "Could not delete " + model.getClass().getSimpleName() + " with id "
+                                        + ((WeaverEntity) model).getId() + " due to having " + param;
                             }
                         }
                     } else {
@@ -349,14 +349,18 @@ public class ValidationUtility {
 
                                 if (field.getType().equals(modelToDelete.getClass())) {
 
-                                    List<Object> queryByPropertyResults = queryByProperty(join, field.getName(), modelToDelete);
+                                    List<Object> queryByPropertyResults = queryByProperty(join, field.getName(),
+                                            modelToDelete);
 
                                     if (queryByPropertyResults.size() > 0) {
                                         invalid = true;
 
                                         U owningModel = (U) queryByPropertyResults.get(0);
 
-                                        message = "Could not delete " + modelToDelete.getClass().getSimpleName() + " with id " + ((WeaverEntity) modelToDelete).getId() + " due to being used by " + owningModel.getClass().getSimpleName() + " with id " + ((WeaverEntity) owningModel).getId();
+                                        message = "Could not delete " + modelToDelete.getClass().getSimpleName()
+                                                + " with id " + ((WeaverEntity) modelToDelete).getId()
+                                                + " due to being used by " + owningModel.getClass().getSimpleName()
+                                                + " with id " + ((WeaverEntity) owningModel).getId();
                                     }
 
                                 }
@@ -364,14 +368,18 @@ public class ValidationUtility {
 
                             if (!invalid && validator.getRestrict().length() == 0 && validator.getPath().length > 0) {
                                 String fullPath = String.join(".", validator.getPath());
-                                List<Object> queryByPropertyResults = queryByProperty(join, fullPath, ((WeaverEntity) modelToDelete).getId());
+                                List<Object> queryByPropertyResults = queryByProperty(join, fullPath,
+                                        ((WeaverEntity) modelToDelete).getId());
 
                                 if (queryByPropertyResults.size() > 0) {
                                     invalid = true;
 
-                                    message = "Could not delete " + modelToDelete.getClass().getSimpleName() + " with id " + ((WeaverEntity) modelToDelete).getId() + " due to being used by ";
+                                    message = "Could not delete " + modelToDelete.getClass().getSimpleName()
+                                            + " with id " + ((WeaverEntity) modelToDelete).getId()
+                                            + " due to being used by ";
                                     for (Object qm : queryByPropertyResults) {
-                                        message += qm.getClass().getSimpleName() + " with id " + ((WeaverEntity) qm).getId();
+                                        message += qm.getClass().getSimpleName() + " with id "
+                                                + ((WeaverEntity) qm).getId();
                                     }
                                 }
 
@@ -395,7 +403,9 @@ public class ValidationUtility {
                             Object value = getValueFromPath(joinedEnity, validator.getPath());
 
                             if (value.toString().equals(validator.getRestrict())) {
-                                message = "Unable to delete due to restrictions! " + join.getSimpleName() + " " + String.join(".", validator.getPath()) + " cannot be " + validator.getRestrict() + "!";
+                                message = "Unable to delete due to restrictions! " + join.getSimpleName() + " "
+                                        + String.join(".", validator.getPath()) + " cannot be "
+                                        + validator.getRestrict() + "!";
                                 invalid = true;
                                 break;
                             }
@@ -415,19 +425,12 @@ public class ValidationUtility {
                     Object value = getValueFromPath(model, validator.getPath());
 
                     if (value.toString().equals(validator.getRestrict())) {
-                        message = "Unable to delete due to restrictions! " + model.getClass().getSimpleName() + " " + String.join(".", validator.getPath()) + " is " + validator.getRestrict() + "!";
+                        message = "Unable to delete due to restrictions! " + model.getClass().getSimpleName() + " "
+                                + String.join(".", validator.getPath()) + " is " + validator.getRestrict() + "!";
                         invalid = true;
                     }
                 }
 
-            }
-
-            if (!invalid) {
-                Object value = getValueForProperty(model, SYSTEM_COLUMN_NAME);
-                if (value != null && ((Boolean) value) == true) {
-                    invalid = true;
-                    message = model.getClass().getSimpleName() + " with id " + ((WeaverEntity) model).getId() + " is a system default and cannot be deleted";
-                }
             }
 
             if (invalid) {
@@ -451,24 +454,6 @@ public class ValidationUtility {
                 if (queryById(model, id).size() == 0) {
                     invalid = true;
                     message = model.getClass().getSimpleName() + " with id " + id + " does not exist";
-                }
-            }
-
-            // check if model has a system default
-
-            if (!invalid) {
-                if (getFieldForProperty(model, SYSTEM_COLUMN_NAME) == null) {
-                    invalid = true;
-                    message = model.getClass().getSimpleName() + " is not a system default in which can be reset";
-                }
-            }
-
-            // check if model is not a system default
-
-            if (!invalid) {
-                if ((Boolean) getValueForProperty(model, SYSTEM_COLUMN_NAME) == true) {
-                    invalid = true;
-                    message = model.getClass().getSimpleName() + " is the system default";
                 }
             }
 
@@ -727,7 +712,8 @@ public class ValidationUtility {
             if (!invalid) {
                 if (recursivelyFindField(validator.getClazz(), (String) validator.getArgs()[columnIndex]) == null) {
                     invalid = true;
-                    message = (String) validator.getArgs()[0] + " is not a column of " + validator.getClazz().getSimpleName();
+                    message = (String) validator.getArgs()[0] + " is not a column of "
+                            + validator.getClazz().getSimpleName();
                 }
             }
 
@@ -832,7 +818,8 @@ public class ValidationUtility {
             Object value = getValueForProperty(model, property);
 
             if (value != null) {
-                if (!(value instanceof WeaverEntity) || ((value instanceof WeaverEntity) && ((WeaverEntity) value).getId() != null)) {
+                if (!(value instanceof WeaverEntity)
+                        || ((value instanceof WeaverEntity) && ((WeaverEntity) value).getId() != null)) {
 
                     if (!((value instanceof String) && ((String) value).length() == 0)) {
                         predicates.add(cb.equal(root.get(property), value));
@@ -846,10 +833,12 @@ public class ValidationUtility {
             }
         }
 
-        uniqueConstraintViolation.message = uniqueConstraintViolation.message.substring(0, uniqueConstraintViolation.message.length() - 2);
+        uniqueConstraintViolation.message = uniqueConstraintViolation.message.substring(0,
+                uniqueConstraintViolation.message.length() - 2);
         int index = uniqueConstraintViolation.message.lastIndexOf(", ");
         if (index >= 0) {
-            uniqueConstraintViolation.message = new StringBuilder(uniqueConstraintViolation.message).replace(index, index + ", ".length(), " and ").toString();
+            uniqueConstraintViolation.message = new StringBuilder(uniqueConstraintViolation.message)
+                    .replace(index, index + ", ".length(), " and ").toString();
         }
 
         if (!invalid) {
@@ -870,7 +859,8 @@ public class ValidationUtility {
         return uniqueConstraintViolation;
     }
 
-    private static <U extends ValidatingEntity> String craftUniqueConstraintsMessage(U model, List<String> violatingColumns) {
+    private static <U extends ValidatingEntity> String craftUniqueConstraintsMessage(U model,
+            List<String> violatingColumns) {
         String message = model.getClass().getSimpleName() + " with ";
         for (String column : violatingColumns) {
             Object value = getValueForProperty(model, column);

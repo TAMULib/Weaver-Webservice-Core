@@ -29,7 +29,6 @@ public class EntityUtility {
     public static final String NAME_COLUMN_NAME = "name";
     public static final String PASSWORD_COLUMN_NAME = "password";
     public static final String POSITION_COLUMN_NAME = "position";
-    public static final String SYSTEM_COLUMN_NAME = "isSystemRequired";
 
     public static String snakeToCamelWithoutId(String value) {
         int l = 0;
@@ -203,14 +202,6 @@ public class EntityUtility {
         }
         query.select(root).where(cb.equal(path, value));
         return entityManager.createQuery(query).getResultList();
-    }
-
-    public static Object createNewFromSystemDefault(Object model) {
-        EntityManager entityManager = SpringContext.bean(EntityManager.class);
-        setValueForProperty(model, SYSTEM_COLUMN_NAME, false);
-        setValueForProperty(model, ID_COLUMN_NAME, null);
-        entityManager.persist(model);
-        return model;
     }
 
     public static Field recursivelyFindField(Class<?> clazz, String property) {
