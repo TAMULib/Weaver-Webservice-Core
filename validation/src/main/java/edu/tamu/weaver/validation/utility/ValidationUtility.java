@@ -286,8 +286,7 @@ public class ValidationUtility {
 
             if (!invalid) {
 
-                // check if relationships from params(columns) will cause foreign key
-                // constraints!!
+                // check if relationships from params(columns) will cause foreign key constraints!!
 
                 U modelToDelete = (U) queryResults.get(0);
 
