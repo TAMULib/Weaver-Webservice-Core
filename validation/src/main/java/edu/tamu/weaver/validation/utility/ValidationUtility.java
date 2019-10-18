@@ -2,9 +2,6 @@ package edu.tamu.weaver.validation.utility;
 
 import static edu.tamu.weaver.data.utility.EntityUtility.NAME_COLUMN_NAME;
 import static edu.tamu.weaver.data.utility.EntityUtility.PASSWORD_COLUMN_NAME;
-import static edu.tamu.weaver.data.utility.EntityUtility.SYSTEM_COLUMN_NAME;
-import static edu.tamu.weaver.data.utility.EntityUtility.createNewFromSystemDefault;
-import static edu.tamu.weaver.data.utility.EntityUtility.getFieldForProperty;
 import static edu.tamu.weaver.data.utility.EntityUtility.getValueForProperty;
 import static edu.tamu.weaver.data.utility.EntityUtility.getValueFromPath;
 import static edu.tamu.weaver.data.utility.EntityUtility.queryAllWithClass;
@@ -237,16 +234,10 @@ public class ValidationUtility {
 
                 // check if unique constraints will be violated!!
 
-                Boolean isSystemRequired = (Boolean) getValueForProperty(model, SYSTEM_COLUMN_NAME);
-
-                if (isSystemRequired != null && isSystemRequired) {
-                    model = (U) createNewFromSystemDefault(model);
-                } else {
-                    if (uniqueConstraintPropertyChange(model)) {
-                        UniqueConstraintViolation uniqueConstraintViolation = validateUniqueConstraints(model);
-                        invalid = uniqueConstraintViolation.invalid;
-                        message = uniqueConstraintViolation.message;
-                    }
+                if (uniqueConstraintPropertyChange(model)) {
+                    UniqueConstraintViolation uniqueConstraintViolation = validateUniqueConstraints(model);
+                    invalid = uniqueConstraintViolation.invalid;
+                    message = uniqueConstraintViolation.message;
                 }
             }
 
@@ -422,14 +413,6 @@ public class ValidationUtility {
 
             }
 
-            if (!invalid) {
-                Object value = getValueForProperty(model, SYSTEM_COLUMN_NAME);
-                if (value != null && ((Boolean) value) == true) {
-                    invalid = true;
-                    message = model.getClass().getSimpleName() + " with id " + ((WeaverEntity) model).getId() + " is a system default and cannot be deleted";
-                }
-            }
-
             if (invalid) {
                 results.addMessage(BUSINESS_MESSAGE_KEY, validator.getType().toString(), message);
                 results.setValid(false);
@@ -451,24 +434,6 @@ public class ValidationUtility {
                 if (queryById(model, id).size() == 0) {
                     invalid = true;
                     message = model.getClass().getSimpleName() + " with id " + id + " does not exist";
-                }
-            }
-
-            // check if model has a system default
-
-            if (!invalid) {
-                if (getFieldForProperty(model, SYSTEM_COLUMN_NAME) == null) {
-                    invalid = true;
-                    message = model.getClass().getSimpleName() + " is not a system default in which can be reset";
-                }
-            }
-
-            // check if model is not a system default
-
-            if (!invalid) {
-                if ((Boolean) getValueForProperty(model, SYSTEM_COLUMN_NAME) == true) {
-                    invalid = true;
-                    message = model.getClass().getSimpleName() + " is the system default";
                 }
             }
 
