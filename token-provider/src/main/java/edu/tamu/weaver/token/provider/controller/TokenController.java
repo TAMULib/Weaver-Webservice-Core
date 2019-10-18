@@ -36,12 +36,12 @@ public class TokenController {
     @RequestMapping("/token")
     public RedirectView token(@RequestParam Map<String, String> params, @RequestHeader Map<String, String> headers) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, URISyntaxException {
         LOG.debug("params: " + params);
-        String referer = params.get("referer");
-        if (referer == null) {
-            LOG.error("No referer in params!!");
-            throw new RuntimeException("No referer in params!!");
+        String referrer = params.get("referrer");
+        if (referrer == null) {
+            LOG.error("No referrer in params!!");
+            throw new RuntimeException("No referrer in params!!");
         }
-        URIBuilder builder = new URIBuilder(referer);
+        URIBuilder builder = new URIBuilder(referrer);
         builder.addParameter("jwt", tokenService.craftToken(headers));
         String url = builder.build().toASCIIString();
         LOG.debug(String.format("Auth url redirect: %s", url));
