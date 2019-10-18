@@ -2,6 +2,7 @@ package edu.tamu.weaver.token.provider.controller;
 
 import static edu.tamu.weaver.response.ApiStatus.SUCCESS;
 
+import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
@@ -11,6 +12,7 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.log4j.Logger;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,20 +51,24 @@ public abstract class WeaverMockTokenController extends TokenController {
 
     @Override
     @RequestMapping("/token")
-    public RedirectView token(@RequestParam Map<String, String> params, @RequestHeader Map<String, String> headers) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
+    public RedirectView token(@RequestParam Map<String, String> params, @RequestHeader Map<String, String> headers) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, URISyntaxException {
         LOG.debug("params: " + params);
-        String referer = params.get("referer");
-        if (referer == null) {
-            LOG.debug("No referer in params!!");
-            throw new RuntimeException("No referer in params!!");
+        String referrer = params.get("referrer");
+        if (referrer == null) {
+            LOG.debug("No referrer in params!!");
+            throw new RuntimeException("No referrer in params!!");
         }
         String mock = params.get("mock");
         if (mock == null) {
             mock = "user";
         }
+        URIBuilder builder = new URIBuilder(referrer);
+        builder.addParameter("jwt", tokenService.craftToken(MOCK_CLAIMS.get(mock)));
+        String url = builder.build().toASCIIString();
+        LOG.debug(String.format("Auth url redirect: %s", url));
         RedirectView redirect = new RedirectView();
         redirect.setContextRelative(false);
-        redirect.setUrl(referer + "?jwt=" + tokenService.craftToken(MOCK_CLAIMS.get(mock)));
+        redirect.setUrl(url);
         return redirect;
     }
 
