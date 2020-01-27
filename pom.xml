@@ -45,7 +45,7 @@
       <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-dependencies</artifactId>
-        <version>1.5.7.RELEASE</version>
+        <version>1.5.22.RELEASE</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -77,7 +77,7 @@
         <plugin>
           <groupId>org.springframework.boot</groupId>
           <artifactId>spring-boot-maven-plugin</artifactId>
-          <version>1.5.7.RELEASE</version>
+          <version>1.5.22.RELEASE</version>
           <configuration>
             <addResources>false</addResources>
           </configuration>
