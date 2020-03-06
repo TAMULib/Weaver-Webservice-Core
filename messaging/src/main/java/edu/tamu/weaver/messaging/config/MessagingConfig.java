@@ -18,10 +18,10 @@ public class MessagingConfig {
     private String brokerUrl;
 
     @Value("${spring.activemq.user}")
-    private String brokerUser;
+    private String brokerUser = null;
 
     @Value("${spring.activemq.password}")
-    private String brokerPassword;
+    private String brokerPassword = null;
 
     @Bean
     public CachingConnectionFactory cachingConnectionFactory() {
