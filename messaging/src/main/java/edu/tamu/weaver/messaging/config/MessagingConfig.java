@@ -17,6 +17,12 @@ public class MessagingConfig {
     @Value("${spring.activemq.broker-url}")
     private String brokerUrl;
 
+    @Value("${spring.activemq.user}")
+    private String brokerUser;
+
+    @Value("${spring.activemq.password}")
+    private String brokerPassword;
+
     @Bean
     public CachingConnectionFactory cachingConnectionFactory() {
         return new CachingConnectionFactory(defaultActiveMQConnectionFactory());
@@ -30,9 +36,7 @@ public class MessagingConfig {
     }
 
     private ActiveMQConnectionFactory defaultActiveMQConnectionFactory() {
-        ActiveMQConnectionFactory activeMQConnectionFactory = new ActiveMQConnectionFactory();
-        activeMQConnectionFactory.setBrokerURL(brokerUrl);
-        return activeMQConnectionFactory;
+        return new ActiveMQConnectionFactory(brokerUser, brokerPassword, brokerUrl);
     }
 
     @Bean
