@@ -74,12 +74,8 @@ public abstract class WeaverMockTokenController extends TokenController {
 
     @Override
     @RequestMapping("/refresh")
-    public ApiResponse refresh(@RequestParam Map<String, String> params, @RequestHeader Map<String, String> headers) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
+    public ApiResponse refresh(@RequestParam(required = true) String token) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
         LOG.debug("Refresh token requested.");
-        String token = params.get("token");
-        if (token == null) {
-            throw new RuntimeException("Cannot refresh without token!");
-        }
         return new ApiResponse(SUCCESS, "Token refresh successful.", tokenService.refreshToken(token));
     }
 
