@@ -52,11 +52,9 @@ public class TokenController {
     }
 
     @RequestMapping("/refresh")
-    public ApiResponse refresh(@RequestParam Map<String, String> params, @RequestHeader Map<String, String> headers) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
+    public ApiResponse refresh(@RequestParam(required = true) String token) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
         LOG.debug("Refresh token requested.");
-        // NOTE: this only works with shibboleth payload in the headers
-        // if not behind service provider a token can be crafted without authentication!!!!!
-        return new ApiResponse(SUCCESS, "Token refresh successful.", tokenService.craftToken(headers));
+        return new ApiResponse(SUCCESS, "Token refresh successful.", tokenService.refreshToken(token));
     }
 
 }
