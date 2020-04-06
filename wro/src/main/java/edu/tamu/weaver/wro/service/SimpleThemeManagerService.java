@@ -57,12 +57,17 @@ public class SimpleThemeManagerService implements ThemeManager {
     @EventListener(ApplicationReadyEvent.class)
     public void initializeResources() {
         if (initializeTheme) {
-            logger.debug("Initializing theme...");
-            try {
-                HttpUtility.makeHttpRequest(cssUrl, "GET");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            new Thread(new Runnable() {
+                @Override
+                public void run()  {
+                    logger.debug("Initializing theme...");
+                    try {
+                        HttpUtility.makeHttpRequest(cssUrl, "GET");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
         }
     }
 }
