@@ -20,9 +20,9 @@ import edu.tamu.weaver.token.service.TokenService;
 import edu.tamu.weaver.utility.HttpUtility;
 
 /**
- * Opt-in by default.
+ * Opt-out by default.
  *
- * To disable: app.assume.enabled: false
+ * To enable: app.assume.enabled: true
  */
 @RestController
 @RequestMapping("/assume")
@@ -85,8 +85,7 @@ public class WeaverAssumeUserController {
                 claims.put("tdl-metadata-edupersonaffiliation", affiliation);
             }
 
-            apiResponse = new ApiResponse(ApiStatus.SUCCESS, "Assume token request successful.",
-                    tokenService.craftToken(claims));
+            apiResponse = new ApiResponse(ApiStatus.SUCCESS, "Assume token request successful.", tokenService.craftToken(claims));
 
         } else {
             apiResponse = new ApiResponse(ApiStatus.INVALID, "netid not found");
