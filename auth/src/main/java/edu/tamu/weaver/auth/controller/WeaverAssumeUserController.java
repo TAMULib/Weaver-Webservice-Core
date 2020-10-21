@@ -29,9 +29,6 @@ import edu.tamu.weaver.utility.HttpUtility;
 @ConditionalOnProperty(prefix = "app", name = "assume.enabled", havingValue = "true", matchIfMissing = false)
 public class WeaverAssumeUserController {
 
-    @Value("${app.authority.admins}")
-    private String[] admins;
-
     @Value("${app.assume.claims-url}")
     private String assumeClaimsUrl;
 
