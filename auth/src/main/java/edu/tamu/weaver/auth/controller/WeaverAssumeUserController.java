@@ -11,6 +11,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -48,8 +49,8 @@ public class WeaverAssumeUserController {
      * @throws Exception
      */
     @GetMapping
-    @SuppressWarnings("unchecked")
     @PreAuthorize("hasRole('ADMIN')")
+    @RequestMapping(method = RequestMethod.GET)
     public ApiResponse assume(@RequestParam() Map<String, String> params) throws Exception {
 
         ApiResponse apiResponse;
@@ -58,8 +59,8 @@ public class WeaverAssumeUserController {
 
         String response = HttpUtility.makeHttpRequest(String.format("%s?netid=%s", assumeClaimsUrl, netid), "GET");
 
+        @SuppressWarnings("unchecked")
         Map<String, String> info = objectMapper.readValue(response, Map.class);
-        info.put("netid", netid);
 
         if (info.get("result") == null) {
 
