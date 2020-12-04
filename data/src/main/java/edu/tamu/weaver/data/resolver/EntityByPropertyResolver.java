@@ -18,6 +18,10 @@ public abstract class EntityByPropertyResolver implements ObjectIdResolver {
 
     }
 
+    public EntityByPropertyResolver(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
+
     @Override
     public void bindItem(ObjectIdGenerator.IdKey id, Object ob) {
 
@@ -39,10 +43,7 @@ public abstract class EntityByPropertyResolver implements ObjectIdResolver {
         return getClass().isAssignableFrom(resolverType.getClass());
     }
 
-    @Override
-    public ObjectIdResolver newForDeserialization(Object c) {
-        return this;
-    }
+    public abstract ObjectIdResolver newForDeserialization(Object c);
 
     protected abstract String getPropertyName();
 

@@ -3,10 +3,12 @@ package edu.tamu.weaver.data.resolver;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.springframework.stereotype.Component;
-
 import com.fasterxml.jackson.annotation.ObjectIdGenerator;
 import com.fasterxml.jackson.annotation.ObjectIdResolver;
+
+import org.springframework.stereotype.Component;
+
+import edu.tamu.weaver.context.SpringContext;
 
 @Component
 public class BaseEntityIdResolver implements ObjectIdResolver {
@@ -16,6 +18,10 @@ public class BaseEntityIdResolver implements ObjectIdResolver {
 
     public BaseEntityIdResolver() {
 
+    }
+
+    public BaseEntityIdResolver(EntityManager entityManager) {
+        this.entityManager = entityManager;
     }
 
     @Override
@@ -35,7 +41,8 @@ public class BaseEntityIdResolver implements ObjectIdResolver {
 
     @Override
     public ObjectIdResolver newForDeserialization(final Object context) {
-        return this;
+        EntityManager entityManager = SpringContext.bean(EntityManager.class);
+        return new BaseEntityIdResolver(entityManager);
     }
 
 }

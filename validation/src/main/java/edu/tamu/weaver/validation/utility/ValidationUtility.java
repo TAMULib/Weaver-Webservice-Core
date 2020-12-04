@@ -783,8 +783,11 @@ public class ValidationUtility {
         Root<?> root = query.from(model.getClass());
 
         List<Predicate> predicates = new ArrayList<Predicate>();
+        List<Predicate> andPredicates = new ArrayList<Predicate>();
 
-        List<String> uniqueColumns = getUniqueConstraints(model);
+        List<String> uniqueColumns = recursivelyFindUniqueColumn(model.getClass());
+
+        List<String> uniqueCombinedColumns = recursivelyFindTableAnnotation(model.getClass());
 
         UniqueConstraintViolation uniqueConstraintViolation = new UniqueConstraintViolation();
 
@@ -805,10 +808,29 @@ public class ValidationUtility {
 
                 }
             } else {
-
                 // TODO: check if nullable
-
             }
+        }
+
+        for (String property : uniqueCombinedColumns) {
+
+            Object value = getValueForProperty(model, property);
+
+            if (value != null) {
+                if (!(value instanceof WeaverEntity) || ((value instanceof WeaverEntity) && ((WeaverEntity) value).getId() != null)) {
+
+                    if (!((value instanceof String) && ((String) value).length() == 0)) {
+                        andPredicates.add(cb.equal(root.get(property), value));
+                    }
+
+                }
+            } else {
+                // TODO: check if nullable
+            }
+        }
+
+        if (andPredicates.size() > 0) {
+            predicates.add(cb.and(andPredicates.toArray(new Predicate[] {})));
         }
 
         uniqueConstraintViolation.message = uniqueConstraintViolation.message.substring(0, uniqueConstraintViolation.message.length() - 2);
@@ -817,16 +839,12 @@ public class ValidationUtility {
             uniqueConstraintViolation.message = new StringBuilder(uniqueConstraintViolation.message).replace(index, index + ", ".length(), " and ").toString();
         }
 
-        if (!invalid) {
+        if (!invalid && predicates.size() > 0) {
+            query.select(root).where(predicates.toArray(new Predicate[] {}));
 
-            if (uniqueColumns.size() > 0 && predicates.size() > 0) {
-
-                query.select(root).where(predicates.toArray(new Predicate[] {}));
-
-                if (entityManager.createQuery(query).getResultList().size() > 0) {
-                    invalid = true;
-                    uniqueConstraintViolation.message = craftUniqueConstraintsMessage(model, uniqueColumns);
-                }
+            if (entityManager.createQuery(query).getResultList().size() > 0) {
+                invalid = true;
+                uniqueConstraintViolation.message = craftUniqueConstraintsMessage(model, uniqueColumns);
             }
         }
 
