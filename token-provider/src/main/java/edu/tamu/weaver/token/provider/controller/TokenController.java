@@ -41,7 +41,7 @@ public class TokenController {
             LOG.error("No referrer in params!!");
             throw new RuntimeException("No referrer in params!!");
         }
-        URIBuilder builder = new URIBuilder(referrer);
+        URIBuilder builder = new URIBuilder(referrer.replace(" ", "%20"));
         builder.addParameter("jwt", tokenService.craftToken(headers));
         String url = builder.build().toASCIIString();
         LOG.debug(String.format("Auth url redirect: %s", url));
