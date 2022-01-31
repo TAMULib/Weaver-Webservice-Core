@@ -48,7 +48,7 @@ public class Credentials {
         this.exp = String.valueOf(claims.get("exp"));
         this.email = String.valueOf(claims.get("email"));
         this.role = String.valueOf(claims.get("role"));
-        this.affiliation = String.valueOf(claims.get("affiliation"));
+        this.affiliation = String.valueOf(claims.getOrDefault("affiliation", ""));
         claims.entrySet().forEach(entry -> {
             this.allCredentials.put(entry.getKey(), String.valueOf(entry.getValue()));
         });
@@ -70,7 +70,7 @@ public class Credentials {
         this.exp = String.valueOf(claims.get("exp"));
         this.email = String.valueOf(claims.get("email"));
         this.role = String.valueOf(claims.get("role"));
-        this.affiliation = String.valueOf(claims.get("affiliation"));
+        this.affiliation = String.valueOf(claims.getOrDefault("affiliation", ""));
         claims.entrySet().forEach(entry -> {
             this.allCredentials.put(entry.getKey(), String.valueOf(entry.getValue()));
         });

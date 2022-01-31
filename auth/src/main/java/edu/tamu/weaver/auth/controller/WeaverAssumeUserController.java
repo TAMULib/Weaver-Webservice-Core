@@ -74,7 +74,7 @@ public class WeaverAssumeUserController {
             claims.put("tdl-givenname", info.get("first_name"));
             claims.put("tdl-mail", info.get("tamu_preferred_alias"));
 
-            String affiliation = info.get("employee_type_name");
+            String affiliation = info.getOrDefault("employee_type_name", "");
 
             if ("".equals(affiliation) || "Student".equals(affiliation)) {
                 String classification = info.get("classification_name").split(" ")[0].replace(",", "");
