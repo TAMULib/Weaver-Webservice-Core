@@ -29,7 +29,7 @@ public abstract class UserCredentialsService<U extends AbstractWeaverUser, R ext
     }
 
     public abstract U updateUserByCredentials(Credentials credentials);
-    
+
     public abstract String getAnonymousRole();
 
 }
