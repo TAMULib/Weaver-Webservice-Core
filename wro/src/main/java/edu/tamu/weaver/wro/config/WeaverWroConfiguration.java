@@ -17,7 +17,7 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 
 import edu.tamu.weaver.wro.manager.factory.WeaverConfigurableWroManagerFactory;
 import edu.tamu.weaver.wro.service.ThemeManager;
-import ro.isdc.wro.config.jmx.ConfigConstants;
+import ro.isdc.wro.config.support.ConfigConstants;
 import ro.isdc.wro.http.ConfigurableWroFilter;
 import ro.isdc.wro.http.handler.RequestHandler;
 import ro.isdc.wro.http.handler.factory.SimpleRequestHandlerFactory;

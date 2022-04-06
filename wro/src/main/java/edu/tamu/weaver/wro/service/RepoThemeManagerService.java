@@ -99,7 +99,7 @@ public class RepoThemeManagerService extends SimpleThemeManagerService implement
                     }
                 }
             }
-            CoreTheme defaultTheme = coreThemeRepo.findOne(activateId);
+            CoreTheme defaultTheme = coreThemeRepo.getById(activateId);
             this.setCurrentTheme(defaultTheme);
         } else {
             this.setCurrentTheme(coreThemeRepo.findByActiveTrue());
