@@ -15,9 +15,9 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Root;
 
-import org.hibernate.jpa.criteria.path.PluralAttributePath;
-
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
+
+import org.hibernate.query.criteria.internal.path.PluralAttributePath;
 
 import edu.tamu.weaver.context.SpringContext;
 

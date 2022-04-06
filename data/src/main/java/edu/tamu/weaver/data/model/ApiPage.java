@@ -2,13 +2,13 @@ package edu.tamu.weaver.data.model;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Function;
 
-import org.springframework.core.convert.converter.Converter;
+import com.fasterxml.jackson.annotation.JsonView;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-
-import com.fasterxml.jackson.annotation.JsonView;
 
 import edu.tamu.weaver.response.ApiView;
 
@@ -104,7 +104,7 @@ public class ApiPage<M extends BaseEntity> implements Page<M> {
     }
 
     @Override
-    public <S> Page<S> map(Converter<? super M, ? extends S> converter) {
+    public <S> Page<S> map(Function<? super M, ? extends S> converter) {
         return page.map(converter);
     }
 

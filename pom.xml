@@ -38,6 +38,7 @@
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <spring.boot.version>2.6.6</spring.boot.version>
   </properties>
 
   <dependencyManagement>
@@ -45,14 +46,14 @@
       <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-dependencies</artifactId>
-        <version>1.5.22.RELEASE</version>
+        <version>${spring.boot.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>org.springframework.cloud</groupId>
         <artifactId>spring-cloud-dependencies</artifactId>
-        <version>Brixton.SR7</version>
+        <version>2021.0.1</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -77,7 +78,7 @@
         <plugin>
           <groupId>org.springframework.boot</groupId>
           <artifactId>spring-boot-maven-plugin</artifactId>
-          <version>1.5.22.RELEASE</version>
+          <version>${spring.boot.version}</version>
           <configuration>
             <addResources>false</addResources>
           </configuration>

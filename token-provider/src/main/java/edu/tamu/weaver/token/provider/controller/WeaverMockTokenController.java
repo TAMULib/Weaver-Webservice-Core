@@ -13,7 +13,8 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,7 +24,7 @@ import edu.tamu.weaver.response.ApiResponse;
 
 public abstract class WeaverMockTokenController extends TokenController {
 
-    private static final Logger LOG = Logger.getLogger(WeaverMockTokenController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(WeaverMockTokenController.class);
 
     private static final Map<String, Map<String, String>> MOCK_CLAIMS = new HashMap<String, Map<String, String>>();
 

@@ -38,7 +38,7 @@ public abstract class AbstractWeaverRepoImpl<M extends WeaverEntity, R extends W
 
     @Override
     public M read(Long id) {
-        return weaverRepo.findOne(id);
+        return weaverRepo.getById(id);
     }
 
     @Override
@@ -51,7 +51,7 @@ public abstract class AbstractWeaverRepoImpl<M extends WeaverEntity, R extends W
     @Override
     public void delete(M model) {
         Long id = model.getId();
-        weaverRepo.delete(id);
+        weaverRepo.deleteById(id);
         simpMessagingTemplate.convertAndSend(getChannel(), new ApiResponse(SUCCESS, DELETE, model));
     }
 

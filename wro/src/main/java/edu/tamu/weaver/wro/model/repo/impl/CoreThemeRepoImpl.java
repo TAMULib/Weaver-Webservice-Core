@@ -86,7 +86,7 @@ public class CoreThemeRepoImpl extends AbstractWeaverRepoImpl<CoreTheme, CoreThe
 
             themePropertyRepo.update(themeProperty);
 
-            ThemePropertyName themePropertyName = themePropertyNameRepo.findOne(themePropertyId);
+            ThemePropertyName themePropertyName = themePropertyNameRepo.getById(themePropertyId);
             if (themePropertyRepo.findThemePropertyByThemePropertyName(themePropertyName).isEmpty()) {
                 themPropertyNamesToDelete.add(themePropertyName);
             }
