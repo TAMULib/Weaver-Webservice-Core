@@ -44,8 +44,8 @@ public class WeaverWroConfiguration {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     
     @Bean
-    public FilterRegistrationBean webResourceOptimizer(Environment env) {
-        FilterRegistrationBean fr = new FilterRegistrationBean();
+    public FilterRegistrationBean<ConfigurableWroFilter> webResourceOptimizer(Environment env) {
+        FilterRegistrationBean<ConfigurableWroFilter> fr = new FilterRegistrationBean<>();
         ConfigurableWroFilter filter = new ConfigurableWroFilter();
         Properties props = buildWroProperties(env);
         filter.setProperties(props);

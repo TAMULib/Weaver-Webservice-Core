@@ -119,8 +119,8 @@ public class ValidationUtility {
                     } else {
                         invalid = true;
                     }
-                } else if (value instanceof Enum) {
-                    values.add(((Enum) value).name());
+                } else if (value instanceof Enum<?>) {
+                    values.add(((Enum<?>) value).name());
                 } else {
                     values.add((String) value);
                 }

@@ -27,7 +27,7 @@ public class OrderedEntityService {
 
     private static final String POSITION_COLUMN_NAME = "position";
 
-    private static final Long one = new Long(1);
+    private static final Long one = Long.valueOf(1);
 
     @Lazy
     @Autowired
