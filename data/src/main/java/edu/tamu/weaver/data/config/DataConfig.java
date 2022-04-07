@@ -23,12 +23,12 @@ public class DataConfig {
     public ObjectMapper objectMapper() {
         return JsonMapper.builder()
             .enable(SerializationFeature.INDENT_OUTPUT)
-            .enable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
-            .enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-            .enable(DeserializationFeature.FAIL_ON_UNRESOLVED_OBJECT_IDS)
             .enable(SerializationFeature.INDENT_OUTPUT)
             .enable(JsonReadFeature.ALLOW_UNESCAPED_CONTROL_CHARS)
             .enable(JsonReadFeature.ALLOW_BACKSLASH_ESCAPING_ANY_CHARACTER)
+            .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
+            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .disable(DeserializationFeature.FAIL_ON_UNRESOLVED_OBJECT_IDS)
             .disable(MapperFeature.DEFAULT_VIEW_INCLUSION)
             .build();
     }
