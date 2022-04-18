@@ -74,19 +74,19 @@ public class SassClassPathUriLocator implements UriLocator {
 
         Resource resource = resourcePatternResolver.getResource(url);
 
-        if (!resourceExists(resource)) {
+        if (!resourceExists(resource, url)) {
             url = "classpath:" + url;
             resource = resourcePatternResolver.getResource(url);
         }
 
-        if (!resourceExists(resource)) {
+        if (!resourceExists(resource, url)) {
             final int lastSlash = url.lastIndexOf('/') + 1;
             String cleanUrl = url.substring(0, lastSlash);
             cleanUrl = cleanUrl + "_" + url.substring(lastSlash, url.length());
             resource = resourcePatternResolver.getResource(cleanUrl);
         }
 
-        if (resourceExists(resource) && resource.isReadable()) {
+        if (resourceExists(resource, url) && resource.isReadable()) {
             try {
                 if (resource.getURI().getScheme().equals("jar")) {
                     File tempFile = File.createTempFile("wro", ".tmp");
@@ -123,14 +123,18 @@ public class SassClassPathUriLocator implements UriLocator {
      * The stack trace is suppressed unless debug is enabled.
      *
      * @param resource The resource to check.
+     * @param uri The URI represented by the resource (used for error logging).
      * @return TRUE if resource exists, FALSE otherwise.
      */
-    private boolean resourceExists(Resource resource) {
+    private boolean resourceExists(Resource resource, String uri) {
         try {
             return resource.exists();
         } catch (IllegalArgumentException e) {
+            String message = "Existence check failed for URI: " + uri;
             if (LOG.isDebugEnabled()) {
-                e.printStackTrace();
+                LOG.error(message, e);
+            } else {
+                LOG.warn(message);
             }
         }
 
