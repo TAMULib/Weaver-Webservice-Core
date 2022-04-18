@@ -7,7 +7,7 @@ import edu.tamu.weaver.data.model.BaseEntity;
 
 /**
  * Application ThemePropertyName entity.
- * 
+ *
  * @author
  *
  */

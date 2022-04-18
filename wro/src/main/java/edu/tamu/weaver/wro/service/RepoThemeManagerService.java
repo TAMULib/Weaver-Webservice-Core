@@ -137,10 +137,10 @@ public class RepoThemeManagerService extends SimpleThemeManagerService implement
 
     @Override
     public Map<String,String> getThemeProperties() {
-    	Map<String,String> themeProperties = new HashMap<String,String>();
+      Map<String,String> themeProperties = new HashMap<String,String>();
         if (this.getCurrentTheme() != null) {
             for (ThemeProperty p : this.getCurrentTheme().getThemeProperties()) {
-            	themeProperties.put(p.getThemePropertyName().getName(),p.getValue());
+              themeProperties.put(p.getThemePropertyName().getName(),p.getValue());
             }
         }
         return themeProperties;
