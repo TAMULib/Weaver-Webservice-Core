@@ -74,19 +74,19 @@ public class SassClassPathUriLocator implements UriLocator {
 
         Resource resource = resourcePatternResolver.getResource(url);
 
-        if (!resource.exists()) {
+        if (!resourceExists(resource)) {
             url = "classpath:" + url;
             resource = resourcePatternResolver.getResource(url);
         }
 
-        if (!resource.exists()) {
+        if (!resourceExists(resource)) {
             final int lastSlash = url.lastIndexOf('/') + 1;
             String cleanUrl = url.substring(0, lastSlash);
             cleanUrl = cleanUrl + "_" + url.substring(lastSlash, url.length());
             resource = resourcePatternResolver.getResource(cleanUrl);
         }
 
-        if (resource.exists() && resource.isReadable()) {
+        if (resourceExists(resource) && resource.isReadable()) {
             try {
                 if (resource.getURI().getScheme().equals("jar")) {
                     File tempFile = File.createTempFile("wro", ".tmp");
@@ -112,6 +112,29 @@ public class SassClassPathUriLocator implements UriLocator {
         Validate.notNull(uri, "URI cannot be NULL!");
         LOG.debug("loading scss file: {}", uri);
         return new FileInputStream(getScssFile(uri).get());
+    }
+
+    /**
+     * Check that a resource exists without throwing an exception when it does not exist.
+     *
+     * Recent version of WRO throw an IllegalArgumentException when the resource does not exist.
+     * The exists() check should not throw an exception when the resource does not exist.
+     *
+     * The stack trace is suppressed unless debug is enabled.
+     *
+     * @param resource The resource to check.
+     * @return TRUE if resource exists, FALSE otherwise.
+     */
+    private boolean resourceExists(Resource resource) {
+        try {
+            return resource.exists();
+        } catch (IllegalArgumentException e) {
+            if (LOG.isDebugEnabled()) {
+                e.printStackTrace();
+            }
+        }
+
+        return false;
     }
 
 }
