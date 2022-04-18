@@ -23,7 +23,6 @@ public class DataConfig {
     public ObjectMapper objectMapper() {
         return JsonMapper.builder()
             .enable(SerializationFeature.INDENT_OUTPUT)
-            .enable(SerializationFeature.INDENT_OUTPUT)
             .enable(JsonReadFeature.ALLOW_UNESCAPED_CONTROL_CHARS)
             .enable(JsonReadFeature.ALLOW_BACKSLASH_ESCAPING_ANY_CHARACTER)
             .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
