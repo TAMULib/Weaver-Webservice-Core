@@ -10,5 +10,5 @@ public interface ValidatingEntity {
     public void setModelValidator(Validator modelValidator);
 
     public <U extends ValidatingEntity> ValidationResults validate(U model);
-	
+
 }

@@ -30,19 +30,19 @@ public class WeaverWroConfiguration {
     private static final String[] OTHER_WRO_PROP = new String[] { ConfigurableProcessorsFactory.PARAM_PRE_PROCESSORS, ConfigurableProcessorsFactory.PARAM_POST_PROCESSORS };
     private String propertyPrefix = "wro";
     private String wroEndpoint = propertyPrefix;
-    
+
     private ThemeManager themeManagerService;
-    
+
     private ResourcePatternResolver resourcePatternResolver;
-    
+
     @Value("${theme.managerService:edu.tamu.weaver.wro.service.SimpleThemeManagerService}")
     private String themeManagerServiceClassName;
-    
+
     @Value("${theme.cssGroupName:app}")
     private String cssGroupName;
-    
+
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    
+
     @Bean
     public FilterRegistrationBean<ConfigurableWroFilter> webResourceOptimizer(Environment env) {
         FilterRegistrationBean<ConfigurableWroFilter> fr = new FilterRegistrationBean<>();
@@ -56,32 +56,32 @@ public class WeaverWroConfiguration {
         fr.addUrlPatterns("/"+getWroEndpoint()+"/*");
         return fr;
     }
-    
+
     @Bean
     public ThemeManager setThemeManagerServiceBean() {
-    	logger.debug("Creating ThemeManagerService Bean with configured class: "+themeManagerServiceClassName);
-    	Class<?> clazz;
-    	try {
-    		clazz = Class.forName(themeManagerServiceClassName);
-    		Constructor<?> constructor;
-    		try {
-    			constructor = clazz.getConstructor();
-    			return (ThemeManager) constructor.newInstance();
-    		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-    			e.printStackTrace();
-    			logger.error("Could not create ThemeManagerService Bean with class: "+themeManagerServiceClassName, e);
-    		}
+      logger.debug("Creating ThemeManagerService Bean with configured class: "+themeManagerServiceClassName);
+      Class<?> clazz;
+      try {
+        clazz = Class.forName(themeManagerServiceClassName);
+        Constructor<?> constructor;
+        try {
+          constructor = clazz.getConstructor();
+          return (ThemeManager) constructor.newInstance();
+        } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+          e.printStackTrace();
+          logger.error("Could not create ThemeManagerService Bean with class: "+themeManagerServiceClassName, e);
+        }
         } catch (ClassNotFoundException e) {
             logger.warn("Could not find ThemeManagerService implementation class: " + themeManagerServiceClassName + "! Application must create theme manager bean!");
         }
-    	return null;
+      return null;
     }
-    
+
     protected Properties buildWroProperties(Environment env) {
-    	Properties props = buildDefaultWroProperties(env);
+      Properties props = buildDefaultWroProperties(env);
         return props;
     }
-    
+
     private Properties buildDefaultWroProperties(Environment env) {
         Properties prop = new Properties();
         for (ConfigConstants c : ConfigConstants.values()) {
@@ -99,48 +99,48 @@ public class WeaverWroConfiguration {
             to.put(name, value);
         }
     }
-    
+
     @Autowired
     @Lazy
     public void setThemeManagerService(ThemeManager themeManagerService) {
-    	this.themeManagerService = themeManagerService;
+      this.themeManagerService = themeManagerService;
     }
-    
+
     public ThemeManager getThemeManagerService() {
-    	return themeManagerService;
+      return themeManagerService;
     }
-    
+
     @Lazy
     @Autowired
     protected void setResourcePatternResolver(ResourcePatternResolver resourcePatternResolver) {
-    	this.resourcePatternResolver = resourcePatternResolver;
+      this.resourcePatternResolver = resourcePatternResolver;
     }
-    
+
     public ResourcePatternResolver getResourcePatternResolver() {
-    	return resourcePatternResolver;
+      return resourcePatternResolver;
     }
-    
+
     protected void setPropertyPrefix(String propertyPrefix) {
-    	this.propertyPrefix = propertyPrefix;
+      this.propertyPrefix = propertyPrefix;
     }
-    
+
     protected String getPropertyPrefix() {
-    	return propertyPrefix;
+      return propertyPrefix;
     }
-    
+
     protected void setWroEndpoint(String wroEndpoint) {
-    	this.wroEndpoint = wroEndpoint;
+      this.wroEndpoint = wroEndpoint;
     }
-    
+
     protected String getWroEndpoint() {
-    	return wroEndpoint;
+      return wroEndpoint;
     }
-    
+
     protected WroManagerFactory getWroManagerFactory(Properties properties) {
-    	return new WeaverConfigurableWroManagerFactory(properties, getThemeManagerService(), resourcePatternResolver);
+      return new WeaverConfigurableWroManagerFactory(properties, getThemeManagerService(), resourcePatternResolver);
     }
-    
+
     protected RequestHandler getRequestHandler() {
-    	return new WeaverRequestHandler();
+      return new WeaverRequestHandler();
     }
 }

@@ -24,7 +24,7 @@ public abstract class WeaverAuthController {
 
     @Autowired
     protected TokenService tokenService;
-    
+
     @Autowired
     protected CryptoService cryptoService;
 

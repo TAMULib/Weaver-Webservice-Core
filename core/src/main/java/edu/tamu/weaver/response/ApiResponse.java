@@ -8,13 +8,13 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * Abstract class for an API response.
- * 
+ *
  * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
  * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>
  * @author <a href="mailto:huff@library.tamu.edu">Jeremy Huff</a>
  * @author <a href="mailto:jsavell@library.tamu.edu">Jason Savell</a>
  * @author <a href="mailto:wwelling@library.tamu.edu">William Welling</a>
- * 
+ *
  */
 @JsonSerialize(using = ApiResponseSerializer.class)
 public class ApiResponse {
@@ -95,7 +95,7 @@ public class ApiResponse {
 
     /**
      * Gets meta.
-     * 
+     *
      * @return Meta
      */
     public Meta getMeta() {
@@ -104,7 +104,7 @@ public class ApiResponse {
 
     /**
      * Gets payload.
-     * 
+     *
      * @return HashMap<String, Object>
      */
     public HashMap<String, Object> getPayload() {

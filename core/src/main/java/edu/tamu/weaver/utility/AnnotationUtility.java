@@ -6,7 +6,7 @@ import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotationUtils;
 
 public class AnnotationUtility {
-    
+
     public static <T extends Annotation> T findMethodAnnotation(Class<T> annotationClass, MethodParameter parameter) {
         T annotation = parameter.getParameterAnnotation(annotationClass);
         if (annotation != null) {
