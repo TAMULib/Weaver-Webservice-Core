@@ -64,7 +64,7 @@ public class OrderedEntityService {
     }
 
     /**
-     * 
+     *
      * @param clazz
      * @param src
      * @param dest
@@ -115,11 +115,11 @@ public class OrderedEntityService {
 
     /**
      * SELECT * FROM ${clazz} WHERE ${whereProp} = ${whereVal} ORDER BY ${property} ASC
-     * 
+     *
      * for every row(boe) that is of {@link OrderedBaseEntity}:
-     * 
+     *
      * boe.setOrder(i+1) -- where i is the index of the position in the result-list from the SELECT statement above as we iterate through that list.
-     * 
+     *
      * @param clazz
      *            -- the entity class
      * @param property

@@ -31,22 +31,22 @@ public class RepoPostProcessor implements ResourcePostProcessor {
 
     protected String getDynamicThemeContent() {
         HashMap<String,String> themeProperties = (HashMap<String,String>) themeManagerService.getThemeProperties();
-    	
+
         StringBuilder formattedProperties = new StringBuilder();
         StringBuilder formattedComments = new StringBuilder();
         formattedComments.append("/* The ThemeManagerService provided the following SASS vars:\n\n");
         themeProperties.forEach((f,v) -> {
             formattedProperties.append("$" + f + ": " + v + ";\n");
-            formattedComments.append("* $" + f + ": " + v + ";\n");		
+            formattedComments.append("* $" + f + ": " + v + ";\n");
         });
         formattedComments.append("*/\n\n"+formattedProperties);
         return formattedComments.toString();
     }
-	
+
     protected ThemeManager getThemeManagerService() {
         return themeManagerService;
     }
-	
+
     protected void setThemeManagerService(ThemeManager themeManagerService) {
         this.themeManagerService = themeManagerService;
     }

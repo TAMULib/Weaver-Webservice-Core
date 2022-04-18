@@ -16,7 +16,7 @@ public interface SecurityInterceptorProxy {
     public SecurityMetadataSource getSecurityMetadataSource();
 
     public Collection<ConfigAttribute> getAttributes(Object object);
-    
+
     public Collection<ConfigAttribute> getAllAttributes();
 
     public AccessDecision decide(Authentication authentication, Object object, Collection<ConfigAttribute> attributes);

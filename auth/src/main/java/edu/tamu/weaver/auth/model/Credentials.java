@@ -8,7 +8,7 @@ import io.jsonwebtoken.Claims;
 /**
  * Credentials object.
  *
- * 
+ *
  * @author <a href="mailto:jmicah@library.tamu.edu">Micah Cooper</a>
  * @author <a href="mailto:jcreel@library.tamu.edu">James Creel</a>
  * @author <a href="mailto:huff@library.tamu.edu">Jeremy Huff</a>
@@ -34,10 +34,10 @@ public class Credentials {
 
     /**
      * Constructor
-     * 
+     *
      * @param claims
      *            Claims
-     * 
+     *
      */
     public Credentials(Claims claims) {
         this();
@@ -56,10 +56,10 @@ public class Credentials {
 
     /**
      * Constructor
-     * 
+     *
      * @param claims
      *            Map<String, Object>
-     * 
+     *
      */
     public Credentials(Map<String, Object> claims) {
         this();
@@ -78,9 +78,9 @@ public class Credentials {
 
     /**
      * Gets last name.
-     * 
+     *
      * @return String
-     * 
+     *
      */
     public String getLastName() {
         return this.lastName;
@@ -88,10 +88,10 @@ public class Credentials {
 
     /**
      * Sets last name.
-     * 
+     *
      * @param lastName
      *            String
-     * 
+     *
      */
     public void setLastName(String lastName) {
         this.lastName = lastName;
@@ -99,9 +99,9 @@ public class Credentials {
 
     /**
      * Gets first name.
-     * 
+     *
      * @return String
-     * 
+     *
      */
     public String getFirstName() {
         return this.firstName;
@@ -109,10 +109,10 @@ public class Credentials {
 
     /**
      * Sets first name.
-     * 
+     *
      * @param firstName
      *            String
-     * 
+     *
      */
     public void setFirstName(String firstName) {
         this.firstName = firstName;
@@ -135,9 +135,9 @@ public class Credentials {
 
     /**
      * Gets UIN.
-     * 
+     *
      * @return String
-     * 
+     *
      */
     public String getUin() {
         return this.uin;
@@ -145,10 +145,10 @@ public class Credentials {
 
     /**
      * Sets UIN.
-     * 
+     *
      * @param uin
      *            String
-     * 
+     *
      */
     public void setUin(String uin) {
         this.uin = uin;
@@ -156,9 +156,9 @@ public class Credentials {
 
     /**
      * Gets expiration.
-     * 
+     *
      * @return String
-     * 
+     *
      */
     public String getExp() {
         return this.exp;
@@ -166,10 +166,10 @@ public class Credentials {
 
     /**
      * Sets expiration.
-     * 
+     *
      * @param exp
      *            String
-     * 
+     *
      */
     public void setExp(String exp) {
         this.exp = exp;
@@ -177,9 +177,9 @@ public class Credentials {
 
     /**
      * Gets email.
-     * 
+     *
      * @return String
-     * 
+     *
      */
     public String getEmail() {
         return this.email;
@@ -187,10 +187,10 @@ public class Credentials {
 
     /**
      * Sets email.
-     * 
+     *
      * @param email
      *            String
-     * 
+     *
      */
     public void setEmail(String email) {
         this.email = email;
@@ -198,9 +198,9 @@ public class Credentials {
 
     /**
      * Gets role.
-     * 
+     *
      * @return String
-     * 
+     *
      */
     public String getRole() {
         return this.role;
@@ -208,10 +208,10 @@ public class Credentials {
 
     /**
      * Sets role.
-     * 
+     *
      * @param role
      *            String
-     * 
+     *
      */
     public void setRole(String role) {
         this.role = role;
