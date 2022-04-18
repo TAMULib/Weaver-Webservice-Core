@@ -5,7 +5,6 @@ import java.util.Properties;
 
 import org.springframework.core.io.support.ResourcePatternResolver;
 
-import edu.tamu.weaver.wro.resource.locator.SassClassPathUriLocator;
 import edu.tamu.weaver.wro.model.factory.WeaverWroModelFactory;
 import edu.tamu.weaver.wro.processor.RepoPostProcessor;
 import edu.tamu.weaver.wro.service.ThemeManager;
@@ -64,6 +63,6 @@ public class WeaverConfigurableWroManagerFactory extends ConfigurableWroManagerF
 	}
 	
 	protected UriLocatorFactory newUriLocatorFactory() {
-		return new SimpleUriLocatorFactory().addLocator(new SassClassPathUriLocator(resourcePatternResolver)).addLocator(new ServletContextUriLocator()).addLocator(new ClasspathUriLocator()).addLocator(new UrlUriLocator());
+		return new SimpleUriLocatorFactory().addLocator(new ServletContextUriLocator()).addLocator(new ClasspathUriLocator()).addLocator(new UrlUriLocator());
 	}
 }
