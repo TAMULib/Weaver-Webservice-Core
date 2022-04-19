@@ -121,6 +121,7 @@ public class SassClassPathUriLocator implements UriLocator {
      * The exists() check should not throw an exception when the resource does not exist.
      *
      * The stack trace is suppressed unless debug is enabled.
+     * When debug is disabled, a warning message is instead printed.
      *
      * @param resource The resource to check.
      * @param uri The URI represented by the resource (used for error logging).
@@ -130,7 +131,7 @@ public class SassClassPathUriLocator implements UriLocator {
         try {
             return resource.exists();
         } catch (IllegalArgumentException e) {
-            String message = "Existence check failed for URI: " + uri;
+            String message = "Failed to find SCSS or CSS file for the URI: " + uri;
             if (LOG.isDebugEnabled()) {
                 LOG.error(message, e);
             } else {
