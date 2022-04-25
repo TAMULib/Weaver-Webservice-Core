@@ -75,7 +75,7 @@ Define a comma separated list of the locations of any SASS/CSS files to be proce
 
 These files must be available on the classpath.
 
-[SimpleThemeManagerService](https://github.com/TAMULib/Weaver-Webservice-Core/blob/2.x/wro/src/main/java/edu/tamu/weaver/wro/service/SimpleThemeManagerService.java#L45) and its extenders pass this list as a String[] to wro4j's WroModelFactory via [WeaverConfigurableWroManagerFactory](https://github.com/TAMULib/Weaver-Webservice-Core/blob/2.x/wro/src/main/java/edu/tamu/weaver/wro/manager/factory/WeaverConfigurableWroManagerFactory.java#L47).
+[SimpleThemeManagerService](https://github.com/TAMULib/Weaver-Webservice-Core/blob/2.x/wro/src/main/java/edu/tamu/weaver/wro/service/SimpleThemeManagerService.java#L45) and its extenders pass this list to wro4j's WroModelFactory via [WeaverConfigurableWroManagerFactory](https://github.com/TAMULib/Weaver-Webservice-Core/blob/2.x/wro/src/main/java/edu/tamu/weaver/wro/manager/factory/WeaverConfigurableWroManagerFactory.java#L47).
 
 
 #### theme.default.location
@@ -86,8 +86,7 @@ Default: none
 
 Optionally define the location of default themes json file, if using [RepoThemeManagerService](https://github.com/TAMULib/Weaver-Webservice-Core/blob/2.x/wro/src/main/java/edu/tamu/weaver/wro/service/RepoThemeManagerService.java). RepoThemeManagerService uses this file to initialize its repository with themes and properties.
 
-The Weaver Webservice Seed app provides an example of the format:
-https://github.com/TAMULib/Weaver-Webservice-Seed/blob/master/src/main/resources/config/theme-defaults.json
+The Weaver Webservice Seed app provides an [example](https://github.com/TAMULib/Weaver-Webservice-Seed/blob/master/src/main/resources/config/theme-defaults.json) of the format.
 
 
 #### theme.reloadUrl
