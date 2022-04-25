@@ -88,8 +88,27 @@ Optionally define the location of default themes json file, if using [RepoThemeM
 
 The Weaver Webservice Seed app provides an [example](https://github.com/TAMULib/Weaver-Webservice-Seed/blob/master/src/main/resources/config/theme-defaults.json) of the format.
 
+#### theme.cssGroupName
 
-#### theme.reloadUrl
+Optional
+
+Default: app
+
+The name wro4j should use when building a single css file from the source `theme.default.css` list.
+
+For example, the default value of 'app' results in a final css file named 'app.css'
+
+#### theme.cssUrl
+
+Optional
+
+Default: http://localhost:9000/wro/app.css
+
+The URI that the final css will be served from. This doesn't normally need to be changed unless `theme.cssGroupName` is also changed from its default.
+
+For example, if `theme.cssGroupName` is set to 'group', `theme.cssUrl` should be set to 'http://localhost:9000/wro/group.css'.
+
+#### theme.cacheReloadUrl
 
 Required
 
