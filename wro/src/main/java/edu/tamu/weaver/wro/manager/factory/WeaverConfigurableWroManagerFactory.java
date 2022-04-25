@@ -23,12 +23,21 @@ public class WeaverConfigurableWroManagerFactory extends ConfigurableWroManagerF
 	private ThemeManager themeManagerService;
 
 	private Properties properties;
+
+	private String cssGroupName;
 	
 	private ResourcePatternResolver resourcePatternResolver;
 
+	private static final String DEFAULT_CSS_GROUP_NAME = "app";
+
 	public WeaverConfigurableWroManagerFactory(Properties props, ThemeManager themeManagerService, ResourcePatternResolver resourcePatternResolver) {
+		this(props, themeManagerService, resourcePatternResolver, DEFAULT_CSS_GROUP_NAME);
+	}
+
+	public WeaverConfigurableWroManagerFactory(Properties props, ThemeManager themeManagerService, ResourcePatternResolver resourcePatternResolver, String cssGroupName) {
 		setProperties(props);
 		setThemeManagerService(themeManagerService);
+		setCssGroupName(cssGroupName);
 		this.resourcePatternResolver = resourcePatternResolver;
 	}
 
@@ -44,7 +53,7 @@ public class WeaverConfigurableWroManagerFactory extends ConfigurableWroManagerF
 
 	@Override
 	protected WroModelFactory newModelFactory() {
-		return new WeaverWroModelFactory(getThemeManagerService().getCssResources(),"app");
+		return new WeaverWroModelFactory(getThemeManagerService().getCssResources(), getCssGroupName());
 	}
 	
 	protected void setProperties(Properties properties) {
@@ -61,6 +70,14 @@ public class WeaverConfigurableWroManagerFactory extends ConfigurableWroManagerF
 
 	protected ThemeManager getThemeManagerService() {
 		return themeManagerService;
+	}
+
+    protected void setCssGroupName(String cssGroupName) {
+		this.cssGroupName = cssGroupName;
+	}
+
+    protected String getCssGroupName() {
+		return cssGroupName;
 	}
 	
 	protected UriLocatorFactory newUriLocatorFactory() {

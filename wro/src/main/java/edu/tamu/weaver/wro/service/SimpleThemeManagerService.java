@@ -50,6 +50,14 @@ public class SimpleThemeManagerService implements ThemeManager {
         return null;
     }
 
+    protected void setCssUrl(String cssUrl) {
+        this.cssUrl = cssUrl;
+    }
+
+    protected String getCssUrl() {
+        return this.cssUrl;
+    }
+
     /**
      * Build the CSS as soon as the the app is running
      *
@@ -64,6 +72,7 @@ public class SimpleThemeManagerService implements ThemeManager {
                     try {
                         HttpUtility.makeHttpRequest(cssUrl, "GET");
                     } catch (IOException e) {
+                        logger.warn("Failed to initialize theme for URL: "+getCssUrl());
                         e.printStackTrace();
                     }
                 }
