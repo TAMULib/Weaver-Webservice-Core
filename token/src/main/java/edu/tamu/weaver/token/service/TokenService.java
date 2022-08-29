@@ -27,6 +27,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 
 @Service
 public class TokenService {
@@ -55,10 +56,13 @@ public class TokenService {
     @Autowired
     private Environment env;
 
+    private Key jwtKey;
+
     private Key key;
 
     @PostConstruct
     private void setup() {
+        jwtKey = Keys.secretKeyFor(SignatureAlgorithm.HS512);
         key = new SecretKeySpec(secret.getBytes(), ENCRYPTION_ALGORITHM);
     }
 
@@ -79,7 +83,7 @@ public class TokenService {
                 .setSubject(subject)
                 .setExpiration(expiration)
                 .setHeaderParam(TYPE_HEADER_KEY, TYPE_HEADER_VALUE)
-                .signWith(SignatureAlgorithm.HS512, secret)
+                .signWith(jwtKey)
                 .compact();
         // @formatter:on
         Cipher cipher = Cipher.getInstance(ENCRYPTION_ALGORITHM);
@@ -108,7 +112,7 @@ public class TokenService {
         Cipher cipher = Cipher.getInstance(ENCRYPTION_ALGORITHM);
         cipher.init(Cipher.DECRYPT_MODE, key);
         String jwt = new String(cipher.doFinal(Base64.decodeBase64(jwe)));
-        return Jwts.parser().setSigningKey(secret).parseClaimsJws(jwt).getBody();
+        return Jwts.parserBuilder().setSigningKey(jwtKey).build().parseClaimsJws(jwt).getBody();
     }
 
     public Claims parseIgnoringExpiration(String token) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
