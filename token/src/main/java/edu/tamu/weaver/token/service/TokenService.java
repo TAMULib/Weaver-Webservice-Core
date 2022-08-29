@@ -2,8 +2,10 @@ package edu.tamu.weaver.token.service;
 
 import static java.util.Calendar.MINUTE;
 
+import java.math.BigInteger;
 import java.security.InvalidKeyException;
 import java.security.Key;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
 import java.util.Date;
@@ -18,6 +20,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.digest.MessageDigestAlgorithms;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,14 +63,17 @@ public class TokenService {
     @Autowired
     private Environment env;
 
-    private Key jwtKey;
-
     private Key key;
 
+    private String jwtSecret;
+
+    private Key jwtKey;
+
     @PostConstruct
-    private void setup() {
-        jwtKey = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+    private void setup() throws NoSuchAlgorithmException {
         key = new SecretKeySpec(secret.getBytes(), ENCRYPTION_ALGORITHM);
+        jwtSecret = sha512Secret(secret);
+        jwtKey = Keys.hmacShaKeyFor(jwtSecret.getBytes());
     }
 
     public String createToken(Map<String, Object> claims) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
@@ -141,6 +147,19 @@ public class TokenService {
         }
         String subject = (String) claims.get(shibSubject);
         return createToken(subject, claims);
+    }
+
+    private String sha512Secret(String input) throws NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance(MessageDigestAlgorithms.SHA_512);
+        byte[] digest = md.digest(input.getBytes());
+        BigInteger no = new BigInteger(1, digest);
+        String hash = no.toString(16);
+
+        while (hash.length() < 32) {
+            hash = "0" + hash;
+        }
+
+        return hash;
     }
 
 }
