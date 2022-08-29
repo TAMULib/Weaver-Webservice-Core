@@ -18,6 +18,8 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.binary.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -31,6 +33,8 @@ import io.jsonwebtoken.security.Keys;
 
 @Service
 public class TokenService {
+
+    private final static Logger LOG = LoggerFactory.getLogger(TokenService.class);
 
     private final static String TYPE_HEADER_KEY = "typ";
 
@@ -83,12 +87,15 @@ public class TokenService {
                 .setSubject(subject)
                 .setExpiration(expiration)
                 .setHeaderParam(TYPE_HEADER_KEY, TYPE_HEADER_VALUE)
-                .signWith(jwtKey)
+                .signWith(jwtKey, SignatureAlgorithm.HS512)
                 .compact();
         // @formatter:on
+        LOG.debug("created jwt: {}", jwt);
         Cipher cipher = Cipher.getInstance(ENCRYPTION_ALGORITHM);
         cipher.init(Cipher.ENCRYPT_MODE, key);
-        return Base64.encodeBase64URLSafeString(cipher.doFinal(jwt.getBytes()));
+        String jwe = Base64.encodeBase64URLSafeString(cipher.doFinal(jwt.getBytes()));
+        LOG.debug("encrypted jwt: {}",  jwe);
+        return jwe;
     }
 
     public String refreshToken(String token) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
@@ -109,9 +116,11 @@ public class TokenService {
     }
 
     public Claims parse(String jwe) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+        LOG.debug("parsing jwe: {}", jwe);
         Cipher cipher = Cipher.getInstance(ENCRYPTION_ALGORITHM);
         cipher.init(Cipher.DECRYPT_MODE, key);
         String jwt = new String(cipher.doFinal(Base64.decodeBase64(jwe)));
+        LOG.debug("parsed: {}", jwt);
         return Jwts.parserBuilder().setSigningKey(jwtKey).build().parseClaimsJws(jwt).getBody();
     }
 
