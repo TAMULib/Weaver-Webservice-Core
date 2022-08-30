@@ -127,7 +127,9 @@ public class TokenService {
         cipher.init(Cipher.DECRYPT_MODE, key);
         String jwt = new String(cipher.doFinal(Base64.decodeBase64(jwe)));
         LOG.debug("parsed: {}", jwt);
-        return Jwts.parserBuilder().setSigningKey(jwtKey).build().parseClaimsJws(jwt).getBody();
+        Claims claims = Jwts.parserBuilder().setSigningKey(jwtKey).build().parseClaimsJws(jwt).getBody();
+        LOG.debug("claims: {}", claims);
+        return claims;
     }
 
     public Claims parseIgnoringExpiration(String token) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
