@@ -2,8 +2,10 @@ package edu.tamu.weaver.token.service;
 
 import static java.util.Calendar.MINUTE;
 
+import java.math.BigInteger;
 import java.security.InvalidKeyException;
 import java.security.Key;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
 import java.util.Date;
@@ -18,6 +20,9 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.digest.MessageDigestAlgorithms;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -27,9 +32,12 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 
 @Service
 public class TokenService {
+
+    private final static Logger LOG = LoggerFactory.getLogger(TokenService.class);
 
     private final static String TYPE_HEADER_KEY = "typ";
 
@@ -57,9 +65,15 @@ public class TokenService {
 
     private Key key;
 
+    private String jwtSecret;
+
+    private Key jwtKey;
+
     @PostConstruct
-    private void setup() {
+    private void setup() throws NoSuchAlgorithmException {
         key = new SecretKeySpec(secret.getBytes(), ENCRYPTION_ALGORITHM);
+        jwtSecret = sha512Secret(secret);
+        jwtKey = Keys.hmacShaKeyFor(jwtSecret.getBytes());
     }
 
     public String createToken(Map<String, Object> claims) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
@@ -79,12 +93,15 @@ public class TokenService {
                 .setSubject(subject)
                 .setExpiration(expiration)
                 .setHeaderParam(TYPE_HEADER_KEY, TYPE_HEADER_VALUE)
-                .signWith(SignatureAlgorithm.HS512, secret)
+                .signWith(jwtKey, SignatureAlgorithm.HS512)
                 .compact();
         // @formatter:on
+        LOG.debug("created jwt: {}", jwt);
         Cipher cipher = Cipher.getInstance(ENCRYPTION_ALGORITHM);
         cipher.init(Cipher.ENCRYPT_MODE, key);
-        return Base64.encodeBase64URLSafeString(cipher.doFinal(jwt.getBytes()));
+        String jwe = Base64.encodeBase64URLSafeString(cipher.doFinal(jwt.getBytes()));
+        LOG.debug("encrypted jwt: {}",  jwe);
+        return jwe;
     }
 
     public String refreshToken(String token) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
@@ -105,10 +122,14 @@ public class TokenService {
     }
 
     public Claims parse(String jwe) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+        LOG.debug("parsing jwe: {}", jwe);
         Cipher cipher = Cipher.getInstance(ENCRYPTION_ALGORITHM);
         cipher.init(Cipher.DECRYPT_MODE, key);
         String jwt = new String(cipher.doFinal(Base64.decodeBase64(jwe)));
-        return Jwts.parser().setSigningKey(secret).parseClaimsJws(jwt).getBody();
+        LOG.debug("parsed: {}", jwt);
+        Claims claims = Jwts.parserBuilder().setSigningKey(jwtKey).build().parseClaimsJws(jwt).getBody();
+        LOG.debug("claims: {}", claims);
+        return claims;
     }
 
     public Claims parseIgnoringExpiration(String token) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
@@ -128,6 +149,19 @@ public class TokenService {
         }
         String subject = (String) claims.get(shibSubject);
         return createToken(subject, claims);
+    }
+
+    private String sha512Secret(String input) throws NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance(MessageDigestAlgorithms.SHA_512);
+        byte[] digest = md.digest(input.getBytes());
+        BigInteger no = new BigInteger(1, digest);
+        String hash = no.toString(16);
+
+        while (hash.length() < 32) {
+            hash = "0" + hash;
+        }
+
+        return hash;
     }
 
 }
