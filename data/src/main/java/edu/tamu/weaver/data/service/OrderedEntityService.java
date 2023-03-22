@@ -162,7 +162,7 @@ public class OrderedEntityService {
     @SuppressWarnings("unchecked")
     public synchronized void remove(Object repo, Class<?> clazz, Long position, String whereProp, Object whereVal) {
         Long id = ((OrderedBaseEntity) findByPosition(clazz, position)).getId();
-        ((JpaRepository<Object, Long>) repo).delete(id);
+        ((JpaRepository<Object, Long>) repo).deleteById(id);
         {
             CriteriaBuilder cb = entityManager.getCriteriaBuilder();
             CriteriaUpdate<Object> update = (CriteriaUpdate<Object>) cb.createCriteriaUpdate(clazz);
