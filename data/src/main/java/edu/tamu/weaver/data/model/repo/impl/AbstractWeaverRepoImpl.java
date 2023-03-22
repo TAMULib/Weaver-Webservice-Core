@@ -8,6 +8,9 @@ import static edu.tamu.weaver.response.ApiAction.UPDATE;
 import static edu.tamu.weaver.response.ApiStatus.SUCCESS;
 
 import java.util.List;
+import java.util.Optional;
+
+import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -38,7 +41,11 @@ public abstract class AbstractWeaverRepoImpl<M extends WeaverEntity, R extends W
 
     @Override
     public M read(Long id) {
-        return weaverRepo.getById(id);
+        Optional<M> model = weaverRepo.findById(id);
+        if (model.isPresent()) {
+            return model.get();
+        }
+        throw new EntityNotFoundException(String.format("%s with id %s not found", getClass().getSimpleName(), id));
     }
 
     @Override
