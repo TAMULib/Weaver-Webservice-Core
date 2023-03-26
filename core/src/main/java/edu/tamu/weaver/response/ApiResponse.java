@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * Abstract class for an API response.
@@ -16,7 +15,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  * @author <a href="mailto:wwelling@library.tamu.edu">William Welling</a>
  *
  */
-@JsonSerialize(using = ApiResponseSerializer.class)
 public class ApiResponse {
 
     @JsonView(ApiView.Partial.class)
