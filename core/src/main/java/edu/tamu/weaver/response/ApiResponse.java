@@ -1,9 +1,15 @@
 package edu.tamu.weaver.response;
 
+import static java.lang.String.format;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import org.springframework.lang.NonNull;
 
 /**
  * Abstract class for an API response.
@@ -15,6 +21,8 @@ import com.fasterxml.jackson.annotation.JsonView;
  *
  */
 public class ApiResponse {
+
+    private static String SERIALIZE_STACKTRACE_EXCEPTION_TEMPLATE = "Failed to serialize stacktrace: %s";
 
     @JsonView(ApiView.Partial.class)
     private final Meta meta;
@@ -133,6 +141,9 @@ public class ApiResponse {
         private String message;
 
         @JsonView(ApiView.Partial.class)
+        private String stacktrace;
+
+        @JsonView(ApiView.Partial.class)
         private String id;
 
         public Meta() {
@@ -163,6 +174,14 @@ public class ApiResponse {
             this.message = message;
         }
 
+        public String getStacktrace() {
+            return stacktrace;
+        }
+
+        public void setStacktrace(String stacktrace) {
+            this.stacktrace = stacktrace;
+        }
+
         public String getId() {
             return id;
         }
@@ -171,6 +190,26 @@ public class ApiResponse {
             this.id = id;
         }
 
+    }
+
+    public static ApiResponse fromException(ApiStatus status, String message, Exception exception) {
+        ApiResponse response = new ApiResponse(status, message);
+        if (exception != null) {
+            response.getMeta()
+                .setStacktrace(serializeStacktrace(exception));
+        }
+
+        return response;
+    }
+
+    private static String serializeStacktrace(@NonNull Exception exception) {
+        try (StringWriter stringWriter = new StringWriter();
+            PrintWriter printWriter = new PrintWriter(stringWriter)) {
+            exception.printStackTrace(printWriter);
+            return stringWriter.toString();
+        } catch (IOException e) {
+            return format(SERIALIZE_STACKTRACE_EXCEPTION_TEMPLATE, e.getMessage());
+        }
     }
 
 }
