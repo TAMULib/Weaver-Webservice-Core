@@ -46,7 +46,7 @@ public abstract class AuthWebSecurityConfig<U extends AbstractWeaverUserDetails,
 
     @Bean
     public TokenAuthorizationFilter<U, R, S> tokenAuthorizationFilter() throws Exception {
-        return new TokenAuthorizationFilter<U, R, S>(authenticationManager());
+        return new TokenAuthorizationFilter<U, R, S>();
     }
 
     protected SecurityExpressionHandler<FilterInvocation> webExpressionHandler() {

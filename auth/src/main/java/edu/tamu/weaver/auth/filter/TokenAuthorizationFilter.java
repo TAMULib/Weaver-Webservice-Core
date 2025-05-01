@@ -8,30 +8,31 @@ import static edu.tamu.weaver.auth.AuthConstants.XML_HTTP_REQUEST_HEADER;
 import static edu.tamu.weaver.auth.model.AccessDecision.ALLOW_ANONYMOUS;
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON;
 
-import java.io.IOException;
-
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import java.io.IOException;
+import java.util.Date;
+
+import io.jsonwebtoken.ExpiredJwtException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import edu.tamu.weaver.auth.model.AbstractWeaverUserDetails;
 import edu.tamu.weaver.auth.model.repo.AbstractWeaverUserRepo;
 import edu.tamu.weaver.auth.service.AbstractWeaverUserDetailsService;
 import edu.tamu.weaver.auth.service.RestAccessManagerService;
 import edu.tamu.weaver.auth.service.TokenAuthenticationService;
-import io.jsonwebtoken.ExpiredJwtException;
 
 @Component
-public class TokenAuthorizationFilter<U extends AbstractWeaverUserDetails, R extends AbstractWeaverUserRepo<U>, S extends AbstractWeaverUserDetailsService<U, R>> extends BasicAuthenticationFilter {
+public class TokenAuthorizationFilter<U extends AbstractWeaverUserDetails, R extends AbstractWeaverUserRepo<U>, S extends AbstractWeaverUserDetailsService<U, R>> extends OncePerRequestFilter {
 
     private static final Logger LOG = LoggerFactory.getLogger(TokenAuthorizationFilter.class);
 
@@ -42,10 +43,6 @@ public class TokenAuthorizationFilter<U extends AbstractWeaverUserDetails, R ext
     @Lazy
     @Autowired
     private TokenAuthenticationService<U, R, S> tokenAuthenticationService;
-
-    public TokenAuthorizationFilter(AuthenticationManager authenticationManager) {
-        super(authenticationManager);
-    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
