@@ -5,7 +5,6 @@ import static edu.tamu.weaver.auth.AuthConstants.DEFAULT_CHARSET;
 import static edu.tamu.weaver.auth.AuthConstants.ERROR_RESPONSE;
 import static edu.tamu.weaver.auth.AuthConstants.EXPIRED_RESPONSE;
 import static edu.tamu.weaver.auth.AuthConstants.XML_HTTP_REQUEST_HEADER;
-import static edu.tamu.weaver.auth.model.AccessDecision.ALLOW_ANONYMOUS;
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON;
 
 import java.io.IOException;
@@ -26,7 +25,6 @@ import org.springframework.stereotype.Component;
 import edu.tamu.weaver.auth.model.AbstractWeaverUserDetails;
 import edu.tamu.weaver.auth.model.repo.AbstractWeaverUserRepo;
 import edu.tamu.weaver.auth.service.AbstractWeaverUserDetailsService;
-import edu.tamu.weaver.auth.service.RestAccessManagerService;
 import edu.tamu.weaver.auth.service.TokenAuthenticationService;
 import io.jsonwebtoken.ExpiredJwtException;
 
@@ -34,10 +32,6 @@ import io.jsonwebtoken.ExpiredJwtException;
 public class TokenAuthorizationFilter<U extends AbstractWeaverUserDetails, R extends AbstractWeaverUserRepo<U>, S extends AbstractWeaverUserDetailsService<U, R>> extends BasicAuthenticationFilter {
 
     private static final Logger LOG = LoggerFactory.getLogger(TokenAuthorizationFilter.class);
-
-    @Lazy
-    @Autowired
-    private RestAccessManagerService restAccessManagerService;
 
     @Lazy
     @Autowired
@@ -51,22 +45,20 @@ public class TokenAuthorizationFilter<U extends AbstractWeaverUserDetails, R ext
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         boolean doFilter = true;
         if (request.getHeader(XML_HTTP_REQUEST_HEADER) != null && request.getHeader(AUTHORIZATION_HEADER) != null) {
-            if (restAccessManagerService.decideAccess(request) != ALLOW_ANONYMOUS) {
-                String token = request.getHeader(AUTHORIZATION_HEADER);
-                if (token != null) {
-                    try {
-                        tokenAuthenticationService.authenticate(token);
-                    } catch (Exception exception) {
-                        LOG.info(exception.getMessage());
-                        response.setContentType(APPLICATION_JSON.toString());
-                        response.setCharacterEncoding(DEFAULT_CHARSET);
-                        if (exception instanceof ExpiredJwtException) {
-                            response.getOutputStream().write(EXPIRED_RESPONSE);
-                        } else {
-                            response.getOutputStream().write(ERROR_RESPONSE);
-                        }
-                        doFilter = false;
+            String token = request.getHeader(AUTHORIZATION_HEADER);
+            if (token != null) {
+                try {
+                    tokenAuthenticationService.authenticate(token);
+                } catch (Exception exception) {
+                    LOG.info(exception.getMessage());
+                    response.setContentType(APPLICATION_JSON.toString());
+                    response.setCharacterEncoding(DEFAULT_CHARSET);
+                    if (exception instanceof ExpiredJwtException) {
+                        response.getOutputStream().write(EXPIRED_RESPONSE);
+                    } else {
+                        response.getOutputStream().write(ERROR_RESPONSE);
                     }
+                    doFilter = false;
                 }
             }
         }
