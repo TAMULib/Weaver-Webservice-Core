@@ -3,3 +3,5 @@
 
 Webservice-Core
 ======================
+
+Copyright © 2016-2025 Texas A&M University Libraries under the [MIT license](LICENSE).

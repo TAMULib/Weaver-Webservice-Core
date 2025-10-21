@@ -9,7 +9,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,6 +24,9 @@ import edu.tamu.weaver.validation.validators.InputValidator;
 @RestController
 @RequestMapping("/validations")
 public class ValidationsController {
+
+    @Autowired
+    private ResourceLoader resourceLoader;
 
     // TODO: add logging
 
@@ -39,9 +44,11 @@ public class ValidationsController {
         Object model = null;
         Object validator = null;
 
+
+
         for (String packageName : modelPackages) {
             try {
-                clazz = Class.forName(packageName + "." + entityName);
+                clazz = resourceLoader.getClassLoader().loadClass(packageName + "." + entityName);
                 break;
             } catch (ClassNotFoundException e) {
                 // e.printStackTrace();
