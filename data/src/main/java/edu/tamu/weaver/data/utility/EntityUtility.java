@@ -6,18 +6,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.EntityManager;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.Column;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.metamodel.Attribute;
 
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
-
-import org.hibernate.query.criteria.internal.path.PluralAttributePath;
 
 import edu.tamu.weaver.context.SpringContext;
 
@@ -189,18 +189,40 @@ public class EntityUtility {
         CriteriaQuery<Object> query = cb.createQuery();
         Root<?> root = query.from(clazz);
         Path<Object> path = null;
+        boolean endsWithJoin = false;
         for (String p : property.split("\\.")) {
+            Attribute<?, ?> attr = root.getModel().getAttribute(p);
             if (path == null) {
-                if (root.get(p) instanceof PluralAttributePath) {
+                if (attr.isCollection()) {
                     path = root.join(p);
+                    endsWithJoin = true;
                 } else {
                     path = root.get(p);
+                    endsWithJoin = false;
                 }
             } else {
-                path = path.get(p);
+                try {
+                    From<?, ?> from = (From<?, ?>) path;
+                    if (attr.isCollection()) {
+                        path = from.join(p);
+                        endsWithJoin = true;
+                    } else {
+                        path = path.get(p);
+                        endsWithJoin = false;
+                    }
+                } catch (ClassCastException e) {
+                    path = path.get(p);
+                    endsWithJoin = false;
+                }
             }
         }
+
+        if (endsWithJoin && (value instanceof Long || value instanceof Integer)) {
+            path = path.get(ID_COLUMN_NAME);
+        }
+
         query.select(root).where(cb.equal(path, value));
+
         return entityManager.createQuery(query).getResultList();
     }
 
