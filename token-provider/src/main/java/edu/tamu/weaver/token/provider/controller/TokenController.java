@@ -1,6 +1,7 @@
 package edu.tamu.weaver.token.provider.controller;
 
 import static edu.tamu.weaver.response.ApiStatus.SUCCESS;
+import static org.springframework.web.util.UriComponentsBuilder.fromUriString;
 
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
@@ -20,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.util.UriBuilder;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import edu.tamu.weaver.response.ApiResponse;
 import edu.tamu.weaver.token.service.TokenService;
@@ -43,7 +43,7 @@ public class TokenController {
             throw new RuntimeException("No referrer in params!!");
         }
         LOG.debug("headers: " + headers);
-        UriBuilder builder = UriComponentsBuilder.fromUriString(referrer.replace(" ", "%20"));
+        UriBuilder builder = fromUriString(referrer.replace(" ", "%20"));
         builder.queryParam("jwt", tokenService.craftToken(headers));
         String url = builder.build().toASCIIString();
         LOG.debug(String.format("Auth url redirect: %s", url));

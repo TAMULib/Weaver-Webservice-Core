@@ -38,6 +38,9 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <spring.boot.version>3.1.12</spring.boot.version>
     <jsonwebtoken.version>0.11.5</jsonwebtoken.version>
+    <cloud-dependencies.version>2022.0.5</cloud-dependencies.version>
+    <maven.plugins.version>3.5.0</maven.plugins.version>
+    <jacoco.plugin.version>0.8.15</jacoco.plugin.version>
   </properties>
 
   <dependencyManagement>
@@ -52,7 +55,7 @@
       <dependency>
         <groupId>org.springframework.cloud</groupId>
         <artifactId>spring-cloud-dependencies</artifactId>
-        <version>2022.0.5</version>
+        <version>${cloud-dependencies.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -86,7 +89,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-resources-plugin</artifactId>
-          <version>3.5.0</version>
+          <version>${maven.plugins.version}</version>
           <configuration>
             <delimiters>
               <delimiter>@</delimiter>
@@ -97,7 +100,7 @@
         <plugin>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
-          <version>0.8.15</version>
+          <version>${jacoco.plugin.version}</version>
           <executions>
             <execution>
               <id>default-prepare-agent</id>
@@ -136,7 +139,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>3.5.0</version>
+        <version>${maven.plugins.version}</version>
         <configuration>
           <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
         </configuration>
