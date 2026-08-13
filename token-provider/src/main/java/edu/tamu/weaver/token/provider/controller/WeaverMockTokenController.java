@@ -1,6 +1,7 @@
 package edu.tamu.weaver.token.provider.controller;
 
 import static edu.tamu.weaver.response.ApiStatus.SUCCESS;
+import static org.springframework.web.util.UriComponentsBuilder.fromUriString;
 
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
@@ -19,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.util.UriBuilder;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import edu.tamu.weaver.response.ApiResponse;
 
@@ -64,7 +64,7 @@ public abstract class WeaverMockTokenController extends TokenController {
         if (mock == null) {
             mock = "user";
         }
-        UriBuilder builder = UriComponentsBuilder.fromUriString(referrer);
+        UriBuilder builder = fromUriString(referrer);
         builder.queryParam("jwt", tokenService.craftToken(MOCK_CLAIMS.get(mock)));
         String url = builder.build().toASCIIString();
         LOG.debug(String.format("Auth url redirect: %s", url));
