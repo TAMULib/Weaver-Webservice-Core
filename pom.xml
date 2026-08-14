@@ -5,7 +5,7 @@
 
   <groupId>edu.tamu.weaver</groupId>
   <artifactId>webservice-parent</artifactId>
-  <version>2.3.4-SNAPSHOT</version>
+  <version>2.3.5-SNAPSHOT</version>
 
   <name>Weaver Webservice Parent</name>
 
@@ -36,7 +36,7 @@
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <spring.boot.version>3.4.13</spring.boot.version>
+    <spring.boot.version>3.5.16</spring.boot.version>
     <jsonwebtoken.version>0.11.5</jsonwebtoken.version>
     <cloud-dependencies.version>2022.0.5</cloud-dependencies.version>
     <maven.plugins.version>3.5.0</maven.plugins.version>
