@@ -5,7 +5,7 @@
 
   <groupId>edu.tamu.weaver</groupId>
   <artifactId>webservice-parent</artifactId>
-  <version>2.3.5-SNAPSHOT</version>
+  <version>2.3.5-RC1</version>
 
   <name>Weaver Webservice Parent</name>
 
