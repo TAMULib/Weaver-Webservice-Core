@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.util.Optional;
 
@@ -41,7 +42,7 @@ public class HttpUtility {
     }
 
     public static String makeHttpRequest(String urlString, String method, Optional<String> message, Optional<String> contentType, int timeout) throws IOException {
-        URL url = new URL(urlString);
+        URL url = URI.create(urlString).toURL();
 
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 

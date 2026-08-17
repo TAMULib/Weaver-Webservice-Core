@@ -46,8 +46,7 @@ public abstract class AuthWebSecurityConfig<U extends AbstractWeaverUserDetails,
 
     @Bean
     public RoleHierarchy roleHierarchy() {
-        RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
-        roleHierarchy.setHierarchy(buildRoleHierarchy());
+        RoleHierarchyImpl roleHierarchy = RoleHierarchyImpl.fromHierarchy(buildRoleHierarchy());
         return roleHierarchy;
     }
 

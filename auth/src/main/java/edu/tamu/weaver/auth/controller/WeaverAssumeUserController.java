@@ -3,7 +3,7 @@ package edu.tamu.weaver.auth.controller;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,7 +37,7 @@ public class WeaverAssumeUserController {
     private TokenService tokenService;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private JsonMapper jsonMapper;
 
     /**
      * Admin endpoint. Queries LDAP with netid and returns jwt of assumed user.
@@ -60,7 +60,7 @@ public class WeaverAssumeUserController {
         String response = HttpUtility.makeHttpRequest(String.format("%s?netid=%s", assumeClaimsUrl, netid), "GET");
 
         @SuppressWarnings("unchecked")
-        Map<String, String> info = objectMapper.readValue(response, Map.class);
+        Map<String, String> info = jsonMapper.readValue(response, Map.class);
 
         if (info.get("result") == null) {
 

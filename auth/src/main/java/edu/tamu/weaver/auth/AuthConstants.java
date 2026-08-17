@@ -9,8 +9,8 @@ import java.util.List;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
 
 import edu.tamu.weaver.response.ApiResponse;
 
@@ -35,11 +35,11 @@ public class AuthConstants {
     public final static ApiResponse SERVER_ERROR_API_RESPONSE = new ApiResponse(ERROR);
 
     static {
-        ObjectMapper objectMapper = new ObjectMapper();
+        JsonMapper jsonMapper = JsonMapper.builder().build();
         byte[] expiredResponse = new byte[0];
         try {
-            expiredResponse = objectMapper.writeValueAsBytes(new ApiResponse(REFRESH));
-        } catch (JsonProcessingException e) {
+            expiredResponse = jsonMapper.writeValueAsBytes(new ApiResponse(REFRESH));
+        } catch (JacksonException e) {
             e.printStackTrace();
         } finally {
             EXPIRED_RESPONSE = expiredResponse;
@@ -47,8 +47,8 @@ public class AuthConstants {
 
         byte[] errorResponse = new byte[0];
         try {
-            errorResponse = objectMapper.writeValueAsBytes(new ApiResponse(ERROR));
-        } catch (JsonProcessingException e) {
+            errorResponse = jsonMapper.writeValueAsBytes(new ApiResponse(ERROR));
+        } catch (JacksonException e) {
             e.printStackTrace();
         } finally {
             ERROR_RESPONSE = errorResponse;
@@ -56,8 +56,8 @@ public class AuthConstants {
 
         byte[] unauthorizedResponse = new byte[0];
         try {
-            unauthorizedResponse = objectMapper.writeValueAsBytes(UNAUTHORIZED_API_RESPONSE);
-        } catch (JsonProcessingException e) {
+            unauthorizedResponse = jsonMapper.writeValueAsBytes(UNAUTHORIZED_API_RESPONSE);
+        } catch (JacksonException e) {
             e.printStackTrace();
         } finally {
             UNAUTHORIZED_RESPONSE = unauthorizedResponse;
