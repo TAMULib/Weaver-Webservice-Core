@@ -51,7 +51,7 @@ public class WeaverAssumeUserController {
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping(method = RequestMethod.GET)
-    public ApiResponse assume(@RequestParam() Map<String, String> params) throws Exception {
+    public ApiResponse assume(@RequestParam("params") Map<String, String> params) throws Exception {
 
         ApiResponse apiResponse;
 

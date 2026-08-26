@@ -1,6 +1,7 @@
 package edu.tamu.weaver.token.provider.controller;
 
 import static edu.tamu.weaver.response.ApiStatus.SUCCESS;
+import static org.springframework.web.util.UriComponentsBuilder.fromUriString;
 
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
@@ -12,13 +13,13 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
-import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.web.util.UriBuilder;
 
 import edu.tamu.weaver.response.ApiResponse;
 
@@ -52,7 +53,7 @@ public abstract class WeaverMockTokenController extends TokenController {
 
     @Override
     @RequestMapping("/token")
-    public RedirectView token(@RequestParam Map<String, String> params, @RequestHeader Map<String, String> headers) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, URISyntaxException {
+    public RedirectView token(@RequestParam("params") Map<String, String> params, @RequestHeader Map<String, String> headers) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, URISyntaxException {
         LOG.debug("params: " + params);
         String referrer = params.get("referrer");
         if (referrer == null) {
@@ -63,8 +64,8 @@ public abstract class WeaverMockTokenController extends TokenController {
         if (mock == null) {
             mock = "user";
         }
-        URIBuilder builder = new URIBuilder(referrer);
-        builder.addParameter("jwt", tokenService.craftToken(MOCK_CLAIMS.get(mock)));
+        UriBuilder builder = fromUriString(referrer);
+        builder.queryParam("jwt", tokenService.craftToken(MOCK_CLAIMS.get(mock)));
         String url = builder.build().toASCIIString();
         LOG.debug(String.format("Auth url redirect: %s", url));
         RedirectView redirect = new RedirectView();
@@ -75,7 +76,7 @@ public abstract class WeaverMockTokenController extends TokenController {
 
     @Override
     @RequestMapping("/refresh")
-    public ApiResponse refresh(@RequestParam(required = true) String token) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
+    public ApiResponse refresh(@RequestParam(name = "token", required = true) String token) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
         LOG.debug("Refresh token requested.");
         return new ApiResponse(SUCCESS, "Token refresh successful.", tokenService.refreshToken(token));
     }

@@ -6,18 +6,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.EntityManager;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.Column;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.metamodel.Attribute;
 
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
-
-import org.hibernate.query.criteria.internal.path.PluralAttributePath;
 
 import edu.tamu.weaver.context.SpringContext;
 
@@ -191,7 +190,8 @@ public class EntityUtility {
         Path<Object> path = null;
         for (String p : property.split("\\.")) {
             if (path == null) {
-                if (root.get(p) instanceof PluralAttributePath) {
+                Attribute<?,?> attr = root.getModel().getAttribute(p);
+                if (attr.isCollection()) {
                     path = root.join(p);
                 } else {
                     path = root.get(p);
