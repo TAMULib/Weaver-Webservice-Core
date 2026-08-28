@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import edu.tamu.weaver.auth.service.CryptoService;
 import edu.tamu.weaver.email.service.EmailSender;
@@ -20,7 +20,7 @@ public abstract class WeaverAuthController {
     protected final static String EMAIL_VERIFICATION_TYPE = "EMAIL_VERIFICATION";
 
     @Autowired
-    protected ObjectMapper objectMapper;
+    protected JsonMapper jsonMapper;
 
     @Autowired
     protected TokenService tokenService;

@@ -3,9 +3,10 @@ package edu.tamu.weaver.wro.service;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import jakarta.annotation.PostConstruct;
@@ -17,9 +18,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
 
 import edu.tamu.weaver.wro.model.CoreTheme;
 import edu.tamu.weaver.wro.model.ThemeProperty;
@@ -41,7 +42,7 @@ public class RepoThemeManagerService extends SimpleThemeManagerService implement
     private ThemePropertyRepo themePropertyRepo;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private JsonMapper jsonMapper;
 
     private CoreTheme currentTheme;
 
@@ -60,8 +61,8 @@ public class RepoThemeManagerService extends SimpleThemeManagerService implement
             ClassPathResource themeDefaultsRaw = new ClassPathResource(themeDefaultFile);
             JsonNode themeDefaults = null;
             try {
-                themeDefaults = objectMapper.readTree(new FileInputStream(themeDefaultsRaw.getFile()));
-            } catch (JsonProcessingException e) {
+                themeDefaults = jsonMapper.readTree(new FileInputStream(themeDefaultsRaw.getFile()));
+            } catch (JacksonException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             } catch (FileNotFoundException e) {
@@ -71,17 +72,17 @@ public class RepoThemeManagerService extends SimpleThemeManagerService implement
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            Iterator<JsonNode> itProps = themeDefaults.get("propertyNames").elements();
-            while (itProps.hasNext()) {
-                JsonNode entry = itProps.next();
-                logger.debug("Creating Theme Property: " + entry.textValue() + "");
-                themePropertyNameRepo.create(entry.textValue());
+            
+            Collection<JsonNode> propertyNames = themeDefaults.get("propertyNames").values();
+            for (JsonNode propertyName : propertyNames) {
+                logger.debug("Creating Theme Property: " + propertyName.stringValue() + "");
+                themePropertyNameRepo.create(propertyName.stringValue());
             }
 
-            Iterator<Entry<String, JsonNode>> it = themeDefaults.get("themes").fields();
+            Set<Entry<String, JsonNode>> fieldSet = themeDefaults.get("themes").properties();
             Long activateId = 0L;
-            while (it.hasNext()) {
-                Map.Entry<String, JsonNode> entry = (Map.Entry<String, JsonNode>) it.next();
+            for (Entry<String, JsonNode> fieldEntry : fieldSet) {
+                Map.Entry<String, JsonNode> entry = (Map.Entry<String, JsonNode>) fieldEntry;
                 if (entry.getValue().isArray()) {
                     logger.debug("New Props for: " + entry.getKey());
                     if (coreThemeRepo.getByName(entry.getKey()) == null) {
@@ -91,7 +92,7 @@ public class RepoThemeManagerService extends SimpleThemeManagerService implement
                         }
                         JsonNode defaultProperties = entry.getValue();
                         for (ThemePropertyName propertyName : themePropertyNameRepo.findAll()) {
-                            String value = defaultProperties.findValue(propertyName.getName()).asText();
+                            String value = defaultProperties.findValue(propertyName.getName()).asString();
                             if (!value.isEmpty()) {
                                 coreThemeRepo.updateThemeProperty(newTheme.getId(), themePropertyRepo.findThemePropertyByThemePropertyNameAndThemeId(propertyName, newTheme.getId()).getId(), value);
                             }
