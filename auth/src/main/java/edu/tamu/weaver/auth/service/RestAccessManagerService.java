@@ -5,7 +5,7 @@ import static edu.tamu.weaver.auth.model.AccessDecision.REQUIRES_AUTHENTICATION;
 import java.util.Collection;
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.web.FilterInvocation;

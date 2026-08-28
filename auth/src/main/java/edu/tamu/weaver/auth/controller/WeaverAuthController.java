@@ -33,7 +33,7 @@ public abstract class WeaverAuthController {
 
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public abstract ApiResponse registration(@RequestBody Map<String, String> dataMap, @RequestParam Map<String, String> parameters);
+    public abstract ApiResponse registration(@RequestBody Map<String, String> dataMap, @RequestParam("parameters") Map<String, String> parameters);
 
     public abstract ApiResponse login(@RequestBody Map<String, String> dataMap);
 
