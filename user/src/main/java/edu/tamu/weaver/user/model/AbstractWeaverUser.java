@@ -1,8 +1,8 @@
 package edu.tamu.weaver.user.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 import edu.tamu.weaver.validation.model.ValidatingBaseEntity;
 

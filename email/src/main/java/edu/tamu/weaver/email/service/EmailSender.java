@@ -1,6 +1,6 @@
 package edu.tamu.weaver.email.service;
 
-import javax.mail.MessagingException;
+import jakarta.mail.MessagingException;
 
 import org.springframework.mail.javamail.JavaMailSender;
 

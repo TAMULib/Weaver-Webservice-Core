@@ -36,7 +36,7 @@ public class ValidationsController {
     private String[] modelPackages;
 
     @RequestMapping("/{entityName}")
-    public ApiResponse validations(@PathVariable String entityName) {
+    public ApiResponse validations(@PathVariable("entityName") String entityName) {
 
         ApiResponse response = new ApiResponse(INVALID);
 
