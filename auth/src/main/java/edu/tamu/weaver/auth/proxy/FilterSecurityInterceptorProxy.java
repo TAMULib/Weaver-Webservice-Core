@@ -1,6 +1,6 @@
 package edu.tamu.weaver.auth.proxy;
 
-import javax.servlet.Filter;
+import jakarta.servlet.Filter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;

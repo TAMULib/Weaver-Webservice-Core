@@ -13,8 +13,14 @@
   <parent>
     <groupId>edu.tamu.weaver</groupId>
     <artifactId>webservice-parent</artifactId>
-    <version>2.2.1-RC1</version>
+    <version>2.3.1.1-SNAPSHOT</version>
   </parent>
+
+  <properties>
+    <wro4j.version>2.1.1</wro4j.version>
+    <webjars.version>0.52</webjars.version>
+    <commons-io.version>2.11.0</commons-io.version>
+  </properties>
 
   <dependencies>
 
@@ -28,7 +34,7 @@
     <dependency>
       <groupId>ro.isdc.wro4j</groupId>
       <artifactId>wro4j-core</artifactId>
-      <version>1.10.1</version>
+      <version>${wro4j.version}</version>
       <exclusions>
         <exclusion>
           <groupId>commons-io</groupId>
@@ -40,7 +46,7 @@
     <dependency>
       <groupId>ro.isdc.wro4j</groupId>
       <artifactId>wro4j-extensions</artifactId>
-      <version>1.10.1</version>
+      <version>${wro4j.version}</version>
       <exclusions>
         <exclusion>
           <groupId>org.codehaus.gmaven.runtime</groupId>
@@ -64,13 +70,13 @@
     <dependency>
       <groupId>org.webjars</groupId>
       <artifactId>webjars-locator-core</artifactId>
-      <version>0.52</version>
+      <version>${webjars.version}</version>
     </dependency>
 
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
-      <version>2.11.0</version>
+      <version>${commons-io.version}</version>
     </dependency>
 
   </dependencies>
