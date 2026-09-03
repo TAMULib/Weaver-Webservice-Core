@@ -13,13 +13,13 @@
   <parent>
     <groupId>edu.tamu.weaver</groupId>
     <artifactId>webservice-parent</artifactId>
-    <version>2.3.1</version>
+    <version>2.3.2-RC1</version>
   </parent>
 
   <properties>
     <wro4j.version>2.1.1</wro4j.version>
-    <webjars.version>0.52</webjars.version>
-    <commons-io.version>2.11.0</commons-io.version>
+    <webjars.version>0.59</webjars.version>
+    <commons-io.version>2.18.0</commons-io.version>
   </properties>
 
   <dependencies>
