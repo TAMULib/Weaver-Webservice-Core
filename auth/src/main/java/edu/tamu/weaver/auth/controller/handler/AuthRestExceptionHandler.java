@@ -1,6 +1,6 @@
 package edu.tamu.weaver.auth.controller.handler;
 
-import static edu.tamu.weaver.auth.AuthConstants.UNAUTHORIZED_API_RESPONSE;
+import static edu.tamu.weaver.response.ApiStatus.UNAUTHORIZED;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
@@ -23,7 +23,7 @@ public class AuthRestExceptionHandler {
     @ResponseStatus(value = HttpStatus.UNAUTHORIZED)
     @ResponseBody
     public ApiResponse handleAccessDeniedException(AccessDeniedException exception) {
-        return UNAUTHORIZED_API_RESPONSE;
+        return new ApiResponse(UNAUTHORIZED);
     }
 
     @ExceptionHandler(CredentialsNotFoundException.class)
